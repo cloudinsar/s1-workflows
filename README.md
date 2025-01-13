@@ -28,7 +28,7 @@ At the moment the filtering based on relative orbit number is not available in t
 
 Clone this repo and follow the instructions: https://github.com/cloudinsar/esa-snap-docker
 
-### 3) Run the preprocessing SNAP workflow (BEAM-DIMAP output):
+### 3) Run the preprocessing SNAP workflow (GeoTIFF output):
 
 The preprocessing SNAP xml graph is defined as
 
@@ -37,5 +37,5 @@ The preprocessing SNAP xml graph is defined as
 The SNAP xml graph for preprocessing is stored in the repo and can be run with the following command:
 
 ```
-docker run -it -v /home/<username>/s1-workflows/:/src/preprocessing/ esa-snap-11 gpt /src/preprocessing/pre-processing_stackOverview_2images.xml -Pinput1=/src/preprocessing/S1A_SLC_20240814T171550_030345_IW3_VV_042880.SAFE/manifest.safe -Pinput2=/src/preprocessing/S1A_SLC_20240826T171550_030345_IW3_VV_043168.SAFE/manifest.safe -Ptarget1=/src/preprocessing/docker_result/stackOverview_2images.json -Ptarget2=/src/preprocessing/docker_result/S1_Orb_Stack
+docker run -it -v /home/<username>/s1-workflows/:/src/preprocessing/ esa-snap-11 gpt /src/preprocessing/s1-workflows/graphs/pre-processing_stackOverview_2images_GeoTiff.xml -Pinput1=/src/preprocessing/S1A_SLC_20240814T171550_030345_IW3_VV_042880.SAFE/manifest.safe -Pinput2=/src/preprocessing/S1A_SLC_20240826T171550_030345_IW3_VV_043168.SAFE/manifest.safe -PstackOverview_filename=/src/preprocessing/docker_result/stackOverview_2images.json -PcoregisteredStack_filename=/src/preprocessing/S1A_SLC_20240814T171550_030345_IW3_VV_042880_Orb_Stack_2images
 ```
