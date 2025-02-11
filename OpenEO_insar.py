@@ -67,9 +67,9 @@ else:
 os.environ["PATH"] = os.environ["PATH"] + ":" + str(containing_folder / "utilities")
 cmd = ["sentinel1_burst_extractor_spatiotemporal.sh"] + argument_list
 print(cmd)
-# subprocess.run(cmd, check=True, cwd=containing_folder / "utilities", stderr=subprocess.STDOUT)
+subprocess.run(cmd, check=True, cwd=containing_folder / "utilities", stderr=subprocess.STDOUT)
 
-print("seconds since start insar.py: " + str((datetime.datetime.now() - start_time).seconds))
+print("seconds since start: " + str((datetime.datetime.now() - start_time).seconds))
 
 # GPT means "Graph Processing Toolkit" in this context
 glob_str = str(tmp_insar / "*/manifest.safe")
@@ -90,14 +90,14 @@ input2 = bursts[1]
 
 gpt_cmd = [
     "gpt",
-    "/src/s1-workflows/graphs/pre-processing_stackOverview_2images_GeoTiff.xml",
+    "/src/graphs/pre-processing_stackOverview_2images_GeoTiff.xml",
     f"-Pinput1={input1}", f"-Pinput2={input2}",
     f"-PstackOverview_filename={result_folder}/stackOverview_2images.json",
     f"-PcoregisteredStack_filename={result_folder}/Orb_Stack_2images"
 ]
 print(gpt_cmd)
 subprocess.run(gpt_cmd, check=True, stderr=subprocess.STDOUT)
-print("seconds since start insar.py: " + str((datetime.datetime.now() - start_time).seconds))
+print("seconds since start: " + str((datetime.datetime.now() - start_time).seconds))
 
 # CWL Will find the result files in HOME or CD
 

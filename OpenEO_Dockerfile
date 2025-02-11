@@ -1,5 +1,5 @@
-# docker build -t openeo_insar .
-# skopeo --insecure-policy copy --dest-tls-verify=false --multi-arch=all --format=oci docker-daemon:openeo_insar:latest docker://registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:latest
+# docker build -t openeo_insar:1.2 . -f OpenEO_Dockerfile
+# skopeo --insecure-policy copy --dest-tls-verify=false --multi-arch=all --format=oci docker-daemon:openeo_insar:1.2 docker://registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.2
 # docker run -it openeo_insar
 FROM ghcr.io/osgeo/gdal:ubuntu-small-3.10.0
 
