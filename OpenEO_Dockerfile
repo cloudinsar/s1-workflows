@@ -1,0 +1,77 @@
+# docker build -t openeo_insar:1.2 . -f OpenEO_Dockerfile
+# skopeo --insecure-policy copy --dest-tls-verify=false --multi-arch=all --format=oci docker-daemon:openeo_insar:1.2 docker://registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.2
+# docker run -it openeo_insar
+FROM ghcr.io/osgeo/gdal:ubuntu-small-3.10.0
+
+# Install necessary packages
+RUN apt-get update && \
+    apt-get install -y \
+        jq \
+        xmlstarlet \
+        zip \
+        default-jre \
+        bc \
+        nano \
+        wget \
+        python3-pip \
+        curl \
+        parallel \
+        dpkg && \
+    rm -rf /var/lib/apt/lists/*
+
+# Download and install jacksum and s5cmd
+RUN curl -L -O 'https://s3.waw3-2.cloudferro.com/swift/v1/jacksum/jacksum_1.7.0-4.1_all.deb' && \
+    dpkg -i jacksum_1.7.0-4.1_all.deb && rm jacksum_1.7.0-4.1_all.deb && \
+    curl -L -O 'https://github.com/peak/s5cmd/releases/download/v2.2.2/s5cmd_2.2.2_linux_amd64.deb' && \
+    dpkg -i s5cmd_2.2.2_linux_amd64.deb && rm s5cmd_2.2.2_linux_amd64.deb
+
+#COPY ./utilities /src/utilities # Copy at the end of faile to avoid slow rebuilds
+ENV PATH="${PATH}:/src/utilities/"
+
+# Set environment variables
+ENV AWS_S3_ENDPOINT=eodata.dataspace.copernicus.eu \
+    # AWS_ACCESS_KEY_ID=ACCESS \
+    # AWS_SECRET_ACCESS_KEY=DATA \
+    AWS_HTTPS=YES \
+    AWS_VIRTUAL_HOSTING=FALSE
+
+
+
+### Install esa-snap ###
+ENV DEBIAN_FRONTEND=noninteractive \
+    LC_ALL=C.UTF-8 \
+    LANG=C.UTF-8
+
+RUN apt-get update && \
+    apt-get install -y \
+      build-essential \
+      git \
+      wget \
+      python3 \
+      libgfortran5
+
+LABEL authors="Michele Claus, Emile Sonneveld"
+LABEL maintainer="michele.claus@eurac.edu, emile.sonneveld@vito.be"
+
+ENV SNAPVER=11
+
+RUN mkdir -p /src/esa-snap-docker
+COPY esa-snap-docker/response.varfile /src/esa-snap-docker/response.varfile
+
+# install and update snap
+RUN wget -q -O /src/esa-snap-docker/esa-snap_all_unix_${SNAPVER}_0_0.sh "https://step.esa.int/downloads/${SNAPVER}.0/installers/esa-snap_all_linux-${SNAPVER}.0.0.sh" && \
+   sh /src/esa-snap-docker/esa-snap_all_unix_${SNAPVER}_0_0.sh -q -varfile /src/esa-snap-docker/response.varfile && \
+   rm -f /src/esa-snap-docker/esa-snap_all_unix_${SNAPVER}_0_0.sh
+
+# update SNAP
+COPY esa-snap-docker/update_snap.sh /src/esa-snap-docker/update_snap.sh
+RUN sh /src/esa-snap-docker/update_snap.sh
+
+# add gpt to PATH
+ENV PATH="${PATH}:/usr/local/esa-snap/bin"
+
+
+ENV PATH="${PATH}:/src/"
+COPY . /src
+
+WORKDIR /src
