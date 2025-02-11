@@ -55,17 +55,17 @@ LABEL maintainer="michele.claus@eurac.edu, emile.sonneveld@vito.be"
 
 ENV SNAPVER=11
 
-RUN mkdir -p /src/snap
-COPY esa-snap-docker/response.varfile /src/snap/response.varfile
+RUN mkdir -p /src/esa-snap-docker
+COPY esa-snap-docker/response.varfile /src/esa-snap-docker/response.varfile
 
 # install and update snap
-RUN wget -q -O /src/snap/esa-snap_all_unix_${SNAPVER}_0_0.sh "https://step.esa.int/downloads/${SNAPVER}.0/installers/esa-snap_all_linux-${SNAPVER}.0.0.sh" && \
-   sh /src/snap/esa-snap_all_unix_${SNAPVER}_0_0.sh -q -varfile /src/snap/response.varfile && \
-   rm -f /src/snap/esa-snap_all_unix_${SNAPVER}_0_0.sh
+RUN wget -q -O /src/esa-snap-docker/esa-snap_all_unix_${SNAPVER}_0_0.sh "https://step.esa.int/downloads/${SNAPVER}.0/installers/esa-snap_all_linux-${SNAPVER}.0.0.sh" && \
+   sh /src/esa-snap-docker/esa-snap_all_unix_${SNAPVER}_0_0.sh -q -varfile /src/esa-snap-docker/response.varfile && \
+   rm -f /src/esa-snap-docker/esa-snap_all_unix_${SNAPVER}_0_0.sh
 
 # update SNAP
-COPY esa-snap-docker/update_snap.sh /src/snap/update_snap.sh
-RUN sh /src/snap/update_snap.sh
+COPY esa-snap-docker/update_snap.sh /src/esa-snap-docker/update_snap.sh
+RUN sh /src/esa-snap-docker/update_snap.sh
 
 # add gpt to PATH
 ENV PATH="${PATH}:/usr/local/esa-snap/bin"
