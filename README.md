@@ -39,3 +39,13 @@ The SNAP xml graph for preprocessing is stored in the repo and can be run with t
 ```
 docker run -it -v /home/<username>/s1-workflows/:/src/preprocessing/ esa-snap-11 gpt /src/preprocessing/s1-workflows/graphs/pre-processing_stackOverview_2images_GeoTiff.xml -Pinput1=/src/preprocessing/S1A_SLC_20240814T171550_030345_IW3_VV_042880.SAFE/manifest.safe -Pinput2=/src/preprocessing/S1A_SLC_20240826T171550_030345_IW3_VV_043168.SAFE/manifest.safe -PstackOverview_filename=/src/preprocessing/docker_result/stackOverview_2images.json -PcoregisteredStack_filename=/src/preprocessing/S1A_SLC_20240814T171550_030345_IW3_VV_042880_Orb_Stack_2images
 ```
+
+## Minimal Example: Run burst extraction and preprocessing in one docker image:
+
+Running those command will run the same kind of docker image that OpenEO runs to get the preprocessed data.
+If not running on Ubuntu, replace /home/ubuntu with the path to the folder where the data will be stored.
+When no arguments are passed to OpenEO_insar.py, some example arguments are used.
+```bash
+docker build -t openeo_insar:1.2 . -f OpenEO_Dockerfile
+docker run -it -v /home/ubuntu:/root -e AWS_ACCESS_KEY_ID=<AWS_ACCESS_KEY_ID> -e AWS_SECRET_ACCESS_KEY=<AWS_SECRET_ACCESS_KEY> --rm openeo_insar:1.2 python3 OpenEO_insar.py
+```
