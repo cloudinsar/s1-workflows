@@ -5,10 +5,10 @@
     <sources/>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <useAdvancedOptions>false</useAdvancedOptions>
-      <file>/home/mcallegari/PROJECT_DATA/ESA_ClouDInSAR/Test/original_data/SNAP_TopSplit/S1A_IW_SLC__1SDV_20240814T171540_20240814T171607_055212_06BAD3_C31B_splitIW3b4.dim</file>
+      <file>/home/mcallegari/PROJECT_DATA/ESA_ClouDInSAR/Test/cdse_utilities/S1A_SLC_20240814T171550_030345_IW3_VV_441043.SAFE/manifest.safe</file>
       <copyMetadata>true</copyMetadata>
       <bandNames/>
-      <pixelRegion>38,0,25316,1516</pixelRegion>
+      <pixelRegion>1,0,25345,1516</pixelRegion>
       <maskNames/>
     </parameters>
   </node>
@@ -17,10 +17,10 @@
     <sources/>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <useAdvancedOptions>false</useAdvancedOptions>
-      <file>/home/mcallegari/PROJECT_DATA/ESA_ClouDInSAR/Test/original_data/SNAP_TopSplit/S1A_IW_SLC__1SDV_20240826T171541_20240826T171608_055387_06C154_3B5B_splitIW3b4.dim</file>
+      <file>/home/mcallegari/PROJECT_DATA/ESA_ClouDInSAR/Test/cdse_utilities/S1A_SLC_20240826T171550_030345_IW3_VV_442708.SAFE/manifest.safe</file>
       <copyMetadata>true</copyMetadata>
       <bandNames/>
-      <pixelRegion>38,0,25533,1517</pixelRegion>
+      <pixelRegion>1,0,25563,1517</pixelRegion>
       <maskNames/>
     </parameters>
   </node>
@@ -92,17 +92,31 @@
       <sourceProduct refid="BandSelect(2)"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>/home/mcallegari/PROJECT_DATA/ESA_ClouDInSAR/Test/original_data/preprocessing_output/2images/geotiff/S1A_IW_SLC__1SDV_20240826_splitIW3b4_Orb_Coreg.tif</file>
+      <file>/home/mcallegari/PROJECT_DATA/ESA_ClouDInSAR/Test/cdse_utilities/preprocessiing/S1A_SLC_20240826.tif</file>
       <formatName>GeoTIFF</formatName>
+    </parameters>
+  </node>
+  <node id="Update-Geo-Reference">
+    <operator>Update-Geo-Reference</operator>
+    <sources>
+      <sourceProduct refid="BandSelect"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <sourceBands>i_IW3_VV_mst_14Aug2024,q_IW3_VV_mst_14Aug2024</sourceBands>
+      <demName>SRTM 1Sec HGT</demName>
+      <demResamplingMethod>BICUBIC_INTERPOLATION</demResamplingMethod>
+      <externalDEMFile/>
+      <externalDEMNoDataValue>0.0</externalDEMNoDataValue>
+      <reGridMethod>false</reGridMethod>
     </parameters>
   </node>
   <node id="Write">
     <operator>Write</operator>
     <sources>
-      <sourceProduct refid="BandSelect"/>
+      <sourceProduct refid="Update-Geo-Reference"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>/home/mcallegari/PROJECT_DATA/ESA_ClouDInSAR/Test/original_data/preprocessing_output/2images/geotiff/S1A_IW_SLC__1SDV_20240814_splitIW3b4_Orb_Coreg.tif</file>
+      <file>/home/mcallegari/PROJECT_DATA/ESA_ClouDInSAR/Test/cdse_utilities/preprocessiing/S1A_SLC_20240814.tif</file>
       <formatName>GeoTIFF</formatName>
     </parameters>
   </node>
@@ -132,8 +146,11 @@
     <node id="Write(2)">
       <displayPosition x="564.0" y="103.0"/>
     </node>
+    <node id="Update-Geo-Reference">
+      <displayPosition x="579.0" y="17.0"/>
+    </node>
     <node id="Write">
-      <displayPosition x="564.0" y="16.0"/>
+      <displayPosition x="756.0" y="17.0"/>
     </node>
   </applicationData>
 </graph>
