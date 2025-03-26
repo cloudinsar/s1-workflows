@@ -1,46 +1,43 @@
-# s1-workflows
-Collection of Sentinel-1 workflows and tests using ESA SNAP
-
 ## Prerequisites:
 - docker
 - 10-20 GB of disk space
+- ...
 
-## Minimal Example: extract and run the preprocessing on two bursts
+## Sentinel-1 SLC burst processing workflow
 
-### 1) Get the sample data
+Two different SLC burst processing workflow are proposed:
+1) SNAP InSAR workflow
+2) SNAP pre-processing + OpenEO InSAR workflow
 
-We use the CDSE burst extractor tool from https://github.com/eu-cdse/utilities to get the Sentinel-1 bursts from 2024-08-14 to 2024-08-26 intersecting the point (x=10.756, y=46.747):
+Both workflows use the CDSE utilities (https://github.com/eu-cdse/utilities) to access to Sentinel-1 bursts
 
-Build the cdse utilities docker as explained here: https://github.com/eu-cdse/utilities. Then get the data with the following query (get the credentials for CDSE from https://eodata-s3keysmanager.dataspace.copernicus.eu/panel/s3-credentials and replace AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY):
+### 1) SNAP InSAR workflow
 
-```
-docker run -it -v /home/<username>:/home/ubuntu -e AWS_ACCESS_KEY_ID=<AWS_ACCESS_KEY_ID> -e AWS_SECRET_ACCESS_KEY=<AWS_SECRET_ACCESS_KEY> cdse_utilities sentinel1_burst_extractor_spatiotemporal.sh -o /home/ubuntu -s 2024-08-14 -e 2024-08-26 -x 10.756 -y 46.747 -p vv
-```
+![image](https://github.com/user-attachments/assets/40eb2f08-12fa-447c-af2b-8f62fdffb99d)
 
-At the moment the filtering based on relative orbit number is not available in the CDSE utilities. Thus we manually select only the image acquired by a single orbit (i.e. 15) in the period of interest. The resulting list of files are:
-- S1A_SLC_20240814T171550_030345_IW3_VV_042880.SAFE
-- S1A_SLC_20240826T171550_030345_IW3_VV_043168.SAFE
+The selection of sub swath, burstId and InSAR pair list can be accomplished by running the pyhton notebook notebooks/show_s1bursts.ipynb.
 
-![image](https://github.com/user-attachments/assets/274ab2d9-345a-418a-88ac-be5300a4ad1c)
+A sample SNAP graph for generating InSAR coherence is available at notebooks/graphs/coh_2images_GeoTiff.xml:
+<img src="https://github.com/user-attachments/assets/d423825a-c3eb-4db9-8d49-4a43ddd22639" width=50% height=50%>
 
+More complex graphs (e.g. for interferogram formation, uinterferogram filtering, unwrappinp, etc.) will be avaialable soon.
 
-### 2) Build the SNAP docker image
+An example of the SNAP preprocessing including Sentinel-1 burst data access with the CDSE utilities is available at notebooks/s1_workflow.ipynb
 
-Clone this repo and follow the instructions: https://github.com/cloudinsar/esa-snap-docker
+### 2) SNAP pre-processing + OpenEO InSAR workflow
 
-### 3) Run the preprocessing SNAP workflow (GeoTIFF output):
+![image](https://github.com/user-attachments/assets/92ffead5-ede6-4999-a563-20a6bd6e963c)
 
-The preprocessing SNAP xml graph is defined as
+The selection of sub swath, burstId and InSAR pair list can be accomplished by running the pyhton notebook notebooks/show_s1bursts.ipynb.
 
-![image](https://github.com/user-attachments/assets/ddc18de7-4813-45cd-8568-6c3eb5b738b3)
+The SNAP pre-processing graph (notebooks/graphs/pre-processing_2images_SaveMst_GeoTiff.xml and notebooks/graphs/pre-processing_2images_SaveOnlySlv_GeoTiff.xml) involve the following operations:
+![image](https://github.com/user-attachments/assets/11223d88-3aa3-4f00-9ad8-003c2af5a7aa)
 
-The SNAP xml graph for preprocessing is stored in the repo and can be run with the following command:
+InSAR OpenEO processes will be implemented and available soon.
 
-```
-docker run -it -v /home/<username>/s1-workflows/:/src/preprocessing/ esa-snap-11 gpt /src/preprocessing/s1-workflows/graphs/pre-processing_stackOverview_2images_GeoTiff.xml -Pinput1=/src/preprocessing/S1A_SLC_20240814T171550_030345_IW3_VV_042880.SAFE/manifest.safe -Pinput2=/src/preprocessing/S1A_SLC_20240826T171550_030345_IW3_VV_043168.SAFE/manifest.safe -PstackOverview_filename=/src/preprocessing/docker_result/stackOverview_2images.json -PcoregisteredStack_filename=/src/preprocessing/S1A_SLC_20240814T171550_030345_IW3_VV_042880_Orb_Stack_2images
-```
+An example of the SNAP preprocessing including Sentinel-1 burst data access with the CDSE utilities is available at notebooks/s1_workflow.ipynb
 
-## Minimal Example: Run burst extraction and preprocessing in one docker image:
+## Run burst extraction and preprocessing in one docker image:
 
 Running those command will run the same kind of docker image that OpenEO runs to get the preprocessed data.
 If not running on Ubuntu, replace /home/ubuntu with the path to the folder where the data will be stored.
