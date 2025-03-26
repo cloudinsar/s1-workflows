@@ -5,7 +5,7 @@
     <sources/>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <useAdvancedOptions>false</useAdvancedOptions>
-      <file>/home/mcallegari/PROJECT_DATA/ESA_ClouDInSAR/Test/cdse_utilities/S1A_SLC_20240814T171550_030345_IW3_VV_441043.SAFE/manifest.safe</file>
+      <file>${mst_filename}</file>
       <copyMetadata>true</copyMetadata>
       <bandNames/>
       <pixelRegion>1,0,25345,1516</pixelRegion>
@@ -17,7 +17,7 @@
     <sources/>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <useAdvancedOptions>false</useAdvancedOptions>
-      <file>/home/mcallegari/PROJECT_DATA/ESA_ClouDInSAR/Test/cdse_utilities/S1A_SLC_20240826T171550_030345_IW3_VV_442708.SAFE/manifest.safe</file>
+      <file>${slv_filename}</file>
       <copyMetadata>true</copyMetadata>
       <bandNames/>
       <pixelRegion>1,0,25563,1517</pixelRegion>
@@ -71,7 +71,7 @@
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <selectedPolarisations>VV</selectedPolarisations>
-      <sourceBands>i_IW3_VV_mst_14Aug2024,q_IW3_VV_mst_14Aug2024</sourceBands>
+      <sourceBands>${i_q_mst_bandnames}</sourceBands>
       <bandNamePattern/>
     </parameters>
   </node>
@@ -82,7 +82,7 @@
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <selectedPolarisations>VV</selectedPolarisations>
-      <sourceBands>i_IW3_VV_slv1_26Aug2024,q_IW3_VV_slv1_26Aug2024</sourceBands>
+      <sourceBands>${i_q_slv_bandnames}</sourceBands>
       <bandNamePattern/>
     </parameters>
   </node>
@@ -92,7 +92,7 @@
       <sourceProduct refid="BandSelect(2)"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>/home/mcallegari/PROJECT_DATA/ESA_ClouDInSAR/Test/cdse_utilities/preprocessiing/S1A_SLC_20240826.tif</file>
+      <file>${output_slv_filename}</file>
       <formatName>GeoTIFF</formatName>
     </parameters>
   </node>
@@ -102,7 +102,7 @@
       <sourceProduct refid="BandSelect"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <sourceBands>i_IW3_VV_mst_14Aug2024,q_IW3_VV_mst_14Aug2024</sourceBands>
+      <sourceBands>${i_q_mst_bandnames}</sourceBands>
       <demName>SRTM 1Sec HGT</demName>
       <demResamplingMethod>BICUBIC_INTERPOLATION</demResamplingMethod>
       <externalDEMFile/>
@@ -116,7 +116,7 @@
       <sourceProduct refid="Update-Geo-Reference"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>/home/mcallegari/PROJECT_DATA/ESA_ClouDInSAR/Test/cdse_utilities/preprocessiing/S1A_SLC_20240814.tif</file>
+      <file>${output_mst_filename}</file>
       <formatName>GeoTIFF</formatName>
     </parameters>
   </node>

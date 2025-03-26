@@ -5,7 +5,7 @@
     <sources/>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <useAdvancedOptions>false</useAdvancedOptions>
-      <file>/home/mcallegari/PROJECT_DATA/ESA_ClouDInSAR/Test/original_data/SNAP_TopSplit/S1A_IW_SLC__1SDV_20240814T171540_20240814T171607_055212_06BAD3_C31B_splitIW3b4.dim</file>
+      <file>${mst_filename}</file>
       <copyMetadata>true</copyMetadata>
       <bandNames/>
       <pixelRegion>0,0,2147483647,2147483647</pixelRegion>
@@ -17,7 +17,7 @@
     <sources/>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <useAdvancedOptions>false</useAdvancedOptions>
-      <file>/home/mcallegari/PROJECT_DATA/ESA_ClouDInSAR/Test/original_data/SNAP_TopSplit/S1A_IW_SLC__1SDV_20240826T171541_20240826T171608_055387_06C154_3B5B_splitIW3b4.dim</file>
+      <file>${slv_filename}</file>
       <copyMetadata>true</copyMetadata>
       <bandNames/>
       <pixelRegion>0,0,2147483647,2147483647</pixelRegion>
@@ -101,7 +101,7 @@
       <sourceProduct refid="TOPSAR-Deburst"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <sourceBands>coh_IW3_VV_14Aug2024_26Aug2024</sourceBands>
+      <sourceBands></sourceBands>
       <demName>SRTM 1Sec HGT</demName>
       <externalDEMFile/>
       <externalDEMNoDataValue>0.0</externalDEMNoDataValue>
@@ -146,7 +146,7 @@
       <sourceProduct refid="Terrain-Correction"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>/home/mcallegari/PROJECT_DATA/ESA_ClouDInSAR/Test/original_data/coherence/S1A_IW_SLC__1SDV_20240814_20240826_splitIW3b4_Orb_Stack_Coh_Deb_TC.tif</file>
+      <file>${output_filename}</file>
       <formatName>GeoTIFF</formatName>
     </parameters>
   </node>
