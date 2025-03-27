@@ -44,5 +44,5 @@ If not running on Ubuntu, replace /home/ubuntu with the path to the folder where
 When no arguments are passed to OpenEO_insar.py, some example arguments are used.
 ```bash
 docker build -t openeo_insar:1.2 . -f OpenEO_Dockerfile
-docker run -it -v /home/ubuntu:/root -e AWS_ACCESS_KEY_ID=<AWS_ACCESS_KEY_ID> -e AWS_SECRET_ACCESS_KEY=<AWS_SECRET_ACCESS_KEY> --rm openeo_insar:1.2 python3 OpenEO_insar.py
+docker run -it -v /home/ubuntu:/root -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --rm openeo_insar:1.2 python3 OpenEO_insar.py
 ```
