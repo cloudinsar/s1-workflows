@@ -8,6 +8,8 @@ import os
 import datetime
 from pathlib import Path
 
+import simple_stac_builder
+
 start_time = datetime.datetime.now()
 
 argument_list = sys.argv[1:]
@@ -44,12 +46,9 @@ argument_list = [
 containing_folder = Path(os.path.dirname(__file__))
 
 result_folder = Path.home()
-# tmp_insar = Path("/tmp/insar") # TODO: No need to write tmp results to mount
-# tmp_insar.mkdir(parents=True, exist_ok=True)
+# result_folder = Path("/tmp/insar")
+# result_folder.mkdir(parents=True, exist_ok=True)
 tmp_insar = result_folder
-
-with open(result_folder / "output.txt", "w") as f:
-    f.write(json.dumps(input_dict))
 
 if "-o" in argument_list:
     index_of_o = argument_list.index("-o")
@@ -74,16 +73,30 @@ bursts = glob.glob(glob_str)
 if len(bursts) == 0:
     raise Exception("No files found with glob: " + glob_str)
 
+if subprocess.run(["which", "gpt"]).returncode != 0 and os.path.exists(
+        "/usr/local/esa-snap/bin/gpt"
+):
+    print("adding SNAP to PATH")  # needed when running outside of docker
+    os.environ["PATH"] = os.environ["PATH"] + ":/usr/local/esa-snap/bin"
+
+
+def date_from_burst(burst_path):
+    return Path(burst_path).parent.name.split("_")[2]
+
+
 gpt_cmd = [
     "gpt",
-    "/src/graphs/pre-processing_stackOverview_2images_GeoTiff.xml",
-    f"-Pinput1={bursts[0]}",
-    f"-Pinput2={bursts[1]}",
-    f"-PstackOverview_filename={result_folder}/stackOverview_2images.json",
-    f"-PcoregisteredStack_filename={result_folder}/Orb_Stack_2images",
+    "./notebooks/graphs/coh_2images_GeoTiff.xml",
+    f"-Pmst_filename={bursts[0]}",
+    f"-Pslv_filename={bursts[1]}",
+    f"-Poutput_filename={result_folder}/S1_coh_2images_{date_from_burst(bursts[0])}_{date_from_burst(bursts[1])}.tif",
 ]
 print(gpt_cmd)
 subprocess.run(gpt_cmd, check=True, stderr=subprocess.STDOUT)
+
+# slow when running outside Docker, because whole home directory is scanned.
+simple_stac_builder.generate_catalog(result_folder)
+
 print("seconds since start: " + str((datetime.datetime.now() - start_time).seconds))
 
 # CWL Will find the result files in HOME or CD
