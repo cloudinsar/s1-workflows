@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import json
+import os
 import re
 import subprocess
 from datetime import datetime
@@ -26,12 +27,11 @@ def parse_json_from_output(output_str: str) -> Dict[str, Any]:
 
 
 def generate_catalog(stac_root):
-    # DRAFT CODE!
     collection_stac = {
         "type": "Collection",
         "stac_version": "1.0.0",
         "id": "unknown-job",
-        "description": "",
+        "description": "Stac catalog made with " + os.path.basename(__file__),
         "license": "unknown",
         "extent": {
             "spatial": {"bbox": [[-180, -90, 180, 90]]},
@@ -61,16 +61,14 @@ def generate_catalog(stac_root):
             collection_stac["extent"]["temporal"]["interval"][0][1] = date2
 
         # get general metadata with gdalinfo:
-        output = subprocess.check_output(
-            ["gdalinfo", "-json", str(file)], text=True, stderr=subprocess.DEVNULL
-        )
         cmd = ["gdalinfo", str(file), "-json", "--config", "GDAL_IGNORE_ERRORS", "ALL"]
         out = subprocess.check_output(cmd, timeout=1800, text=True)
         data_gdalinfo_from_subprocess = parse_json_from_output(out)
-        del data_gdalinfo_from_subprocess["stac"][
-            "proj:projjson"
-        ]  # remove verbose information
-        del data_gdalinfo_from_subprocess["stac"]["proj:wkt2"]  # remove verbose information
+        gdalinfo_stac = data_gdalinfo_from_subprocess["stac"]
+        del gdalinfo_stac["proj:projjson"]  # remove verbose information
+        del gdalinfo_stac["proj:wkt2"]  # remove verbose information
+        gdalinfo_stac["href"] = "./" + str(Path(file).relative_to(stac_root))
+
         # assemble with application specific data:
         stac = {
             "type": "Feature",
@@ -103,7 +101,7 @@ def generate_catalog(stac_root):
                 # "insar:height_of_ambiguity_m": -92.51294,
             },
             "links": [],
-            "assets": {file.name: data_gdalinfo_from_subprocess["stac"]},
+            "assets": {file.name: gdalinfo_stac},
         }
 
         stac_item_filename = str(file) + ".json"
@@ -120,6 +118,14 @@ def generate_catalog(stac_root):
 
     with open(stac_root / "S1_coh_2images_collection.json", "w") as f:
         json.dump(collection_stac, f, indent=2)
+
+    try:
+        from pystac import Collection, Item
+
+        collection = Collection.from_file(stac_root / "S1_coh_2images_collection.json")
+        collection.validate_all()
+    except Exception as e:
+        print(e)
 
 
 if __name__ == "__main__":
