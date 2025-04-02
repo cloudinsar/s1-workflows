@@ -25,7 +25,7 @@ RUN curl -L -O 'https://s3.waw3-2.cloudferro.com/swift/v1/jacksum/jacksum_1.7.0-
     curl -L -O 'https://github.com/peak/s5cmd/releases/download/v2.2.2/s5cmd_2.2.2_linux_amd64.deb' && \
     dpkg -i s5cmd_2.2.2_linux_amd64.deb && rm s5cmd_2.2.2_linux_amd64.deb
 
-#COPY ./utilities /src/utilities # Copy at the end of faile to avoid slow rebuilds
+#COPY ./utilities /src/utilities # Copy at the end of file to avoid slow rebuilds
 ENV PATH="${PATH}:/src/utilities/"
 
 # Set environment variables

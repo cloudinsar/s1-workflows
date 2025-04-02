@@ -2,6 +2,8 @@
 import json
 import re
 import subprocess
+from datetime import datetime
+
 import sys
 from pathlib import Path
 from typing import Dict, Any
@@ -41,14 +43,14 @@ def generate_catalog(stac_root):
     tiff_files = list(stac_root.rglob("*.tif"))
     for file in tiff_files:
         print(file)
-        res = re.search(r"S1_coh_(?P<date1>\d{8})_(?P<date2>\d{8}).tif$", file.name)
+        res = re.search(r"S1_coh_2images_(?P<date1>\d{8}T\d{6})_(?P<date2>\d{8}T\d{6}).tif$", file.name)
         if res is None:
             print("Skipping: ", file)
             continue
         date1 = res.group("date1")
         date2 = res.group("date2")
-        date1 = f"{date1[:4]}-{date1[4:6]}-{date1[6:8]}T00:00:00Z"
-        date2 = f"{date2[:4]}-{date2[4:6]}-{date2[6:8]}T23:59:59Z"
+        date1 = datetime.strptime(date1, "%Y%m%dT%H%M%S").isoformat() + "Z"
+        date2 = datetime.strptime(date2, "%Y%m%dT%H%M%S").isoformat() + "Z"
         if date1 < collection_stac["extent"]["temporal"]["interval"][0][0]:
             collection_stac["extent"]["temporal"]["interval"][0][0] = date1
         if date1 > collection_stac["extent"]["temporal"]["interval"][0][1]:
@@ -80,7 +82,8 @@ def generate_catalog(stac_root):
             },
             "bbox": [-180, -90, 180, 90],
             "properties": {
-                "datetime": "2024-08-26T17:15:50Z",
+                "datetime": date1,  # master date
+                "sar:datetime_slave": date2,
                 # TODO: Get those values out of burst extraction:
                 # "sar:instrument_mode": "IW",
                 # "sar:frequency_band": "C",
@@ -115,7 +118,7 @@ def generate_catalog(stac_root):
             }
         )
 
-    with open(stac_root / "collection.json", "w") as f:
+    with open(stac_root / "S1_coh_2images_collection.json", "w") as f:
         json.dump(collection_stac, f, indent=2)
 
 
@@ -123,6 +126,6 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         generate_catalog(Path(sys.argv[1]))
     else:
-        generate_catalog(Path("./notebooks/output/S1_coh"))
+        generate_catalog(Path("./output"))
         print("Using default stac_root!")
     print("done")
