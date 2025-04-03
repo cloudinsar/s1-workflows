@@ -40,7 +40,7 @@ def generate_catalog(stac_root):
         "links": [],
     }
 
-    tiff_files = list(stac_root.rglob("*.tif"))
+    tiff_files = list(stac_root.glob("*2images*.tif"))
     for file in tiff_files:
         print(file)
         res = re.search(r"S1_coh_2images_(?P<date1>\d{8}T\d{6})_(?P<date2>\d{8}T\d{6}).tif$", file.name)
@@ -67,8 +67,11 @@ def generate_catalog(stac_root):
         gdalinfo_stac = data_gdalinfo_from_subprocess["stac"]
         del gdalinfo_stac["proj:projjson"]  # remove verbose information
         del gdalinfo_stac["proj:wkt2"]  # remove verbose information
+        del gdalinfo_stac["proj:epsg"]  # might mess up x/y resolution, so remove
+        del gdalinfo_stac["proj:transform"]  # might mess up x/y resolution, so remove
+        del gdalinfo_stac["proj:shape"]  # might mess up x/y resolution, so remove
         gdalinfo_stac["href"] = "./" + str(Path(file).relative_to(stac_root))
-
+        coordinates = data_gdalinfo_from_subprocess["wgs84Extent"]["coordinates"]
         # assemble with application specific data:
         stac = {
             "type": "Feature",
@@ -76,9 +79,14 @@ def generate_catalog(stac_root):
             "id": file.name,
             "geometry": {
                 "type": "Polygon",
-                "coordinates": data_gdalinfo_from_subprocess["wgs84Extent"]["coordinates"],
+                "coordinates": coordinates,
             },
-            "bbox": [-180, -90, 180, 90],
+            "bbox": [
+                min([c[0] for polygon in coordinates for c in polygon]),
+                min([c[1] for polygon in coordinates for c in polygon]),
+                max([c[0] for polygon in coordinates for c in polygon]),
+                max([c[1] for polygon in coordinates for c in polygon]),
+            ],
             "properties": {
                 "datetime": date1,  # master date
                 "sar:datetime_slave": date2,
@@ -124,6 +132,7 @@ def generate_catalog(stac_root):
 
         collection = Collection.from_file(stac_root / "S1_coh_2images_collection.json")
         collection.validate_all()
+        print("pystac validation done")
     except Exception as e:
         print(e)
 

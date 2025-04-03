@@ -106,5 +106,7 @@ print("seconds since start: " + str((datetime.datetime.now() - start_time).secon
 
 files = glob.glob(str(result_folder / "*2images*"))
 for file in files:
-    subprocess.run(["chmod", "777", str(result_folder)])
+    # Docker often runs as root, this makes it easier to work with the files as a standard user:
+    subprocess.call(["chmod", "777", str(file)])
+
 print("Files in target dir: " + str(files))

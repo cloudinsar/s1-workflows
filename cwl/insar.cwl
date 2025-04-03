@@ -1,6 +1,6 @@
 cwlVersion: v1.0
 class: CommandLineTool
-baseCommand: OpenEO_insar.py
+baseCommand: /src/OpenEO_insar.py
 requirements:
   DockerRequirement:
     dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.3
