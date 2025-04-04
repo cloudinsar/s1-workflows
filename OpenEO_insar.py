@@ -66,15 +66,16 @@ cmd = [
     "-o", str(tmp_insar),
 ]
 print(cmd)
-subprocess.check_call(cmd, cwd=containing_folder / "utilities", stderr=subprocess.STDOUT)
-
+output = subprocess.check_output(cmd, cwd=containing_folder / "utilities", stderr=subprocess.STDOUT)
+# get paths from stdout:
+needle = "out_path: "
+bursts = sorted([line[len(needle):] for line in output.decode("utf-8").split("\n") if line.startswith(needle)])
+print(f"{bursts=}")
 print("seconds since start: " + str((datetime.datetime.now() - start_time).seconds))
 
 # GPT means "Graph Processing Toolkit" in this context
-glob_str = str(tmp_insar / "*/manifest.safe")
-bursts = glob.glob(glob_str)
 if len(bursts) == 0:
-    raise Exception("No files found with glob: " + glob_str)
+    raise Exception("No files found in command output: " + str(output))
 
 if subprocess.run(["which", "gpt"]).returncode != 0 and os.path.exists(
         "/usr/local/esa-snap/bin/gpt"
