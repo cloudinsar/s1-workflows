@@ -8,7 +8,7 @@
       <file>${mst_filename}</file>
       <copyMetadata>true</copyMetadata>
       <bandNames/>
-      <pixelRegion>0,0,2147483647,2147483647</pixelRegion>
+      <pixelRegion></pixelRegion>
       <maskNames/>
     </parameters>
   </node>
@@ -20,7 +20,7 @@
       <file>${slv_filename}</file>
       <copyMetadata>true</copyMetadata>
       <bandNames/>
-      <pixelRegion>0,0,2147483647,2147483647</pixelRegion>
+      <pixelRegion></pixelRegion>
       <maskNames/>
     </parameters>
   </node>
@@ -140,10 +140,22 @@
       <externalAuxFile/>
     </parameters>
   </node>
+  <node id="Convert-Datatype">
+    <operator>Convert-Datatype</operator>
+    <sources>
+      <sourceProduct refid="Terrain-Correction"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <sourceBands/>
+      <targetDataType>float32</targetDataType>
+      <targetScalingStr>Truncate</targetScalingStr>
+      <targetNoDataValue>NaN</targetNoDataValue>
+    </parameters>
+  </node>
   <node id="Write">
     <operator>Write</operator>
     <sources>
-      <sourceProduct refid="Terrain-Correction"/>
+      <sourceProduct refid="Convert-Datatype"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <file>${output_filename}</file>
@@ -176,8 +188,11 @@
     <node id="Terrain-Correction">
       <displayPosition x="455.0" y="177.0"/>
     </node>
+    <node id="Convert-Datatype">
+      <displayPosition x="458.0" y="237.0"/>
+    </node>
     <node id="Write">
-      <displayPosition x="490.0" y="249.0"/>
+      <displayPosition x="492.0" y="283.0"/>
     </node>
   </applicationData>
 </graph>
