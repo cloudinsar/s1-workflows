@@ -33,6 +33,8 @@ if not input_dict.get("sub_swath"):
     input_dict["sub_swath"] = "IW3"
 print(input_dict)
 print("AWS_ACCESS_KEY_ID= " + str(os.environ.get("AWS_ACCESS_KEY_ID", None)))
+if "AWS_ACCESS_KEY_ID" not in os.environ:
+    raise Exception("AWS_ACCESS_KEY_ID should be set in environment")
 
 center_point = (
     (input_dict["spatial_extent"]["west"] + input_dict["spatial_extent"]["east"]) / 2,

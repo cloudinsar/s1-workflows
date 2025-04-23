@@ -134,7 +134,7 @@ def generate_catalog(stac_root):
         collection.validate_all()
         print("pystac validation done")
     except Exception as e:
-        print(e)
+        print("Skipping STAC validation: " + str(e))
 
 
 if __name__ == "__main__":
