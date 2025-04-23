@@ -3,6 +3,7 @@ import base64
 import glob
 import json
 import subprocess
+import urllib
 import sys
 import os
 import datetime
@@ -17,29 +18,29 @@ if len(sys.argv) > 1:
 else:
     input_dict = {
         "message": "These are example arguments",
-        "spatial_extent": {
-            "west": 10.751,
-            "south": 46.741,
-            "east": 10.759,
-            "north": 46.749,
-        },
-        "temporal_extent": ["2024-08-14", "2024-08-26"],
-        "polarization": "vv",
-        "sub_swath": "IW3",
+        "burst_id": 249435,
+        "sub_swath": "IW2",
+        "InSAR_pairs": [
+            ["2024-08-09", "2024-08-21"],
+            ["2024-08-09", "2024-09-02"],
+            ["2024-08-21", "2024-09-02"],
+            ["2024-08-21", "2024-09-14"],
+            ["2024-09-02", "2024-09-14"]
+        ],
+        "spatial_extent": {"west": 11.4, "south": 46.8, "east": 11.4, "north": 46.8},
+        "polarization": "vv"
     }
 if not input_dict.get("polarization"):
     input_dict["polarization"] = "vv"
 if not input_dict.get("sub_swath"):
     input_dict["sub_swath"] = "IW3"
 print(input_dict)
+start_date = min([min(pair) for pair in input_dict["InSAR_pairs"]])
+end_date = max([max(pair) for pair in input_dict["InSAR_pairs"]])
+
 print("AWS_ACCESS_KEY_ID= " + str(os.environ.get("AWS_ACCESS_KEY_ID", None)))
 if "AWS_ACCESS_KEY_ID" not in os.environ:
     raise Exception("AWS_ACCESS_KEY_ID should be set in environment")
-
-center_point = (
-    (input_dict["spatial_extent"]["west"] + input_dict["spatial_extent"]["east"]) / 2,
-    (input_dict["spatial_extent"]["south"] + input_dict["spatial_extent"]["north"]) / 2,
-)
 
 # __file__ could have exotic values in Docker:
 # __file__ == /src/./OpenEO_insar.py
@@ -54,31 +55,43 @@ result_folder = Path.cwd()
 # result_folder.mkdir(exist_ok=True)
 tmp_insar = result_folder
 
-# Allow for relative imports:
-os.environ["PATH"] = os.environ["PATH"] + ":" + str(containing_folder / "utilities")
-cmd = [
-    "sentinel1_burst_extractor_spatiotemporal.sh",
-    "-s", input_dict["temporal_extent"][0],
-    "-e", input_dict["temporal_extent"][1],
-    # TODO: Specify spatial extent instead of point
-    "-x", str(center_point[0]),
-    "-y", str(center_point[1]),
-    "-p", input_dict["polarization"],
-    "-S", input_dict["sub_swath"],
-    "-o", str(tmp_insar),
-]
-print(cmd)
-output = subprocess.check_output(cmd, cwd=containing_folder / "utilities", stderr=subprocess.STDOUT)
-# get paths from stdout:
-needle = "out_path: "
-bursts = sorted([line[len(needle):] for line in output.decode("utf-8").split("\n") if line.startswith(needle)])
-print(f"{bursts=}")
-print("seconds since start: " + str((datetime.datetime.now() - start_time).seconds))
+https_request = f"https://catalogue.dataspace.copernicus.eu/odata/v1/Bursts?$filter=" + urllib.parse.quote(
+    f"ContentDate/Start ge {start_date}T00:00:00.000Z and ContentDate/Start le {end_date}T23:59:59.000Z and "
+    f"PolarisationChannels eq '{input_dict['polarization'].upper()}' and "
+    f"BurstId eq {input_dict['burst_id']} and "
+    f"SwathIdentifier eq '{input_dict['sub_swath'].upper()}'"
+) + "&$top=1000"
+print(https_request)
+with urllib.request.urlopen(https_request) as response:
+    bursts = json.loads(response.read().decode())
+
+burst_paths = []
+for burst in bursts['value']:
+    # Allow for relative imports:
+    os.environ["PATH"] = os.environ["PATH"] + ":" + str(containing_folder / "utilities")
+
+    cmd = [
+        "sentinel1_burst_extractor.sh",
+        "-n", burst['ParentProductName'],
+        "-p", input_dict["polarization"].lower(),
+        "-s", str(input_dict["sub_swath"].lower()),
+        "-r", str(input_dict["burst_id"]),
+        "-o", str(result_folder),
+    ]
+    print(cmd)
+    output = subprocess.check_output(cmd, cwd=containing_folder / "utilities", stderr=subprocess.STDOUT)
+    # get paths from stdout:
+    needle = "out_path: "
+    bursts = sorted([Path(line[len(needle):]).absolute() for line in output.decode("utf-8").split("\n") if line.startswith(needle)])
+    burst_paths.extend(bursts)
+    print("seconds since start: " + str((datetime.datetime.now() - start_time).seconds))
+
+    if len(bursts) == 0:
+        raise Exception("No files found in command output: " + str(output))
+
+print(f"{burst_paths=!r}")
 
 # GPT means "Graph Processing Toolkit" in this context
-if len(bursts) == 0:
-    raise Exception("No files found in command output: " + str(output))
-
 if subprocess.run(["which", "gpt"]).returncode != 0 and os.path.exists(
         "/usr/local/esa-snap/bin/gpt"
 ):
@@ -89,16 +102,19 @@ if subprocess.run(["which", "gpt"]).returncode != 0 and os.path.exists(
 def date_from_burst(burst_path):
     return Path(burst_path).parent.name.split("_")[2]
 
+for pair in input_dict["InSAR_pairs"]:
+    mst_filename = next(filter(lambda x: pair[0].replace("-", "") in str(x), burst_paths))
+    slv_filename = next(filter(lambda x: pair[1].replace("-", "") in str(x), burst_paths))
 
-gpt_cmd = [
-    "gpt",
-    str(containing_folder / "notebooks/graphs/coh_2images_GeoTiff.xml"),
-    f"-Pmst_filename={bursts[0]}",
-    f"-Pslv_filename={bursts[1]}",
-    f"-Poutput_filename={result_folder}/S1_coh_2images_{date_from_burst(bursts[0])}_{date_from_burst(bursts[1])}.tif",
-]
-print(gpt_cmd)
-subprocess.check_call(gpt_cmd, stderr=subprocess.STDOUT)
+    gpt_cmd = [
+        "gpt",
+        str(containing_folder / "notebooks/graphs/coh_2images_GeoTiff.xml"),
+        f"-Pmst_filename={mst_filename}",
+        f"-Pslv_filename={slv_filename}",
+        f"-Poutput_filename={result_folder}/S1_coh_2images_{date_from_burst(mst_filename)}_{date_from_burst(slv_filename)}.tif",
+    ]
+    print(gpt_cmd)
+    subprocess.check_call(gpt_cmd, stderr=subprocess.STDOUT)
 
 # slow when running outside Docker, because whole home directory is scanned.
 simple_stac_builder.generate_catalog(result_folder)
