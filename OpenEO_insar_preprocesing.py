@@ -19,16 +19,16 @@ if len(sys.argv) > 1:
 else:
     input_dict = {
         "message": "These are example arguments",
-        "burst_id": 249435,
+        "burst_id": "249435",
         "sub_swath": "IW2",
         "InSAR_pairs": [
             ["2024-08-09", "2024-08-21"],
             ["2024-08-09", "2024-09-02"],
             ["2024-08-21", "2024-09-02"],
             ["2024-08-21", "2024-09-14"],
-            ["2024-09-02", "2024-09-14"]
+            ["2024-09-02", "2024-09-14"],
         ],
-        "polarization": "vv"
+        "polarization": "vv",
     }
 if not input_dict.get("polarization"):
     input_dict["polarization"] = "vv"
@@ -55,24 +55,28 @@ result_folder = Path.cwd()
 # result_folder.mkdir(exist_ok=True)
 tmp_insar = result_folder
 
-https_request = f"https://catalogue.dataspace.copernicus.eu/odata/v1/Bursts?$filter=" + urllib.parse.quote(
-    f"ContentDate/Start ge {start_date}T00:00:00.000Z and ContentDate/Start le {end_date}T23:59:59.000Z and "
-    f"PolarisationChannels eq '{input_dict['polarization'].upper()}' and "
-    f"BurstId eq {input_dict['burst_id']} and "
-    f"SwathIdentifier eq '{input_dict['sub_swath'].upper()}'"
-) + "&$top=1000"
+https_request = (
+    f"https://catalogue.dataspace.copernicus.eu/odata/v1/Bursts?$filter="
+    + urllib.parse.quote(
+        f"ContentDate/Start ge {start_date}T00:00:00.000Z and ContentDate/Start le {end_date}T23:59:59.000Z and "
+        f"PolarisationChannels eq '{input_dict['polarization'].upper()}' and "
+        f"BurstId eq {input_dict['burst_id']} and "
+        f"SwathIdentifier eq '{input_dict['sub_swath'].upper()}'"
+    )
+    + "&$top=1000"
+)
 print(https_request)
 with urllib.request.urlopen(https_request) as response:
     bursts = json.loads(response.read().decode())
 
 burst_paths = []
-for burst in bursts['value']:
+for burst in bursts["value"]:
     # Allow for relative imports:
     os.environ["PATH"] = os.environ["PATH"] + ":" + str(containing_folder / "utilities")
 
     cmd = [
         "sentinel1_burst_extractor.sh",
-        "-n", burst['ParentProductName'],
+        "-n", burst["ParentProductName"],
         "-p", input_dict["polarization"].lower(),
         "-s", str(input_dict["sub_swath"].lower()),
         "-r", str(input_dict["burst_id"]),
@@ -82,7 +86,13 @@ for burst in bursts['value']:
     output = subprocess.check_output(cmd, cwd=containing_folder / "utilities", stderr=subprocess.STDOUT)
     # get paths from stdout:
     needle = "out_path: "
-    bursts = sorted([Path(line[len(needle):]).absolute() for line in output.decode("utf-8").split("\n") if line.startswith(needle)])
+    bursts = sorted(
+        [
+            Path(line[len(needle) :]).absolute()
+            for line in output.decode("utf-8").split("\n")
+            if line.startswith(needle)
+        ]
+    )
     burst_paths.extend(bursts)
     print("seconds since start: " + str((datetime.datetime.now() - start_time).seconds))
 
@@ -93,7 +103,7 @@ print(f"{burst_paths=!r}")
 
 # GPT means "Graph Processing Toolkit" in this context
 if subprocess.run(["which", "gpt"]).returncode != 0 and os.path.exists(
-        "/usr/local/esa-snap/bin/gpt"
+    "/usr/local/esa-snap/bin/gpt"
 ):
     print("adding SNAP to PATH")  # needed when running outside of docker
     os.environ["PATH"] = os.environ["PATH"] + ":/usr/local/esa-snap/bin"
@@ -102,21 +112,33 @@ if subprocess.run(["which", "gpt"]).returncode != 0 and os.path.exists(
 def date_from_burst(burst_path):
     return Path(burst_path).parent.name.split("_")[2]
 
+
 for pair in input_dict["InSAR_pairs"]:
-    mst_filename = next(filter(lambda x: pair[0].replace("-", "") in str(x), burst_paths))
-    slv_filename = next(filter(lambda x: pair[1].replace("-", "") in str(x), burst_paths))
+    mst_date = pair[0].replace("-", "")
+    slv_date = pair[1].replace("-", "")
+    mst_filename = next(filter(lambda x: mst_date in str(x), burst_paths))
+    slv_filename = next(filter(lambda x: slv_date in str(x), burst_paths))
+    mst_bandname = f'{input_dict["sub_swath"].upper()}_VV_mst_{datetime.datetime.strptime(mst_date, "%Y%m%d").strftime("%d%b%Y")}'
+    slv_bandname = f'{input_dict["sub_swath"].upper()}_VV_slv1_{datetime.datetime.strptime(slv_date, "%Y%m%d").strftime("%d%b%Y")}'
 
     gpt_cmd = [
         "gpt",
-        str(containing_folder / "notebooks/graphs/coh_2images_GeoTiff.xml"),
+        str(
+            containing_folder
+            / "notebooks/graphs/pre-processing_2images_SaveMst_GeoTiff.xml"
+        ),
         f"-Pmst_filename={mst_filename}",
         f"-Pslv_filename={slv_filename}",
-        f"-Poutput_filename={result_folder}/S1_coh_2images_{date_from_burst(mst_filename)}_{date_from_burst(slv_filename)}.tif",
+        f"-Pi_q_mst_bandnames=i_{mst_bandname},q_{mst_bandname}",
+        f"-Pi_q_slv_bandnames=i_{slv_bandname},q_{slv_bandname}",
+        f"-Poutput_mst_filename={result_folder}/S1_coh_2images_mst_{date_from_burst(mst_filename)}.tif",
+        f"-Poutput_slv_filename={result_folder}/S1_coh_2images_slv_{date_from_burst(slv_filename)}.tif",
     ]
     print(gpt_cmd)
     subprocess.check_call(gpt_cmd, stderr=subprocess.STDOUT)
 
 # slow when running outside Docker, because the whole home directory is scanned.
+# TODO: Give the tiffs a draft bbox
 simple_stac_builder.generate_catalog(result_folder)
 
 print("seconds since start: " + str((datetime.datetime.now() - start_time).seconds))

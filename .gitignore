@@ -19,6 +19,8 @@ target/
 
 # custom:
 output
+*2images*
+S1A_SLC_*
 
 # Jupyter Notebook
 .ipynb_checkpoints
