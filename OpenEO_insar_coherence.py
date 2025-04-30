@@ -98,6 +98,8 @@ if subprocess.run(["which", "gpt"]).returncode != 0 and os.path.exists(
     print("adding SNAP to PATH")  # needed when running outside of docker
     os.environ["PATH"] = os.environ["PATH"] + ":/usr/local/esa-snap/bin"
 
+print("gpt --diag")
+subprocess.run(["gpt", "--diag"], stderr=subprocess.STDOUT)
 
 def date_from_burst(burst_path):
     return Path(burst_path).parent.name.split("_")[2]

@@ -3,11 +3,10 @@ import json
 import os
 import re
 import subprocess
-from datetime import datetime
-
 import sys
+from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
 
 
 def parse_json_from_output(output_str: str) -> Dict[str, Any]:
@@ -26,7 +25,10 @@ def parse_json_from_output(output_str: str) -> Dict[str, Any]:
     return json.loads(json_str)
 
 
-def generate_catalog(stac_root):
+def generate_catalog(
+        stac_root,
+        date_regex: str = r"S1_coh_2images_(?P<date1>\d{8}T\d{6})_(?P<date2>\d{8}T\d{6}).tif$",
+):
     collection_stac = {
         "type": "Collection",
         "stac_version": "1.0.0",
@@ -41,24 +43,26 @@ def generate_catalog(stac_root):
     }
 
     tiff_files = list(stac_root.glob("*2images*.tif"))
+    # tiff_files = [Path(file) for file in tiff_files]
     for file in tiff_files:
         print(file)
-        res = re.search(r"S1_coh_2images_(?P<date1>\d{8}T\d{6})_(?P<date2>\d{8}T\d{6}).tif$", file.name)
+        res = re.search(date_regex, file.name)
         if res is None:
             print("Skipping: ", file)
             continue
         date1 = res.group("date1")
-        date2 = res.group("date2")
         date1 = datetime.strptime(date1, "%Y%m%dT%H%M%S").isoformat() + "Z"
-        date2 = datetime.strptime(date2, "%Y%m%dT%H%M%S").isoformat() + "Z"
         if date1 < collection_stac["extent"]["temporal"]["interval"][0][0]:
             collection_stac["extent"]["temporal"]["interval"][0][0] = date1
         if date1 > collection_stac["extent"]["temporal"]["interval"][0][1]:
             collection_stac["extent"]["temporal"]["interval"][0][1] = date1
-        if date2 < collection_stac["extent"]["temporal"]["interval"][0][0]:
-            collection_stac["extent"]["temporal"]["interval"][0][0] = date2
-        if date2 > collection_stac["extent"]["temporal"]["interval"][0][1]:
-            collection_stac["extent"]["temporal"]["interval"][0][1] = date2
+        if "date2" in res.groupdict():
+            date2 = res.group("date2")
+            date2 = datetime.strptime(date2, "%Y%m%dT%H%M%S").isoformat() + "Z"
+            if date2 < collection_stac["extent"]["temporal"]["interval"][0][0]:
+                collection_stac["extent"]["temporal"]["interval"][0][0] = date2
+            if date2 > collection_stac["extent"]["temporal"]["interval"][0][1]:
+                collection_stac["extent"]["temporal"]["interval"][0][1] = date2
 
         # get general metadata with gdalinfo:
         cmd = ["gdalinfo", str(file), "-json", "--config", "GDAL_IGNORE_ERRORS", "ALL"]
@@ -68,7 +72,9 @@ def generate_catalog(stac_root):
         del gdalinfo_stac["proj:projjson"]  # remove verbose information
         del gdalinfo_stac["proj:wkt2"]  # remove verbose information
         del gdalinfo_stac["proj:epsg"]  # might mess up x/y resolution, so remove
-        del gdalinfo_stac["proj:transform"]  # might mess up x/y resolution, so remove
+        if "proj:transform" in gdalinfo_stac:
+            # might mess up x/y resolution, so remove
+            del gdalinfo_stac["proj:transform"]
         del gdalinfo_stac["proj:shape"]  # might mess up x/y resolution, so remove
         gdalinfo_stac["href"] = "./" + str(Path(file).relative_to(stac_root))
         coordinates = data_gdalinfo_from_subprocess["wgs84Extent"]["coordinates"]
@@ -141,6 +147,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         generate_catalog(Path(sys.argv[1]))
     else:
-        generate_catalog(Path("./output"))
+        # generate_catalog(Path("./output"))
+        generate_catalog(Path("."), date_regex=r".*_(?P<date1>\d{8}T\d{6}).tif$")
         print("Using default stac_root!")
     print("done")

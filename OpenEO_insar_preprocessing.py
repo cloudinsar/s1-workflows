@@ -120,7 +120,13 @@ for pair in input_dict["InSAR_pairs"]:
     slv_filename = next(filter(lambda x: slv_date in str(x), burst_paths))
     mst_bandname = f'{input_dict["sub_swath"].upper()}_VV_mst_{datetime.datetime.strptime(mst_date, "%Y%m%d").strftime("%d%b%Y")}'
     slv_bandname = f'{input_dict["sub_swath"].upper()}_VV_slv1_{datetime.datetime.strptime(slv_date, "%Y%m%d").strftime("%d%b%Y")}'
-
+    # Avoid "2images" in the name here:
+    output_mst_filename_tmp = (
+        f"{result_folder}/tmp_mst_{date_from_burst(mst_filename)}.tif"
+    )
+    output_slv_filename_tmp = (
+        f"{result_folder}/tmp_slv_{date_from_burst(slv_filename)}.tif"
+    )
     gpt_cmd = [
         "gpt",
         str(
@@ -131,15 +137,28 @@ for pair in input_dict["InSAR_pairs"]:
         f"-Pslv_filename={slv_filename}",
         f"-Pi_q_mst_bandnames=i_{mst_bandname},q_{mst_bandname}",
         f"-Pi_q_slv_bandnames=i_{slv_bandname},q_{slv_bandname}",
-        f"-Poutput_mst_filename={result_folder}/S1_coh_2images_mst_{date_from_burst(mst_filename)}.tif",
-        f"-Poutput_slv_filename={result_folder}/S1_coh_2images_slv_{date_from_burst(slv_filename)}.tif",
+        f"-Poutput_mst_filename={output_mst_filename_tmp}",
+        f"-Poutput_slv_filename={output_slv_filename_tmp}",
     ]
     print(gpt_cmd)
     subprocess.check_call(gpt_cmd, stderr=subprocess.STDOUT)
 
+    output_mst_filename = (
+        f"{result_folder}/S1_coh_2images_mst_{date_from_burst(mst_filename)}.tif"
+    )
+    output_slv_filename = (
+        f"{result_folder}/S1_coh_2images_slv_{date_from_burst(slv_filename)}.tif"
+    )
+    import tiff_to_gtiff
+
+    tiff_to_gtiff.tiff_to_gtiff(output_mst_filename_tmp, output_mst_filename)
+    tiff_to_gtiff.tiff_to_gtiff(output_slv_filename_tmp, output_slv_filename)
+    # TODO: Delete tmp files
+
 # slow when running outside Docker, because the whole home directory is scanned.
-# TODO: Give the tiffs a draft bbox
-simple_stac_builder.generate_catalog(result_folder)
+simple_stac_builder.generate_catalog(
+    result_folder, date_regex=r".*_(?P<date2>\d{8}T\d{6}).tif$"
+)
 
 print("seconds since start: " + str((datetime.datetime.now() - start_time).seconds))
 

@@ -21,6 +21,7 @@ target/
 output
 *2images*
 S1A_SLC_*
+tmp*
 
 # Jupyter Notebook
 .ipynb_checkpoints
