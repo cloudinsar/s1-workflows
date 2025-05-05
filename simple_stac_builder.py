@@ -63,6 +63,8 @@ def generate_catalog(
                 collection_stac["extent"]["temporal"]["interval"][0][0] = date2
             if date2 > collection_stac["extent"]["temporal"]["interval"][0][1]:
                 collection_stac["extent"]["temporal"]["interval"][0][1] = date2
+        else:
+            date2 = None
 
         # get general metadata with gdalinfo:
         cmd = ["gdalinfo", str(file), "-json", "--config", "GDAL_IGNORE_ERRORS", "ALL"]
@@ -78,7 +80,7 @@ def generate_catalog(
         del gdalinfo_stac["proj:shape"]  # might mess up x/y resolution, so remove
         gdalinfo_stac["href"] = "./" + str(Path(file).relative_to(stac_root))
         coordinates = data_gdalinfo_from_subprocess["wgs84Extent"]["coordinates"]
-        # assemble with application specific data:
+        # assemble with application-specific data:
         stac = {
             "type": "Feature",
             "stac_version": "1.0.0",
@@ -95,7 +97,6 @@ def generate_catalog(
             ],
             "properties": {
                 "datetime": date1,  # master date
-                "sar:datetime_slave": date2,
                 # TODO: Get those values out of burst extraction:
                 # "sar:instrument_mode": "IW",
                 # "sar:frequency_band": "C",
@@ -117,6 +118,8 @@ def generate_catalog(
             "links": [],
             "assets": {file.name: gdalinfo_stac},
         }
+        if date2 is not None:
+            stac["properties"]["sar:datetime_slave"] = date2
 
         stac_item_filename = str(file) + ".json"
         with open(stac_item_filename, "w") as f:

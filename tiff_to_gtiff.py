@@ -19,7 +19,7 @@ gdal.UseExceptions()
 #     geojson["coordinates"][0].append([float(elem.find('longitude').text),
 #                                       float(elem.find('latitude').text)])
 # # TODO: The list of points is not realy a geojson, not sure how to interpret it atm
-# with open("geojson_dump.json", "w") as f:
+# with open("tmp_geojson_dump.json", "w") as f:
 #     json.dump(geojson, f)
 
 
@@ -34,7 +34,7 @@ def tiff_to_gtiff(input_path, output_path):
 
     transform = list(ds_in.GetGeoTransform())
     # repr(transform) -> '(0.0, 1.0, 0.0, 0.0, 0.0, 1.0)'
-    scale_factor = 180 / 100000  # scal small enough to be visualizable in latlon
+    scale_factor = 180 / 100000  # scale small enough to be visualizable in latlon
     transform[1] *= scale_factor
     transform[5] *= scale_factor
 

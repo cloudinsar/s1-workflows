@@ -23,9 +23,6 @@ else:
         "sub_swath": "IW2",
         "InSAR_pairs": [
             ["2024-08-09", "2024-08-21"],
-            ["2024-08-09", "2024-09-02"],
-            ["2024-08-21", "2024-09-02"],
-            ["2024-08-21", "2024-09-14"],
             ["2024-09-02", "2024-09-14"],
         ],
         "polarization": "vv",
@@ -127,21 +124,24 @@ for pair in input_dict["InSAR_pairs"]:
     output_slv_filename_tmp = (
         f"{result_folder}/tmp_slv_{date_from_burst(slv_filename)}.tif"
     )
-    gpt_cmd = [
-        "gpt",
-        str(
-            containing_folder
-            / "notebooks/graphs/pre-processing_2images_SaveMst_GeoTiff.xml"
-        ),
-        f"-Pmst_filename={mst_filename}",
-        f"-Pslv_filename={slv_filename}",
-        f"-Pi_q_mst_bandnames=i_{mst_bandname},q_{mst_bandname}",
-        f"-Pi_q_slv_bandnames=i_{slv_bandname},q_{slv_bandname}",
-        f"-Poutput_mst_filename={output_mst_filename_tmp}",
-        f"-Poutput_slv_filename={output_slv_filename_tmp}",
-    ]
-    print(gpt_cmd)
-    subprocess.check_call(gpt_cmd, stderr=subprocess.STDOUT)
+    if not os.path.exists(output_mst_filename_tmp) or not os.path.exists(
+        output_slv_filename_tmp
+    ):
+        gpt_cmd = [
+            "gpt",
+            str(
+                containing_folder
+                / "notebooks/graphs/pre-processing_2images_SaveMst_GeoTiff.xml"
+            ),
+            f"-Pmst_filename={mst_filename}",
+            f"-Pslv_filename={slv_filename}",
+            f"-Pi_q_mst_bandnames=i_{mst_bandname},q_{mst_bandname}",
+            f"-Pi_q_slv_bandnames=i_{slv_bandname},q_{slv_bandname}",
+            f"-Poutput_mst_filename={output_mst_filename_tmp}",
+            f"-Poutput_slv_filename={output_slv_filename_tmp}",
+        ]
+        print(gpt_cmd)
+        subprocess.check_call(gpt_cmd, stderr=subprocess.STDOUT)
 
     output_mst_filename = (
         f"{result_folder}/S1_coh_2images_mst_{date_from_burst(mst_filename)}.tif"
@@ -151,13 +151,16 @@ for pair in input_dict["InSAR_pairs"]:
     )
     import tiff_to_gtiff
 
-    tiff_to_gtiff.tiff_to_gtiff(output_mst_filename_tmp, output_mst_filename)
-    tiff_to_gtiff.tiff_to_gtiff(output_slv_filename_tmp, output_slv_filename)
+    if not os.path.exists(output_mst_filename) or not os.path.exists(
+        output_slv_filename
+    ):
+        tiff_to_gtiff.tiff_to_gtiff(output_mst_filename_tmp, output_mst_filename)
+        tiff_to_gtiff.tiff_to_gtiff(output_slv_filename_tmp, output_slv_filename)
     # TODO: Delete tmp files
 
 # slow when running outside Docker, because the whole home directory is scanned.
 simple_stac_builder.generate_catalog(
-    result_folder, date_regex=r".*_(?P<date2>\d{8}T\d{6}).tif$"
+    result_folder, date_regex=r".*_(?P<date1>\d{8}T\d{6}).tif$"
 )
 
 print("seconds since start: " + str((datetime.datetime.now() - start_time).seconds))

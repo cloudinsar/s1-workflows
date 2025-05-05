@@ -78,7 +78,10 @@ RUN python3 -m venv /src/venv && \
     python3 -m pip install -r /src/requirements.txt
 
 ENV PATH="${PATH}:/src/"
-COPY . /src
+# COPY . /src
+COPY ./utilities /src/utilities
+COPY ./notebooks/graphs /src/notebooks/graphs
+COPY *.py /src
 
 
 WORKDIR /src
