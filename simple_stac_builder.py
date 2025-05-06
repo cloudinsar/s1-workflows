@@ -25,6 +25,18 @@ def parse_json_from_output(output_str: str) -> Dict[str, Any]:
     return json.loads(json_str)
 
 
+def union_aabbox(a: list, b: list) -> list:
+    """
+    Union of two axis-aligned bounding boxes (AABBs).
+    """
+    return [
+        min(a[0], b[0]),
+        min(a[1], b[1]),
+        max(a[2], b[2]),
+        max(a[3], b[3]),
+    ]
+
+
 def generate_catalog(
         stac_root,
         date_regex: str = r"S1_coh_2images_(?P<date1>\d{8}T\d{6})_(?P<date2>\d{8}T\d{6}).tif$",
@@ -36,7 +48,7 @@ def generate_catalog(
         "description": "Stac catalog made with " + os.path.basename(__file__),
         "license": "unknown",
         "extent": {
-            "spatial": {"bbox": [[-180, -90, 180, 90]]},
+            "spatial": {"bbox": [[9999, 9999, -9999, -9999]]},
             "temporal": {"interval": [["9999-12-30T23:59:59Z", "0001-01-01T00:00:00Z"]]},
         },
         "links": [],
@@ -121,6 +133,10 @@ def generate_catalog(
         if date2 is not None:
             stac["properties"]["sar:datetime_slave"] = date2
 
+        collection_stac["extent"]["spatial"]["bbox"][0] = union_aabbox(
+            collection_stac["extent"]["spatial"]["bbox"][0], stac["bbox"]
+        )
+
         stac_item_filename = str(file) + ".json"
         with open(stac_item_filename, "w") as f:
             json.dump(stac, f, indent=2)
@@ -150,7 +166,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         generate_catalog(Path(sys.argv[1]))
     else:
+        print("Using default stac_root!")
         # generate_catalog(Path("./output"))
         generate_catalog(Path("."), date_regex=r".*_(?P<date1>\d{8}T\d{6}).tif$")
-        print("Using default stac_root!")
     print("done")

@@ -110,6 +110,7 @@ for pair in input_dict["InSAR_pairs"]:
 
     gpt_cmd = [
         "gpt",
+        "-J-Xmx14G",
         str(containing_folder / "notebooks/graphs/coh_2images_GeoTiff.xml"),
         f"-Pmst_filename={mst_filename}",
         f"-Pslv_filename={slv_filename}",
