@@ -37,12 +37,16 @@ InSAR OpenEO processes will be implemented and available soon.
 
 An example of the SNAP preprocessing including Sentinel-1 burst data access with the CDSE utilities is available at [s1_workflow.ipynb](https://github.com/cloudinsar/s1-workflows/blob/main/notebooks/s1_workflow.ipynb)
 
-## Run burst extraction and preprocessing in one docker image:
+## Run coherence and preprocessing in a docker image:
 
-Running those command will run the same kind of docker image that OpenEO runs to get the preprocessed data.
+Running those commands will run the same docker image that OpenEO runs to get the preprocessed data.
 If not running on Ubuntu, replace /home/ubuntu with the path to the folder where the data will be stored.
-When no arguments are passed to OpenEO_insar.py, some example arguments are used.
+When no arguments are passed to the Python script, some example arguments are used.
+To run preprocessing, replace OpenEO_insar_coherence.py with OpenEO_insar_preprocessing.py
 ```bash
 docker build -t openeo_insar:1.7 . -f OpenEO_Dockerfile
 /usr/bin/time -v docker run -it -v /home/ubuntu:/root -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --rm openeo_insar:1.7 python3 /src/OpenEO_insar_coherence.py
 ```
+
+# OpenEO integration
+More info about the openEO part can be found here: [openeo_docs.md](./docs/openeo_docs.md)
