@@ -1,4 +1,4 @@
-# ClouDInSAR: samaple notebooks
+# ClouDInSAR: sample notebooks
 
 ## Set-up Instructions
 
