@@ -48,5 +48,8 @@ docker build -t openeo_insar:1.7 . -f OpenEO_Dockerfile
 /usr/bin/time -v docker run -it -v /home/ubuntu:/root -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --rm openeo_insar:1.7 python3 /src/OpenEO_insar_coherence.py
 ```
 
-# OpenEO integration
-More info about the openEO part can be found here: [openeo_docs.md](./docs/openeo_docs.md)
+
+## More Documentation:
+
+- [OpenEO integration](docs/openeo_docs.md)
+- [Sample notebooks documentation](notebooks/README.md)
