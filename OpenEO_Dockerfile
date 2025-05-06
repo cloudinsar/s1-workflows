@@ -1,6 +1,6 @@
-# docker build -t openeo_insar:1.5 . -f OpenEO_Dockerfile
-# skopeo copy --multi-arch=all --format=oci docker-daemon:openeo_insar:1.5 docker://registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.5
-# docker run -it -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --rm openeo_insar:1.5
+# docker build -t openeo_insar:1.6 . -f OpenEO_Dockerfile
+# skopeo copy --multi-arch=all --format=oci docker-daemon:openeo_insar:1.6 docker://registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.6
+# docker run -it --memory=15G -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --rm openeo_insar:1.6
 FROM ghcr.io/osgeo/gdal:ubuntu-small-3.10.0
 
 # Install necessary packages
@@ -49,6 +49,8 @@ RUN apt-get update && \
       wget \
       python3 \
       python3-venv \
+      cmake \
+      autoconf \
       libgfortran5
 
 LABEL authors="Michele Claus, Emile Sonneveld"
@@ -75,7 +77,8 @@ COPY requirements.txt /src/requirements.txt
 # . venv/bin/activate -> has no effect in Docker, here we need the following line:
 ENV PATH="/src/venv/bin:$PATH"
 RUN python3 -m venv /src/venv && \
-    python3 -m pip install -r /src/requirements.txt
+    python3 -m pip install -r /src/requirements.txt && \
+    python3 -m pip install --global-option=build_ext --global-option="-I/usr/include/gdal" GDAL==`gdal-config --version`
 
 ENV PATH="${PATH}:/src/"
 # COPY . /src

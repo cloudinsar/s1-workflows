@@ -133,13 +133,13 @@ def generate_catalog(
             }
         )
 
-    with open(stac_root / "S1_coh_2images_collection.json", "w") as f:
+    with open(stac_root / "S1_2images_collection.json", "w") as f:
         json.dump(collection_stac, f, indent=2)
 
     try:
         from pystac import Collection, Item
 
-        collection = Collection.from_file(stac_root / "S1_coh_2images_collection.json")
+        collection = Collection.from_file(stac_root / "S1_2images_collection.json")
         collection.validate_all()
         print("pystac validation done")
     except Exception as e:

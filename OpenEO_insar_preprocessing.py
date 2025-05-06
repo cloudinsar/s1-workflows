@@ -11,6 +11,7 @@ import urllib.request
 from pathlib import Path
 
 import simple_stac_builder
+import tiff_to_gtiff
 
 start_time = datetime.datetime.now()
 
@@ -129,6 +130,7 @@ for pair in input_dict["InSAR_pairs"]:
     ):
         gpt_cmd = [
             "gpt",
+            "-J-Xmx14G",
             str(
                 containing_folder
                 / "notebooks/graphs/pre-processing_2images_SaveMst_GeoTiff.xml"
@@ -144,12 +146,11 @@ for pair in input_dict["InSAR_pairs"]:
         subprocess.check_call(gpt_cmd, stderr=subprocess.STDOUT)
 
     output_mst_filename = (
-        f"{result_folder}/S1_coh_2images_mst_{date_from_burst(mst_filename)}.tif"
+        f"{result_folder}/S1_2images_mst_{date_from_burst(mst_filename)}.tif"
     )
     output_slv_filename = (
-        f"{result_folder}/S1_coh_2images_slv_{date_from_burst(slv_filename)}.tif"
+        f"{result_folder}/S1_2images_slv_{date_from_burst(slv_filename)}.tif"
     )
-    import tiff_to_gtiff
 
     if not os.path.exists(output_mst_filename) or not os.path.exists(
         output_slv_filename

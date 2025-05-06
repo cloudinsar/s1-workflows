@@ -34,9 +34,9 @@ def tiff_to_gtiff(input_path, output_path):
 
     transform = list(ds_in.GetGeoTransform())
     # repr(transform) -> '(0.0, 1.0, 0.0, 0.0, 0.0, 1.0)'
-    scale_factor = 180 / 100000  # scale small enough to be visualizable in latlon
-    transform[1] *= scale_factor
-    transform[5] *= scale_factor
+    # scale_factor = 180 / 100000  # scale small enough to be visualizable in latlon
+    # transform[1] *= scale_factor
+    # transform[5] *= scale_factor
 
     ds_out.SetGeoTransform(transform)
     ds_out.FlushCache()  # saves to disk
