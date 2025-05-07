@@ -13,7 +13,7 @@ docker image pull clausmichele/esa-snap:esa-snap-11-snappy-python-3.10_0.3
 2. Start JupyterLab using the Docker image:
 
 ```sh
-docker run -p 8889:8889 -ti esa-snap-11-snappy-python-3.10_0.3 jupyter lab --ip=0.0.0.0 --port 8889 --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password=''
+docker run -p 8889:8889 -ti clausmichele/esa-snap:esa-snap-11-snappy-python-3.10_0.3 jupyter lab --ip=0.0.0.0 --port 8889 --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password=''
 ```
 
 3. Open the following link in a browser:
