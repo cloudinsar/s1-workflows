@@ -20,3 +20,7 @@ However, it shows fine in Q-GIS:
 
 The following image showcases the architecture of the OpenEO InSAR process:
 ![image](./img/openeo_insar.drawio.png)
+
+## How to access:
+Make an account on https://openeo.dataspace.copernicus.eu/
+More info comming soon...
