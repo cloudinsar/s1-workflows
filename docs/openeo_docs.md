@@ -5,10 +5,18 @@ Example of a process graph to run coherence:
 The parameters used in the insar_coherence node are shown here:
 ![image](./img/openeo_insar_coherence_options.png)
 
-Preprocessing without coherence can be done with a different node. The result is difficult to visualise on a map because
-it has no geospatial information.
-However, it shows fine in Q-GIS:
-![image](./img/openeo_insar_preprocessing.png)
+Preprocessing without coherence can be done with a different node. The result is a stack of coregistered SLC in SAR geometry, therefore it cannot be geo-referred on a map. A sample result is shown including the amplitude image derived from the real and imaginary part of the SLC:
+
+![amplitude](https://github.com/user-attachments/assets/e91e39c1-150a-400b-9f4a-1deec5f37016)
+
+the latitude raster:
+
+![lat](https://github.com/user-attachments/assets/d83434e5-3e8d-4263-a53e-8d3d0316c173)
+
+the longitude raster:
+
+![lon](https://github.com/user-attachments/assets/da40297a-f611-4f92-a713-87274fdbe075)
+
 
 ## How is insar integrated in openEO
 
