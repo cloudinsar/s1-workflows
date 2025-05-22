@@ -1,45 +1,17 @@
 #!/usr/bin/env python3
-import json
 import os
-import re
 import subprocess
 import sys
-from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict
+from typing import Union
 
-
-def parse_json_from_output(output_str: str) -> Dict[str, Any]:
-    lines = output_str.split("\n")
-    parsing_json = False
-    json_str = ""
-    # reverse order to get last possible json line
-    for l in reversed(lines):
-        if not parsing_json:
-            if l.endswith("}"):
-                parsing_json = True
-        json_str = l + json_str
-        if l.startswith("{"):
-            break
-
-    return json.loads(json_str)
-
-
-def union_aabbox(a: list, b: list) -> list:
-    """
-    Union of two axis-aligned bounding boxes (AABBs).
-    """
-    return [
-        min(a[0], b[0]),
-        min(a[1], b[1]),
-        max(a[2], b[2]),
-        max(a[3], b[3]),
-    ]
+from workflow_utils import *
 
 
 def generate_catalog(
-        stac_root,
-        date_regex: str = r"S1_coh_2images_(?P<date1>\d{8}T\d{6})_(?P<date2>\d{8}T\d{6}).tif$",
+    stac_root,
+    date_regex: Union[str, re.Pattern] = re.compile(
+        r"S1_coh_2images_(?P<date1>\d{8}T\d{6})_(?P<date2>\d{8}T\d{6}).tif$"
+    ),
 ):
     collection_stac = {
         "type": "Collection",
@@ -62,15 +34,15 @@ def generate_catalog(
         if res is None:
             print("Skipping: ", file)
             continue
-        date1 = res.group("date1")
-        date1 = datetime.strptime(date1, "%Y%m%dT%H%M%S").isoformat() + "Z"
+        date1 = parse_date(res.group("date1"))
+        date1 = date1.isoformat() + "Z"
         if date1 < collection_stac["extent"]["temporal"]["interval"][0][0]:
             collection_stac["extent"]["temporal"]["interval"][0][0] = date1
         if date1 > collection_stac["extent"]["temporal"]["interval"][0][1]:
             collection_stac["extent"]["temporal"]["interval"][0][1] = date1
         if "date2" in res.groupdict():
-            date2 = res.group("date2")
-            date2 = datetime.strptime(date2, "%Y%m%dT%H%M%S").isoformat() + "Z"
+            date2 = parse_date(res.group("date2"))
+            date2 = date2.isoformat() + "Z"
             if date2 < collection_stac["extent"]["temporal"]["interval"][0][0]:
                 collection_stac["extent"]["temporal"]["interval"][0][0] = date2
             if date2 > collection_stac["extent"]["temporal"]["interval"][0][1]:
@@ -168,5 +140,9 @@ if __name__ == "__main__":
     else:
         print("Using default stac_root!")
         # generate_catalog(Path("./output"))
-        generate_catalog(Path("."), date_regex=r".*_(?P<date1>\d{8}T\d{6}).tif$")
+        generate_catalog(
+            Path("example_output_insar_preprocessing"),
+            date_regex=re.compile(r".*_(?P<date1>\d{8}(T\d{6})?)\.tif$"),
+        )
+        # generate_catalog(Path("."), date_regex=re.compile(r".*_(?P<date1>\d{8}T\d{6}).nc$"))
     print("done")
