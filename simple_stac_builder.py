@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import re
 import subprocess
 import sys
 from typing import Union
@@ -9,6 +10,8 @@ from workflow_utils import *
 
 def generate_catalog(
     stac_root,
+    files: Union[str, list] = "*2images*.tif",
+    collection_filename="S1_2images_collection.json",
     date_regex: Union[str, re.Pattern] = re.compile(
         r"S1_coh_2images_(?P<date1>\d{8}T\d{6})_(?P<date2>\d{8}T\d{6}).tif$"
     ),
@@ -19,15 +22,29 @@ def generate_catalog(
         "id": "unknown-job",
         "description": "Stac catalog made with " + os.path.basename(__file__),
         "license": "unknown",
+        "cube:dimensions": {  # TODO: Fill in extent values?
+            "x": {"axis": "x", "type": "spatial"},
+            "y": {"axis": "y", "type": "spatial"},
+            "t": {"type": "temporal"},
+            "bands": {"type": "bands"},
+        },
         "extent": {
             "spatial": {"bbox": [[9999, 9999, -9999, -9999]]},
-            "temporal": {"interval": [["9999-12-30T23:59:59Z", "0001-01-01T00:00:00Z"]]},
+            "temporal": {
+                "interval": [["9999-12-30T23:59:59Z", "0001-01-01T00:00:00Z"]]
+            },
         },
         "links": [],
     }
 
-    tiff_files = list(stac_root.glob("*2images*.tif"))
-    # tiff_files = [Path(file) for file in tiff_files]
+    if isinstance(files, str):
+        tiff_files = list(stac_root.glob(files))
+    elif isinstance(files, list):
+        tiff_files = files
+    else:
+        raise ValueError("Invalid files parameter: " + str(files))
+
+    tiff_files = [Path(file) for file in tiff_files]
     for file in tiff_files:
         print(file)
         res = re.search(date_regex, file.name)
@@ -55,6 +72,17 @@ def generate_catalog(
         out = subprocess.check_output(cmd, timeout=1800, text=True)
         data_gdalinfo_from_subprocess = parse_json_from_output(out)
         gdalinfo_stac = data_gdalinfo_from_subprocess["stac"]
+
+        def mapper(x):
+            """
+            replaces default band names like b1, b2, ... with their description instead
+            """
+            r = re.compile(r"b\d+")
+            if r.match(x["name"]) and "description" in x:
+                return {"name": x["description"]}
+            return x
+
+        gdalinfo_stac["eo:bands"] = list(map(mapper, gdalinfo_stac["eo:bands"]))
         del gdalinfo_stac["proj:projjson"]  # remove verbose information
         del gdalinfo_stac["proj:wkt2"]  # remove verbose information
         del gdalinfo_stac["proj:epsg"]  # might mess up x/y resolution, so remove
@@ -121,13 +149,13 @@ def generate_catalog(
             }
         )
 
-    with open(stac_root / "S1_2images_collection.json", "w") as f:
+    with open(stac_root / collection_filename, "w") as f:
         json.dump(collection_stac, f, indent=2)
 
     try:
         from pystac import Collection, Item
 
-        collection = Collection.from_file(stac_root / "S1_2images_collection.json")
+        collection = Collection.from_file(stac_root / collection_filename)
         collection.validate_all()
         print("pystac validation done")
     except Exception as e:
@@ -138,10 +166,12 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         generate_catalog(Path(sys.argv[1]))
     else:
-        print("Using default stac_root!")
+        print("Using debug arguments!")
         # generate_catalog(Path("./output"))
         generate_catalog(
-            Path("example_output_insar_preprocessing"),
+            Path("."),
+            files=["S1_2images_20240809T170739.tif"],
+            collection_filename="S1_2images_collection_master.json",
             date_regex=re.compile(r".*_(?P<date1>\d{8}(T\d{6})?)\.tif$"),
         )
         # generate_catalog(Path("."), date_regex=re.compile(r".*_(?P<date1>\d{8}T\d{6}).nc$"))

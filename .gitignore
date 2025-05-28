@@ -21,6 +21,7 @@ target/
 output
 *2images*
 S1A_SLC_*
+S1B_SLC_*
 tmp*
 
 # Jupyter Notebook

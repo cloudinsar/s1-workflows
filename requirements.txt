@@ -1,3 +1,4 @@
 pystac
 jsonschema==4.23.0
 numpy
+exifread

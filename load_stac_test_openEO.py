@@ -9,11 +9,17 @@ import openeo
 # Step 1, build process graph
 #############################
 
-stac_root = Path("S1_2images_collection.json").absolute()
-# stac_root = Path("output/S1_2images_collection.json").absolute()
-assert stac_root.exists()
+stac_root_master = Path("S1_2images_collection_master.json").absolute()
+stac_root_slaves = Path("S1_2images_collection_slaves.json").absolute()
+assert stac_root_master.exists()
+assert stac_root_slaves.exists()
 
-datacube = openeo.DataCube.load_stac(url=str(stac_root))
+datacube_master = openeo.DataCube.load_stac(
+    url=str(stac_root_master), bands=["lat_band", "lon_band"]
+)
+datacube_master = datacube_master.reduce_dimension(reducer="max", dimension="t")
+datacube_slaves = openeo.DataCube.load_stac(url=str(stac_root_slaves), bands=["i", "q"])
+datacube = datacube_slaves.merge_cubes(datacube_master)
 datacube = datacube.resample_spatial(
     resolution=1, projection="EPSG:3857"  # webmercator
 )
