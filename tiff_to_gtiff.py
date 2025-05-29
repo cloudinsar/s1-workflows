@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
-import json
+import os.path
+import re
 import xml.etree.ElementTree as ET
+from pathlib import Path
 
-from osgeo import gdal
+import exifread
+from osgeo import gdal, gdalconst
 
 gdal.UseExceptions()
 
@@ -23,8 +26,33 @@ gdal.UseExceptions()
 #     json.dump(geojson, f)
 
 
-def tiff_to_gtiff(input_path, output_path):
-    ds_in = gdal.Open(input_path)
+def tiff_to_gtiff(input_path, output_path, band_names=None):
+    input_path = Path(input_path)
+    if not os.path.exists(input_path):
+        raise FileNotFoundError(f"Input file {input_path} does not exist.")
+
+    with input_path.open("rb") as f:
+        tags = exifread.process_file(f)
+        tag = next(filter(lambda x: x.tag == 65000, tags.values()), None)
+        if tag:
+            xml_str = tag.values
+            root = ET.fromstring(xml_str)
+            band_tags = root.findall(".//Image_Interpretation/Spectral_Band_Info")
+            band_tags.sort(key=lambda x: int(x.find("BAND_INDEX").text))
+            date_suffix_regex = re.compile(
+                r"_IW\d_(?P<polarization>\w\w)_\w\w\w\w?_\d\d[A-Z]\w+\d\d\d\d$"
+            )
+            grid_regex = re.compile(r"^(?P<matchgroup>\w+)_band$")
+
+            def tag_to_band_name(band_tag):
+                band_name = band_tag.find("BAND_NAME").text
+                band_name = date_suffix_regex.sub(r"_\g<polarization>", band_name)
+                band_name = grid_regex.sub(r"grid_\g<matchgroup>", band_name)
+                return band_name
+
+            band_names = list(map(tag_to_band_name, band_tags))
+
+    ds_in = gdal.Open(input_path, gdalconst.GA_ReadOnly)
 
     transform = list(ds_in.GetGeoTransform())
     # print(repr(transform))  # [0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
@@ -40,6 +68,11 @@ def tiff_to_gtiff(input_path, output_path):
     # transform[1] *= scale_factor
     # transform[5] *= scale_factor
 
+    if band_names:
+        for i in range(1, ds_out.RasterCount + 1):
+            band = ds_out.GetRasterBand(i)
+            band.SetDescription(band_names[i - 1])
+
     # set CRS to webmercator, to avoid pixels going out of the CRS bounds:
     ds_out.SetProjection("EPSG:3857")
 
@@ -51,5 +84,9 @@ def tiff_to_gtiff(input_path, output_path):
 
 if __name__ == "__main__":
     tiff_to_gtiff(
-        "tmp_mst_20240902T170739.tif", "S1_2images_mst_20240902T170739_TEST.tif"
+        # "tmp_slv_20240821T170739.tif",
+        # "tmp_slv_20240821T170739.test.tif",
+        "tmp_mst_20240809T170739.tif",
+        "tmp_mst_20240809T170739.test.tif",
+        band_names=[""],
     )
