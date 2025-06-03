@@ -12,10 +12,13 @@ def date_from_burst(burst_path):
 def parse_date(date_str: str) -> datetime:
     if re.match(r"^\d{4}-\d{2}-\d{2}$", date_str):
         return datetime.strptime(date_str, "%Y-%m-%d")
-    elif re.match(r"^\d{4}\d{2}\d{2}$", date_str):
+    if re.match(r"^\d{4}\d{2}\d{2}$", date_str):
         return datetime.strptime(date_str, "%Y%m%d")
-    else:
+    try:
         return datetime.strptime(date_str, "%Y%m%dT%H%M%S")
+    except ValueError:
+        pass
+    return datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S.%fZ")
 
 
 def union_aabbox(a: list, b: list) -> list:
