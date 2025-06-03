@@ -70,7 +70,7 @@
       <sourceProduct refid="Back-Geocoding"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <selectedPolarisations>VV</selectedPolarisations>
+      <selectedPolarisations>${polarisation}</selectedPolarisations>
       <sourceBands>${i_q_slv_bandnames}</sourceBands>
       <bandNamePattern/>
     </parameters>

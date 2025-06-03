@@ -46,8 +46,8 @@ First CD to this the root of this repo.
 When no arguments are passed to the Python script, some example arguments are used.
 To run preprocessing, replace OpenEO_insar_coherence.py with OpenEO_insar_preprocessing.py
 ```bash
-docker build -t openeo_insar:1.7 . -f OpenEO_Dockerfile
-docker run -it -v $PWD:/src -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --rm openeo_insar:1.7 python3 /src/OpenEO_insar_coherence.py
+docker build -t openeo_insar:1.8 . -f OpenEO_Dockerfile
+docker run -it -v $PWD:/src -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --rm openeo_insar:1.8 python3 /src/OpenEO_insar_coherence.py
 ```
 
 ## More Documentation:

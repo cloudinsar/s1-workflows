@@ -28,7 +28,7 @@ else:
         "message": "These are example arguments to match SAR2Cube_openEO_examples_coherence_boxcar",
         "burst_id": "329488",
         "sub_swath": "IW2",
-        "temporal_extent": ["2018-01-27", "2018-02-09"],
+        "temporal_extent": ["2018-01-26", "2018-02-09"],
         "master_date": "2018-01-28",
         "polarization": "vh",
     }
@@ -193,6 +193,7 @@ for burst_path in burst_paths[1:]:
             ),
             f"-Pmst_filename={mst_filename}",
             f"-Pslv_filename={slv_filename}",
+            f"-Ppolarisation={input_dict['polarization'].upper()}",
             f"-Pi_q_slv_bandnames=i_{slv_bandname},q_{slv_bandname}",
             f"-Poutput_slv_filename={output_slv_filename_tmp}",
         ]
