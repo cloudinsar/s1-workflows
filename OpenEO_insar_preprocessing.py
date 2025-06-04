@@ -18,7 +18,7 @@ if len(sys.argv) > 1:
 else:
     # input_dict = {
     #     "message": "These are example arguments",
-    #     "burst_id": "249435",
+    #     "burst_id": 249435,
     #     "sub_swath": "IW2",
     #     "temporal_extent": ["2024-08-09", "2024-09-02"],
     #     "master_date": "2024-08-09",
@@ -26,7 +26,7 @@ else:
     # }
     input_dict = {
         "message": "These are example arguments to match SAR2Cube_openEO_examples_coherence_boxcar",
-        "burst_id": "329488",
+        "burst_id": 329488,
         "sub_swath": "IW2",
         "temporal_extent": ["2018-01-26", "2018-02-09"],
         "master_date": "2018-01-28",
@@ -89,17 +89,17 @@ for burst in bursts["value"]:
     output = subprocess.check_output(cmd, cwd=containing_folder / "utilities", stderr=subprocess.STDOUT)
     # get paths from stdout:
     needle = "out_path: "
-    bursts = sorted(
+    bursts_from_output = sorted(
         [
             Path(line[len(needle) :]).absolute()
             for line in output.decode("utf-8").split("\n")
             if line.startswith(needle)
         ]
     )
-    burst_paths.extend(bursts)
+    burst_paths.extend(bursts_from_output)
     print("seconds since start: " + str((datetime.now() - start_time).seconds))
 
-    if len(bursts) == 0:
+    if len(bursts_from_output) == 0:
         raise Exception("No files found in command output: " + str(output))
 
 burst_paths = sorted(burst_paths)
@@ -227,7 +227,7 @@ print("seconds since start: " + str((datetime.now() - start_time).seconds))
 
 # CWL Will find the result files in HOME or CD
 
-files = glob.glob(str(result_folder / "*2images*"))
+files = list(result_folder.glob("*2images*"))
 for file in files:
     # Docker often runs as root, this makes it easier to work with the files as a standard user:
     subprocess.call(["chmod", "777", str(file)])
