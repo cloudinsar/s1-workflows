@@ -1,5 +1,8 @@
 import json
 import re
+import shlex
+import subprocess
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict
@@ -47,3 +50,65 @@ def parse_json_from_output(output_str: str) -> Dict[str, Any]:
             break
 
     return json.loads(json_str)
+
+
+def merge_two_dicts(x, y):
+    z = x.copy()  # start with keys and values of x
+    z.update(y)  # modifies z with keys and values of y
+    return z
+
+
+def exec_proc(command, cwd=None, write_output=True, env=None):
+    if isinstance(command, str):
+        command_to_display = command
+        command_list = shlex.split(command)
+    else:
+        command = list(map(lambda x: str(x), command))
+        command_to_display = subprocess.list2cmdline(command)
+        command_list = command
+    if cwd is None:
+        cwd = os.getcwd()
+    elif not os.path.exists(cwd):
+        raise Exception("cwd does not exist: " + str(cwd))
+
+    if env is None:
+        env = {}
+
+    keys_values = env.items()
+    # convert all values to strings:
+    env = {str(key): str(value) for key, value in keys_values}
+    new_env = merge_two_dicts(os.environ, env)
+
+    # print commands that can be pasted in the console
+    print(f'> cwd "{cwd}"')
+    for key in env:
+        print(key + "=" + str(subprocess.list2cmdline([env[key], ""])[:-3]))
+    print("" + command_to_display)
+
+    try:
+        output = ""
+        process = subprocess.Popen(
+            command_list,
+            cwd=cwd,
+            universal_newlines=True,
+            stderr=subprocess.STDOUT,
+            stdout=subprocess.PIPE,
+            env=new_env,
+        )
+
+        with process:
+            for line in process.stdout:
+                if write_output:
+                    sys.stdout.write(line)
+                output += line
+            ret = process.wait()
+
+    except subprocess.CalledProcessError as ex:
+        ret = ex.returncode
+        output = ex.output
+
+    if ret != 0:
+        if not write_output:
+            print(output)
+        raise Exception("Process returned error status code: " + str(ret), ret, output)
+    return ret, output

@@ -79,8 +79,6 @@ for burst in bursts["value"]:
     if begin not in flattened_pairs and end not in flattened_pairs:
         print(f"Skipping burst {burst['BurstId']} ({begin} - {end})")
         continue
-    # Allow for relative imports:
-    os.environ["PATH"] = os.environ["PATH"] + ":" + str(containing_folder / "utilities")
     cmd = [
         "sentinel1_burst_extractor.sh",
         "-n", burst["ParentProductName"],
@@ -89,12 +87,21 @@ for burst in bursts["value"]:
         "-r", str(input_dict["burst_id"]),
         "-o", str(result_folder),
     ]
-    print(cmd)
-    output = subprocess.check_output(cmd, cwd=containing_folder / "utilities", stderr=subprocess.STDOUT)
+    _, output = exec_proc(
+        cmd,
+        cwd=containing_folder / "utilities",
+        env={
+            "PATH": os.environ["PATH"] + ":" + str(containing_folder / "utilities")
+        },  # Allow for relative imports:
+    )
     # get paths from stdout:
     needle = "out_path: "
     bursts_from_output = sorted(
-        [Path(line[len(needle):]).absolute() for line in output.decode("utf-8").split("\n") if line.startswith(needle)]
+        [
+            Path(line[len(needle) :]).absolute()
+            for line in output.split("\n")
+            if line.startswith(needle)
+        ]
     )
     burst_paths.extend(bursts_from_output)
     print("seconds since start: " + str((datetime.now() - start_time).seconds))
@@ -109,8 +116,8 @@ if subprocess.run(["which", "gpt"]).returncode != 0 and os.path.exists("/usr/loc
     print("adding SNAP to PATH")  # needed when running outside of docker
     os.environ["PATH"] = os.environ["PATH"] + ":/usr/local/esa-snap/bin"
 
-print("gpt --diag")
-subprocess.run(["gpt", "--diag"], stderr=subprocess.STDOUT)
+# print("gpt --diag")
+# subprocess.run(["gpt", "--diag"], stderr=subprocess.STDOUT)
 
 
 def date_from_burst(burst_path):
@@ -150,12 +157,12 @@ for pair in input_dict["InSAR_pairs"]:
             f"-Pphase_coh_bandnames={phase_bandname},{coh_bandname}",
             f"-Poutput_filename={output_filename_tmp}",
         ]
-        print(gpt_cmd)
-        subprocess.check_call(gpt_cmd, stderr=subprocess.STDOUT)
+        exec_proc(gpt_cmd)
 
     output_filename = f"{result_folder}/S1_interferogramcoh_2images_{date_from_burst(mst_filename)}_{date_from_burst(slv_filename)}.tif"
     if not os.path.exists(output_filename):
         tiff_to_gtiff.tiff_to_gtiff(output_filename_tmp, output_filename)
+    print("seconds since start: " + str((datetime.now() - start_time).seconds))
 
 # slow when running outside Docker, because the whole home directory is scanned.
 simple_stac_builder.generate_catalog(result_folder)
@@ -167,6 +174,6 @@ print("seconds since start: " + str((datetime.now() - start_time).seconds))
 files = list(result_folder.glob("*2images*"))
 for file in files:
     # Docker often runs as root, this makes it easier to work with the files as a standard user:
-    subprocess.call(["chmod", "777", str(file)])
+    subprocess.call(["chmod", "777", str(file)])  # TODO: use 664
 
 print("Files in target dir: " + str(files))

@@ -28,6 +28,7 @@ gdal.UseExceptions()
 
 def tiff_to_gtiff(input_path, output_path, band_names=None):
     input_path = Path(input_path)
+    print(f"tiff_to_gtiff {input_path=}")
     if not os.path.exists(input_path):
         raise FileNotFoundError(f"Input file {input_path} does not exist.")
 
