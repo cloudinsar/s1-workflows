@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-import os
-import re
-import subprocess
-import sys
+import logging
 from typing import Union
 
 from workflow_utils import *
@@ -16,13 +13,23 @@ def generate_catalog(
         r"S1_coh_2images_(?P<date1>\d{8}T\d{6})_(?P<date2>\d{8}T\d{6}).tif$"
     ),
 ):
-    collection_stac = {
+    local_args = locals().copy()
+    function_call_str = "generate_catalog("
+    for arg in local_args:
+        function_call_str += f"{arg}={repr(local_args[arg])},"
+    function_call_str += ")"
+    print(function_call_str)
+
+    collection_stac: dict = {
         "type": "Collection",
         "stac_version": "1.0.0",
         "id": "unknown-job",
         "description": "Stac catalog made with " + os.path.basename(__file__),
         "license": "unknown",
-        "cube:dimensions": {  # TODO: Fill in extent values?
+        "stac_extensions": [
+            "https://stac-extensions.github.io/datacube/v2.2.0/schema.json"
+        ],
+        "cube:dimensions": {
             "x": {"axis": "x", "type": "spatial"},
             "y": {"axis": "y", "type": "spatial"},
             "t": {"type": "temporal"},
@@ -83,6 +90,12 @@ def generate_catalog(
             return x
 
         gdalinfo_stac["eo:bands"] = list(map(mapper, gdalinfo_stac["eo:bands"]))
+        band_names = [band["name"] for band in gdalinfo_stac["eo:bands"]]
+        if "values" in collection_stac["cube:dimensions"]["bands"]:
+            assert collection_stac["cube:dimensions"]["bands"]["values"] == band_names
+        else:
+            collection_stac["cube:dimensions"]["bands"]["values"] = band_names
+
         del gdalinfo_stac["proj:projjson"]  # remove verbose information
         del gdalinfo_stac["proj:wkt2"]  # remove verbose information
         del gdalinfo_stac["proj:epsg"]  # might mess up x/y resolution, so remove
@@ -149,17 +162,34 @@ def generate_catalog(
             }
         )
 
+    collection_stac["cube:dimensions"]["x"]["extent"] = [
+        collection_stac["extent"]["spatial"]["bbox"][0][0],
+        collection_stac["extent"]["spatial"]["bbox"][0][2],
+    ]
+    collection_stac["cube:dimensions"]["y"]["extent"] = [
+        collection_stac["extent"]["spatial"]["bbox"][0][1],
+        collection_stac["extent"]["spatial"]["bbox"][0][3],
+    ]
+    collection_stac["cube:dimensions"]["t"]["extent"] = collection_stac["extent"][
+        "temporal"
+    ]["interval"][0]
+
     with open(stac_root / collection_filename, "w") as f:
         json.dump(collection_stac, f, indent=2)
 
     try:
+        print("Trying pystac validation...")
         from pystac import Collection, Item
+
+        logging.basicConfig(level=logging.DEBUG)
 
         collection = Collection.from_file(stac_root / collection_filename)
         collection.validate_all()
-        print("pystac validation done")
+        print("pystac validation successful")
     except Exception as e:
-        print("Skipping STAC validation: " + str(e))
+        print("pystac validation failed: " + str(e))
+        print("Reproduce error with:")
+        print(function_call_str)
 
 
 if __name__ == "__main__":
@@ -169,10 +199,22 @@ if __name__ == "__main__":
         print("Using debug arguments!")
         # generate_catalog(Path("./output"))
         generate_catalog(
-            Path("."),
-            files=["S1_2images_20240809T170739.tif"],
-            collection_filename="S1_2images_collection_master.json",
-            date_regex=re.compile(r".*_(?P<date1>\d{8}(T\d{6})?)\.tif$"),
+            stac_root=Path("."),
+            files=[
+                "S1_coh_2images_20240809T170739_20240821T170739.tif",
+                "S1_coh_2images_20240809T170739_20240902T170739.tif",
+            ],
+            collection_filename="S1_2images_collection.json",
+            date_regex=re.compile(
+                "S1_coh_2images_(?P<date1>\\d{8}T\\d{6})_(?P<date2>\\d{8}T\\d{6}).tif$"
+            ),
         )
+
+        # generate_catalog(
+        #     Path("."),
+        #     files=["S1_2images_20240809T170739.tif"],
+        #     collection_filename="S1_2images_collection_master.json",
+        #     date_regex=re.compile(r".*_(?P<date1>\d{8}(T\d{6})?)\.tif$"),
+        # )
         # generate_catalog(Path("."), date_regex=re.compile(r".*_(?P<date1>\d{8}T\d{6}).nc$"))
     print("done")

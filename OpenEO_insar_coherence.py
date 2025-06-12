@@ -117,6 +117,8 @@ def date_from_burst(burst_path):
     return Path(burst_path).parent.name.split("_")[2]
 
 
+asset_paths = []
+
 for pair in input_dict["InSAR_pairs"]:
     mst_filename = next(filter(lambda x: pair[0].replace("-", "") in str(x), burst_paths))
     slv_filename = next(filter(lambda x: pair[1].replace("-", "") in str(x), burst_paths))
@@ -136,11 +138,15 @@ for pair in input_dict["InSAR_pairs"]:
         subprocess.check_call(gpt_cmd, stderr=subprocess.STDOUT)
 
     output_filename = f"{result_folder}/S1_coh_2images_{date_from_burst(mst_filename)}_{date_from_burst(slv_filename)}.tif"
+    asset_paths.append(output_filename)
     if not os.path.exists(output_filename):
         tiff_to_gtiff.tiff_to_gtiff(output_filename_tmp, output_filename)
 
 # slow when running outside Docker, because the whole home directory is scanned.
-simple_stac_builder.generate_catalog(result_folder)
+simple_stac_builder.generate_catalog(
+    result_folder,
+    files=asset_paths,
+)
 
 print("seconds since start: " + str((datetime.now() - start_time).seconds))
 

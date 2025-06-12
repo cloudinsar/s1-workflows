@@ -1,11 +1,23 @@
 import json
 import re
 import shlex
+import socket
 import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict
+
+origGetAddrInfo = socket.getaddrinfo
+
+
+def getAddrInfoWrapper(host, port, family=0, socktype=0, proto=0, flags=0):
+    return origGetAddrInfo(host, port, socket.AF_INET, socktype, proto, flags)
+
+
+# Force ipv4 usege to avoid urllib getting stuck on requests
+# replace the original socket.getaddrinfo by our version
+socket.getaddrinfo = getAddrInfoWrapper
 
 
 def date_from_burst(burst_path):
