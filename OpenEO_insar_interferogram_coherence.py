@@ -22,10 +22,10 @@ else:
         "sub_swath": "IW2",
         "InSAR_pairs": [
             ["2024-08-09", "2024-08-21"],
-            ["2024-08-09", "2024-09-02"],
-            ["2024-08-21", "2024-09-02"],
-            ["2024-08-21", "2024-09-14"],
-            ["2024-09-02", "2024-09-14"],
+            # ["2024-08-09", "2024-09-02"],
+            # ["2024-08-21", "2024-09-02"],
+            # ["2024-08-21", "2024-09-14"],
+            # ["2024-09-02", "2024-09-14"],
         ],
         "polarization": "vv",
     }
@@ -91,8 +91,9 @@ for burst in bursts["value"]:
         cmd,
         cwd=containing_folder / "utilities",
         env={
+            # Allow for relative imports:
             "PATH": os.environ["PATH"] + ":" + str(containing_folder / "utilities")
-        },  # Allow for relative imports:
+        },
     )
     # get paths from stdout:
     needle = "out_path: "
@@ -123,6 +124,8 @@ if subprocess.run(["which", "gpt"]).returncode != 0 and os.path.exists("/usr/loc
 def date_from_burst(burst_path):
     return Path(burst_path).parent.name.split("_")[2]
 
+
+asset_paths = []
 
 for pair in input_dict["InSAR_pairs"]:
     mst_filename = next(filter(lambda x: pair[0].replace("-", "") in str(x), burst_paths))
@@ -160,12 +163,19 @@ for pair in input_dict["InSAR_pairs"]:
         exec_proc(gpt_cmd)
 
     output_filename = f"{result_folder}/S1_interferogramcoh_2images_{date_from_burst(mst_filename)}_{date_from_burst(slv_filename)}.tif"
+    asset_paths.append(output_filename)
     if not os.path.exists(output_filename):
         tiff_to_gtiff.tiff_to_gtiff(output_filename_tmp, output_filename)
     print("seconds since start: " + str((datetime.now() - start_time).seconds))
 
 # slow when running outside Docker, because the whole home directory is scanned.
-simple_stac_builder.generate_catalog(result_folder)
+simple_stac_builder.generate_catalog(
+    result_folder,
+    files=asset_paths,
+    date_regex=re.compile(
+        r".*_2images_(?P<date1>\d{8}T\d{6})_(?P<date2>\d{8}T\d{6}).tif$"
+    ),
+)
 
 print("seconds since start: " + str((datetime.now() - start_time).seconds))
 

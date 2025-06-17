@@ -1,6 +1,6 @@
-# docker build -t openeo_insar:1.8 . -f OpenEO_Dockerfile
-# skopeo copy --multi-arch=all --format=oci docker-daemon:openeo_insar:1.8 docker://registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.8
-# docker run -it --memory=15G -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --rm openeo_insar:1.8
+# docker build -t openeo_insar:1.9 . -f OpenEO_Dockerfile
+# skopeo copy --multi-arch=all --format=oci docker-daemon:openeo_insar:1.9 docker://registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.9
+# docker run -it --memory=15G -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --rm openeo_insar:1.9
 FROM ghcr.io/osgeo/gdal:ubuntu-small-3.10.0
 
 # Install necessary packages
@@ -25,7 +25,7 @@ RUN curl -L -O 'https://s3.waw3-2.cloudferro.com/swift/v1/jacksum/jacksum_1.7.0-
     curl -L -O 'https://github.com/peak/s5cmd/releases/download/v2.2.2/s5cmd_2.2.2_linux_amd64.deb' && \
     dpkg -i s5cmd_2.2.2_linux_amd64.deb && rm s5cmd_2.2.2_linux_amd64.deb
 
-#COPY ./utilities /src/utilities # Copy at the end of file to avoid slow rebuilds
+#COPY ./utilities /src/utilities/ # Copy at the end of file to avoid slow rebuilds
 ENV PATH="${PATH}:/src/utilities/"
 
 # Set environment variables
@@ -82,9 +82,9 @@ RUN python3 -m venv /src/venv && \
 
 ENV PATH="${PATH}:/src/"
 # COPY . /src
-COPY ./utilities /src/utilities
-COPY ./notebooks/graphs /src/notebooks/graphs
-COPY *.py /src
+COPY ./utilities /src/utilities/
+COPY ./notebooks/graphs /src/notebooks/graphs/
+COPY *.py /src/
 
 
 WORKDIR /src
