@@ -28,11 +28,25 @@ else:
             # ["2024-09-02", "2024-09-14"],
         ],
         "polarization": "vv",
+        # Coherence window size:
+        "coherence_window_rg": 10,
+        "coherence_window_az": 2,
+        # Multillok parameters:
+        "n_rg_looks": 4,
+        "n_az_looks": 1,
     }
 if not input_dict.get("polarization"):
     input_dict["polarization"] = "vv"
 if not input_dict.get("sub_swath"):
     input_dict["sub_swath"] = "IW3"
+if not "coherence_window_rg" in input_dict or not "coherence_window_az" in input_dict:
+    print("Setting default coherence window size")
+    input_dict["coherence_window_rg"] = 10
+    input_dict["coherence_window_az"] = 2
+if not "n_rg_looks" in input_dict or not "n_az_looks" in input_dict:
+    print("Setting default multillok parameters")
+    input_dict["n_rg_looks"] = 4
+    input_dict["n_az_looks"] = 1
 print(input_dict)
 start_date = min([min(pair) for pair in input_dict["InSAR_pairs"]])
 end_date = max([max(pair) for pair in input_dict["InSAR_pairs"]])
@@ -134,11 +148,6 @@ for pair in input_dict["InSAR_pairs"]:
     output_filename_tmp = f"{result_folder}/tmp_S1_interferogramcoh_2images_{date_from_burst(mst_filename)}_{date_from_burst(slv_filename)}.tif"
 
     if not os.path.exists(output_filename_tmp):
-        # Coherence window size
-        cohWinRg, cohWinAz = (10, 2)
-
-        # Multillok parameters
-        nRgLooks, nAzLooks = (4, 1)
         mst_date = parse_date(pair[0])
         slv_date = parse_date(pair[1])
         phase_bandname = f'Phase_ifg_{input_dict["sub_swath"]}_VV_{mst_date.strftime("%d%b%Y")}_{slv_date.strftime("%d%b%Y")}'
@@ -153,10 +162,10 @@ for pair in input_dict["InSAR_pairs"]:
             ),
             f"-Pmst_filename={mst_filename}",
             f"-Pslv_filename={slv_filename}",
-            f"-PcohWinRg={cohWinRg}",
-            f"-PcohWinAz={cohWinAz}",
-            f"-PnRgLooks={nRgLooks}",
-            f"-PnAzLooks={nAzLooks}",
+            f"-PcohWinRg={input_dict['coherence_window_rg']}",
+            f"-PcohWinAz={input_dict['coherence_window_az']}",
+            f"-PnRgLooks={input_dict['n_rg_looks']}",
+            f"-PnAzLooks={input_dict['n_az_looks']}",
             f"-Pphase_coh_bandnames={phase_bandname},{coh_bandname}",
             f"-Poutput_filename={output_filename_tmp}",
         ]
