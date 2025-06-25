@@ -16,6 +16,9 @@ import matplotlib.pyplot as plt
 import esa_snappy as snappy
 
 import os
+import boto3
+from pathlib import Path
+
 from dateutil.parser import parse
 import datetime
 
@@ -163,30 +166,41 @@ def download_s1metadata(bursts, sub_swath_identifier, burst_id, CDSE_ACCESS_KEY,
                     SAFE_image_list.append((b["ParentProductName"]))
                     S3_image_list.append((b["S3Path"].split(".SAFE")[0] + ".SAFE"))
 
-    os.environ["AWS_ACCESS_KEY_ID"] = CDSE_ACCESS_KEY
-    os.environ["AWS_SECRET_ACCESS_KEY"] = CDSE_SECRET_KEY
+
+    polarization = bursts['value'][0]['PolarisationChannels']
+    if polarization.lower()=="vv":
+        include_pol='vv'
+        exclude_pol='vh'
+    elif polarization.lower()=="vh":
+        include_pol='vh'
+        exclude_pol='vv'
     
-    include_pol='vv'
-    exclude_pol='vh'
+    s3_endpoint = "https://eodata.dataspace.copernicus.eu"
     
-    s3_endpoint = "eodata.dataspace.copernicus.eu"
+    s3_resource=boto3.resource(
+        's3',
+        aws_access_key_id=CDSE_ACCESS_KEY,
+        aws_secret_access_key=CDSE_SECRET_KEY,
+        endpoint_url=s3_endpoint
+    )
+    client = s3_resource.meta.client
+    bucket_name = "eodata"
+    bucket=s3_resource.Bucket(bucket_name)
     
     for im_safe, im_s3 in zip(SAFE_image_list,S3_image_list):
-        #print(im_safe)
-        os.system(f"s5cmd --endpoint-url \"https://{s3_endpoint}\" cp --include \"*{sub_swath_identifier.lower()}*\" --exclude \"*{exclude_pol}*\"  --exclude \"*.tiff\" --include \"manifest.safe\" \"s3:/\"{im_s3}\"/*\" {im_safe}/")
-        os.system(f"mkdir {im_safe}/measurement")
-    
-        command = f"s5cmd --endpoint-url \"https://{s3_endpoint}\" -r 5 ls \"s3:/\"{im_s3}\"/measurement/\" | grep -o '\S\+$' | grep {include_pol} | grep {sub_swath_identifier.lower()}"
-        result = os.popen(command).read().splitlines()
-    
-        for im in result:
-            command = f"gdal_create -ot Int8 -outsize 1 1 -bands 1 -burn 0 {im_safe}/measurement/{im}"
-            os.system(command)
+        safe_files = bucket.objects.filter(Prefix=im_s3[8:])
+        for file in safe_files:
+            if (sub_swath_identifier.lower() in file.key and include_pol in file.key) or "manifest.safe" in file.key:
+                output_path = "S1" + file.key.split("S1")[1]
+                # Create output directory structure
+                Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+                if ".tiff" in file.key:
+                    command = f"gdal_create -ot Int8 -outsize 1 1 -bands 1 -burn 0 {output_path}"
+                    os.system(command)
+                    continue
+                client.download_file(bucket_name, file.key, output_path)
 
     return SAFE_image_list
-
-
-
 
 
 def compute_baseline(SAFE_image_list):
@@ -241,23 +255,16 @@ def find_optimal_master(SAFE_image_list):
         products.append(snappy.ProductIO.readProduct(im))
     InSARStackOverview = snappy.jpy.get_type('eu.esa.sar.insar.gpf.InSARStackOverview')
     return InSARStackOverview.findOptimalMasterProduct(products).getName()
+  
 
-
-def reformat_date_string(date):
-    return date[:4] + date[5:7] + date[8:10]
-    
-
-def sbas_pairs(SAFE_image_list, max_temporal_baseline=0, max_perp_baseline=0):
+def sbas_pairs(SAFE_image_list, max_temporal_baseline, max_perp_baseline):
 
     df = compute_baseline(SAFE_image_list)
     optimal_master = find_optimal_master(SAFE_image_list)
 
     zero_reference_date = optimal_master.split("_")[5][:4] + "-" + optimal_master.split("_")[5][4:6] + "-" + optimal_master.split("_")[5][6:8]
-
-    max_temporal_baseline = 24 # days
-    max_perpendicular_baseline = 200 # meters, absolute value
     
-    filter_mask = np.bitwise_and(abs(df["temp_baseline"])<=datetime.timedelta(max_temporal_baseline),abs(df["perp_baseline"])<=max_perpendicular_baseline)
+    filter_mask = np.bitwise_and(abs(df["temp_baseline"])<=datetime.timedelta(max_temporal_baseline),abs(df["perp_baseline"])<=max_perp_baseline)
     df_filtered = df[filter_mask].reset_index()
 
     ax = df[df["master_date"]==zero_reference_date].plot.scatter(
@@ -277,7 +284,10 @@ def sbas_pairs(SAFE_image_list, max_temporal_baseline=0, max_perp_baseline=0):
                 linewidth=0.1)
     plt.show()
 
-    return [f"{reformat_date_string(str(df_filtered.iloc[[x]]['master_date'].values[0]))}_{reformat_date_string(str(df_filtered.iloc[[x]]['slave_date'].values[0]))}" for x in df_filtered.index]
+    return df_filtered.assign(
+        master_date_str=df_filtered['master_date'].dt.strftime('%Y-%m-%d'),
+        slave_date_str=df_filtered['slave_date'].dt.strftime('%Y-%m-%d')
+    )[['master_date_str', 'slave_date_str']].values.tolist()
 
 
 
@@ -306,6 +316,9 @@ def ps_pairs(SAFE_image_list):
                 linewidth=0.1)
     plt.show()
 
-    return [f"{reformat_date_string(str(df_filtered_.iloc[[x]]['master_date'].values[0]))}_{reformat_date_string(str(df_filtered_.iloc[[x]]['slave_date'].values[0]))}" for x in df_filtered_.index]
+    return df_filtered_.assign(
+        master_date_str=df_filtered_['master_date'].dt.strftime('%Y-%m-%d'),
+        slave_date_str=df_filtered_['slave_date'].dt.strftime('%Y-%m-%d')
+    )[['master_date_str', 'slave_date_str']].values.tolist()
     
 
