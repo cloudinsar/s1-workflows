@@ -15322,7 +15322,7 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 
 </div>
 
-</div><div id="cell-id=d1aa89bf-3038-4178-a305-604c1c3a8aaf" class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+</div><div id="cell-id=d1aa89bf-3038-4178-a305-604c1c3a8aaf" class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -15330,7 +15330,7 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">job</span> <span class="o">=</span> <span class="n">datacube</span><span class="o">.</span><span class="n">create_job</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;InSAR_coherence&#39;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">job</span> <span class="o">=</span> <span class="n">datacube</span><span class="o">.</span><span class="n">create_job</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;InSAR_coherence_interferogram&#39;</span><span class="p">)</span>
 <span class="n">job</span><span class="o">.</span><span class="n">start_and_wait</span><span class="p">()</span>
 <span class="n">job</span><span class="o">.</span><span class="n">get_results</span><span class="p">()</span><span class="o">.</span><span class="n">download_files</span><span class="p">()</span>
 </pre></div>
@@ -15338,30 +15338,6 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
      </div>
 </div>
 </div>
-</div>
-
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-
-
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-    
-    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-
-
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
-<pre>0:00:00 Job &#39;j-25062512205645edad47eae35c21faf9&#39;: send &#39;start&#39;
-0:00:12 Job &#39;j-25062512205645edad47eae35c21faf9&#39;: created (progress 0%)
-0:00:17 Job &#39;j-25062512205645edad47eae35c21faf9&#39;: created (progress 0%)
-0:00:24 Job &#39;j-25062512205645edad47eae35c21faf9&#39;: created (progress 0%)
-</pre>
-</div>
-</div>
-
-</div>
-
 </div>
 
 </div>
@@ -15403,7 +15379,7 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[3]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[4]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="n">rasterio</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;openEO_2024-08-21Z.tif&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">src</span><span class="p">:</span>
@@ -15453,7 +15429,7 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[5]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[7]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="n">rasterio</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;openEO_2024-08-21Z.tif&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">src</span><span class="p">:</span>
@@ -15508,7 +15484,7 @@ class="
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[7]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[8]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="n">rasterio</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;openEO_2024-08-21Z.tif&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">src</span><span class="p">:</span>
@@ -15565,7 +15541,7 @@ class="
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <p>Open the <a href="https://openeo.dataspace.copernicus.eu/">OpenEO Web Editor</a>, search the job that has been executed and click on <em>View the results</em></p>
-<p><img src="../images/openEO_webeditor.png" alt="image" /></p>
+<p><img src="openEO_webeditor.png" alt="image" /></p>
 
 </div>
 </div>
@@ -15598,7 +15574,7 @@ class="
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[13]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[9]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">job</span><span class="o">.</span><span class="n">get_results</span><span class="p">()</span>
@@ -15617,7 +15593,7 @@ class="
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
     
-    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[13]:</div>
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[9]:</div>
 
 
 
@@ -15638,7 +15614,7 @@ class="
     }
     </script>
     <openeo-collection>
-        <script type="application/json">{"mapOptions": {}, "data": {"assets": {"openEO_2024-08-09Z.tif": {"bands": [{"name": "Phase_ifg_VV"}, {"name": "coh_VV"}], "eo:bands": [{"name": "Phase_ifg_VV"}, {"name": "coh_VV"}], "href": "https://openeo.dataspace.copernicus.eu/openeo/1.2/jobs/j-2506230832544f55a87e8e1da8d7a627/results/assets/YjFkN2E3YzMtMGMxYi00MjgzLWE0NDItM2I1YmYxZmE4ZjNj/2617274bed6a24e04acf270555afa013/openEO_2024-08-09Z.tif?expires=1751458808", "proj:bbox": [627400, 5163030, 726600, 5203300], "proj:epsg": 32632, "proj:shape": [4027, 9920], "raster:bands": [{"name": "Phase_ifg_VV", "statistics": {"maximum": 3.1395418643951, "mean": -0.04961045043173, "minimum": -3.1374592781067, "stddev": 1.4635496395245, "valid_percent": 45.22}}, {"name": "coh_VV", "statistics": {"maximum": 0.99557381868362, "mean": 0.44493387084644, "minimum": 2.1874133381061e-05, "stddev": 0.20186411212859, "valid_percent": 45.22}}], "roles": ["data"], "title": "openEO_2024-08-09Z.tif", "type": "image/tiff; application=geotiff"}}, "description": "Results for batch job j-2506230832544f55a87e8e1da8d7a627", "extent": {"spatial": {"bbox": [[10.663658928347262, 46.58258370539847, 11.977583165854059, 46.97097454441098]]}, "temporal": {"interval": [[null, null]]}}, "id": "j-2506230832544f55a87e8e1da8d7a627", "license": "proprietary", "links": [{"href": "S1_interferogramcoh_2images_20240809T170739_20240821T170739.tif", "rel": "derived_from", "title": "Derived from S1_interferogramcoh_2images_20240809T170739_20240821T170739.tif", "type": "application/json"}, {"href": "S1_interferogramcoh_2images_20240809T170739_20240902T170739.tif", "rel": "derived_from", "title": "Derived from S1_interferogramcoh_2images_20240809T170739_20240902T170739.tif", "type": "application/json"}, {"href": "https://openeo.dataspace.copernicus.eu/openeo/1.2/jobs/j-2506230832544f55a87e8e1da8d7a627/results", "rel": "self", "type": "application/json"}, {"href": "https://openeo.dataspace.copernicus.eu/openeo/1.2/jobs/j-2506230832544f55a87e8e1da8d7a627/results/YjFkN2E3YzMtMGMxYi00MjgzLWE0NDItM2I1YmYxZmE4ZjNj/2207ee0cbf9cb90d98b5f7dd748ac556?expires=1751458808", "rel": "canonical", "type": "application/json"}, {"href": "http://ceos.org/ard/files/PFS/SR/v5.0/CARD4L_Product_Family_Specification_Surface_Reflectance-v5.0.pdf", "rel": "card4l-document", "type": "application/pdf"}, {"href": "https://openeo.dataspace.copernicus.eu/openeo/1.2/jobs/j-2506230832544f55a87e8e1da8d7a627/results/items/YjFkN2E3YzMtMGMxYi00MjgzLWE0NDItM2I1YmYxZmE4ZjNj/2617274bed6a24e04acf270555afa013/openEO_2024-08-09Z.tif?expires=1751458808", "rel": "item", "type": "application/geo+json"}], "openeo:status": "finished", "providers": [{"description": "This data was processed on an openEO backend maintained by VITO.", "name": "VITO", "processing:expression": {"expression": {"insarinterferogramcoherence1": {"arguments": {"InSAR_pairs": [["2024-08-09", "2024-08-21"], ["2024-08-09", "2024-09-02"]], "burst_id": 249435, "polarization": "vv", "sub_swath": "IW2"}, "process_id": "insar_interferogram_coherence"}, "saveresult1": {"arguments": {"data": {"from_node": "insarinterferogramcoherence1"}, "format": "GTiff", "options": {}}, "process_id": "save_result", "result": true}}, "format": "openeo"}, "processing:facility": "openEO Geotrellis backend", "processing:software": {"Geotrellis backend": "0.66.0a5"}, "roles": ["processor"]}], "stac_extensions": ["https://stac-extensions.github.io/eo/v1.1.0/schema.json", "https://stac-extensions.github.io/file/v2.1.0/schema.json", "https://stac-extensions.github.io/processing/v1.1.0/schema.json", "https://stac-extensions.github.io/projection/v1.1.0/schema.json"], "stac_version": "1.0.0", "summaries": {}, "title": "InSAR_coherence_interferogram", "type": "Collection"}}</script>
+        <script type="application/json">{"mapOptions": {}, "data": {"assets": {"openEO_2024-08-09Z.tif": {"bands": [{"name": "Phase_ifg_VV"}, {"name": "coh_VV"}], "eo:bands": [{"name": "Phase_ifg_VV"}, {"name": "coh_VV"}], "href": "https://openeo.dataspace.copernicus.eu/openeo/1.2/jobs/j-25062517480247df80a8da7ffe101771/results/assets/YjFkN2E3YzMtMGMxYi00MjgzLWE0NDItM2I1YmYxZmE4ZjNj/cfe870b4dae39be01e282c9cd2a94a39/openEO_2024-08-09Z.tif?expires=1751483502", "proj:bbox": [627340, 5163010, 726610, 5203300], "proj:epsg": 32632, "proj:shape": [4029, 9927], "raster:bands": [{"name": "Phase_ifg_VV", "statistics": {"maximum": 3.1384592056274, "mean": -0.035569203738581, "minimum": -3.1354651451111, "stddev": 1.412996507888, "valid_percent": 45.17}}, {"name": "coh_VV", "statistics": {"maximum": 0.99557381868362, "mean": 0.46058346527421, "minimum": 1.060834438249e-05, "stddev": 0.20678773794503, "valid_percent": 45.17}}], "roles": ["data"], "title": "openEO_2024-08-09Z.tif", "type": "image/tiff; application=geotiff"}, "openEO_2024-08-21Z.tif": {"bands": [{"name": "Phase_ifg_VV"}, {"name": "coh_VV"}], "eo:bands": [{"name": "Phase_ifg_VV"}, {"name": "coh_VV"}], "href": "https://openeo.dataspace.copernicus.eu/openeo/1.2/jobs/j-25062517480247df80a8da7ffe101771/results/assets/YjFkN2E3YzMtMGMxYi00MjgzLWE0NDItM2I1YmYxZmE4ZjNj/597437fab63aea00ffd11d7dac62be9e/openEO_2024-08-21Z.tif?expires=1751483502", "proj:bbox": [627340, 5163010, 726610, 5203300], "proj:epsg": 32632, "proj:shape": [4029, 9927], "raster:bands": [{"name": "Phase_ifg_VV", "statistics": {"maximum": 3.1402592658997, "mean": -0.11556940745678, "minimum": -3.1406321525574, "stddev": 1.7120523549605, "valid_percent": 45.16}}, {"name": "coh_VV", "statistics": {"maximum": 0.99437046051025, "mean": 0.4882051743687, "minimum": 4.3321859266143e-05, "stddev": 0.22440390034193, "valid_percent": 45.16}}], "roles": ["data"], "title": "openEO_2024-08-21Z.tif", "type": "image/tiff; application=geotiff"}}, "description": "Results for batch job j-25062517480247df80a8da7ffe101771", "extent": {"spatial": {"bbox": [[10.662870244759342, 46.582400584058654, 11.977714386846676, 46.97098607764081]]}, "temporal": {"interval": [[null, null]]}}, "id": "j-25062517480247df80a8da7ffe101771", "license": "proprietary", "links": [{"href": "S1_interferogramcoh_2images_20240809T170739_20240821T170739.tif", "rel": "derived_from", "title": "Derived from S1_interferogramcoh_2images_20240809T170739_20240821T170739.tif", "type": "application/json"}, {"href": "S1_interferogramcoh_2images_20240821T170739_20240902T170739.tif", "rel": "derived_from", "title": "Derived from S1_interferogramcoh_2images_20240821T170739_20240902T170739.tif", "type": "application/json"}, {"href": "https://openeo.dataspace.copernicus.eu/openeo/1.2/jobs/j-25062517480247df80a8da7ffe101771/results", "rel": "self", "type": "application/json"}, {"href": "https://openeo.dataspace.copernicus.eu/openeo/1.2/jobs/j-25062517480247df80a8da7ffe101771/results/YjFkN2E3YzMtMGMxYi00MjgzLWE0NDItM2I1YmYxZmE4ZjNj/28fd227d0e5f5fa539729a3051755f80?expires=1751483502", "rel": "canonical", "type": "application/json"}, {"href": "http://ceos.org/ard/files/PFS/SR/v5.0/CARD4L_Product_Family_Specification_Surface_Reflectance-v5.0.pdf", "rel": "card4l-document", "type": "application/pdf"}, {"href": "https://openeo.dataspace.copernicus.eu/openeo/1.2/jobs/j-25062517480247df80a8da7ffe101771/results/items/YjFkN2E3YzMtMGMxYi00MjgzLWE0NDItM2I1YmYxZmE4ZjNj/cfe870b4dae39be01e282c9cd2a94a39/openEO_2024-08-09Z.tif?expires=1751483502", "rel": "item", "type": "application/geo+json"}, {"href": "https://openeo.dataspace.copernicus.eu/openeo/1.2/jobs/j-25062517480247df80a8da7ffe101771/results/items/YjFkN2E3YzMtMGMxYi00MjgzLWE0NDItM2I1YmYxZmE4ZjNj/597437fab63aea00ffd11d7dac62be9e/openEO_2024-08-21Z.tif?expires=1751483502", "rel": "item", "type": "application/geo+json"}], "openeo:status": "finished", "providers": [{"description": "This data was processed on an openEO backend maintained by VITO.", "name": "VITO", "processing:expression": {"expression": {"insarinterferogramcoherence1": {"arguments": {"InSAR_pairs": [["2024-08-09", "2024-08-21"], ["2024-08-21", "2024-09-02"]], "burst_id": 249435, "polarization": "vv", "sub_swath": "IW2"}, "process_id": "insar_interferogram_coherence"}, "saveresult1": {"arguments": {"data": {"from_node": "insarinterferogramcoherence1"}, "format": "GTiff", "options": {}}, "process_id": "save_result", "result": true}}, "format": "openeo"}, "processing:facility": "openEO Geotrellis backend", "processing:software": {"Geotrellis backend": "0.66.0a5"}, "roles": ["processor"]}], "stac_extensions": ["https://stac-extensions.github.io/eo/v1.1.0/schema.json", "https://stac-extensions.github.io/file/v2.1.0/schema.json", "https://stac-extensions.github.io/processing/v1.1.0/schema.json", "https://stac-extensions.github.io/projection/v1.1.0/schema.json"], "stac_version": "1.0.0", "summaries": {}, "title": "InSAR_coherence", "type": "Collection"}}</script>
     </openeo-collection>
     
 </div>
@@ -15666,7 +15642,7 @@ class="
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[14]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[10]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">job</span><span class="o">.</span><span class="n">get_results</span><span class="p">()</span><span class="o">.</span><span class="n">get_assets</span><span class="p">()</span>
@@ -15685,13 +15661,14 @@ class="
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
     
-    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[14]:</div>
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[10]:</div>
 
 
 
 
 <div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain">
-<pre>[&lt;ResultAsset &#39;openEO_2024-08-09Z.tif&#39; (type image/tiff; application=geotiff) at &#39;https://openeo.dataspace.copernicus.eu/openeo/1.2/jobs/j-2506230832544f55a87e8e1da8d7a627/results/assets/YjFkN2E3YzMtMGMxYi00MjgzLWE0NDItM2I1YmYxZmE4ZjNj/8a046c9b3a18220a4127ae3ffaf1bbd0/openEO_2024-08-09Z.tif?expires=1751458821&#39;&gt;]</pre>
+<pre>[&lt;ResultAsset &#39;openEO_2024-08-09Z.tif&#39; (type image/tiff; application=geotiff) at &#39;https://openeo.dataspace.copernicus.eu/openeo/1.2/jobs/j-25062517480247df80a8da7ffe101771/results/assets/YjFkN2E3YzMtMGMxYi00MjgzLWE0NDItM2I1YmYxZmE4ZjNj/44d4c30db3039111c827ed76445772cb/openEO_2024-08-09Z.tif?expires=1751483510&#39;&gt;,
+ &lt;ResultAsset &#39;openEO_2024-08-21Z.tif&#39; (type image/tiff; application=geotiff) at &#39;https://openeo.dataspace.copernicus.eu/openeo/1.2/jobs/j-25062517480247df80a8da7ffe101771/results/assets/YjFkN2E3YzMtMGMxYi00MjgzLWE0NDItM2I1YmYxZmE4ZjNj/c1332271b51153ca02353bd7b67c8fb5/openEO_2024-08-21Z.tif?expires=1751483510&#39;&gt;]</pre>
 </div>
 
 </div>
@@ -15708,7 +15685,7 @@ class="
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <p>Then open QGIS. Click on <em>Open Data Source Manager</em> and select the protocol <em>HTTPS</em> as <em>Source Type</em>. Then paste the URL and add the layer</p>
-<p><img src="../images/qgis_visualization.png" alt="image" /></p>
+<p><img src="qgis_visualization.png" alt="image" /></p>
 
 </div>
 </div>
