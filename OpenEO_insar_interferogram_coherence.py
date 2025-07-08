@@ -51,6 +51,14 @@ print(input_dict)
 start_date = min([min(pair) for pair in input_dict["InSAR_pairs"]])
 end_date = max([max(pair) for pair in input_dict["InSAR_pairs"]])
 
+primary_dates = [pair[0] for pair in input_dict["InSAR_pairs"]]
+primary_dates_duplicates = set([d for d in primary_dates if primary_dates.count(d) > 1])
+if primary_dates_duplicates:
+    raise ValueError(
+        f"Duplicate primary date(s) found in InSAR_pairs: {primary_dates_duplicates}. "
+        "You can load multiple primary dates over multiple processes if needed."
+    )
+
 print("AWS_ACCESS_KEY_ID= " + str(os.environ.get("AWS_ACCESS_KEY_ID", None)))
 if "AWS_ACCESS_KEY_ID" not in os.environ:
     raise Exception("AWS_ACCESS_KEY_ID should be set in environment")
