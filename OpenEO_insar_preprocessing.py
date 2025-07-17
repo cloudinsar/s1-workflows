@@ -36,6 +36,7 @@ if not input_dict.get("polarization"):
     input_dict["polarization"] = "vv"
 if not input_dict.get("sub_swath"):
     input_dict["sub_swath"] = "IW3"
+assert (len(input_dict["temporal_extent"]) == 2), "temporal_extent should be a list with two dates"
 print(input_dict)
 
 print("AWS_ACCESS_KEY_ID= " + str(os.environ.get("AWS_ACCESS_KEY_ID", None)))
