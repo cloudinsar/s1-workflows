@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import logging
-from typing import Union
 import os
+from typing import Union
 
 from workflow_utils import *
 
@@ -17,7 +17,7 @@ def generate_catalog(
     local_args = locals().copy()
     function_call_str = "generate_catalog("
     for arg in local_args:
-        function_call_str += f"{arg}={repr(local_args[arg])},"
+        function_call_str += f"{arg}={repr(local_args[arg])}, "
     function_call_str += ")"
     print(function_call_str)
 
@@ -55,6 +55,8 @@ def generate_catalog(
     tiff_files = [Path(file) for file in tiff_files]
     for file in tiff_files:
         print(file)
+        if not file.is_absolute():
+            file = stac_root / file
         res = re.search(date_regex, file.name)
         if res is None:
             print("Skipping: ", file)
