@@ -42,8 +42,12 @@ url = "https://openeo.dataspace.copernicus.eu"
 connection = openeo.connect(url).authenticate_oidc()
 
 datacube = connection.datacube_from_process(
-    process_id="insar_preprocessing",
-    InSAR_pairs=[["2024-08-09", "2024-09-02"], ["2024-08-21", "2024-09-02"]],
+    process_id="insar_preprocessing_v02",
+    master_date= "2024-08-09",
+    temporal_extent= [
+      "2024-08-09",
+      "2024-09-02"
+    ],
     burst_id=249435,
     sub_swath="IW2",
     polarization="vv"
