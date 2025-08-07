@@ -35,6 +35,14 @@ def retrieve_bursts(start_date, end_date, pol, aoi):
         content = response.read().decode()
         
     return json.loads(content)
+    
+    
+def merge_retrieved_bursts(burst_list):
+
+    merged = burst_list[0].copy()
+    for b in burst_list[1:]:
+        merged['value'] += b['value']
+    return merged
 
 
 def show_bursts(bursts, aoi):
