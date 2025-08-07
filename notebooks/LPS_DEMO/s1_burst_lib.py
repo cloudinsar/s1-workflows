@@ -265,14 +265,15 @@ def find_optimal_master(SAFE_image_list):
     return InSARStackOverview.findOptimalMasterProduct(products).getName()
   
 
-def sbas_pairs(SAFE_image_list, max_temporal_baseline, max_perp_baseline):
+def sbas_pairs(SAFE_image_list, max_temporal_baseline, max_perp_baseline, min_temporal_baseline=0):
 
     df = compute_baseline(SAFE_image_list)
     optimal_master = find_optimal_master(SAFE_image_list)
 
     zero_reference_date = optimal_master.split("_")[5][:4] + "-" + optimal_master.split("_")[5][4:6] + "-" + optimal_master.split("_")[5][6:8]
-    
-    filter_mask = np.bitwise_and(abs(df["temp_baseline"])<=datetime.timedelta(max_temporal_baseline),abs(df["perp_baseline"])<=max_perp_baseline)
+
+    filter_mask = np.bitwise_and(-df["temp_baseline"]>=datetime.timedelta(min_temporal_baseline), -df["temp_baseline"]<=datetime.timedelta(max_temporal_baseline))
+    filter_mask = np.bitwise_and(filter_mask, abs(df["perp_baseline"])<=max_perp_baseline)
     df_filtered = df[filter_mask].reset_index()
 
     ax = df[df["master_date"]==zero_reference_date].plot.scatter(
