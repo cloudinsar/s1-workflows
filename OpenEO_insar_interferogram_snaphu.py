@@ -212,7 +212,7 @@ for pair in input_dict["InSAR_pairs"]:
         unw_phase_bandname = f'Unw_Phase_ifg_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
         coh_bandname = f'coh_{sub_swath}_VV_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
         unw_phase_filename = glob.glob(os.path.join(os.path.join(result_folder, output_filename_tmp), 'UnwPhase*.img'))[0]
-        result_path = os.path.join(result_folder, f"geocoded_interferogram_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}.tif")
+        result_path = os.path.join(result_folder, f"geocoded_interferogram_{prm_date.strftime('%d%b%Y')}_{sec_date.strftime('%d%b%Y')}.tif")
         gpt_cmd = [
                 "gpt",
                 "-J-Xmx14G",
