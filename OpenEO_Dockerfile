@@ -81,6 +81,10 @@ RUN python3 -m venv /opt/venv && \
     python3 -m pip install --config-settings="--build-option=build_ext" --config-settings="--build-option=-I/usr/include/gdal" GDAL==`gdal-config --version`
 
 ENV PATH="${PATH}:/src/"
+
+RUN wget https://step.esa.int/thirdparties/snaphu/1.4.2-2/snaphu-v1.4.2_linux.zip && unzip -d / snaphu-v1.4.2_linux.zip
+ENV PATH="$PATH:/snaphu-v1.4.2_linux/bin"
+
 # COPY . /src
 COPY ./utilities /src/utilities/
 COPY ./notebooks/graphs /src/notebooks/graphs/
