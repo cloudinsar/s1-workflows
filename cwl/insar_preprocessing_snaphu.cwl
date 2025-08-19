@@ -1,6 +1,6 @@
 cwlVersion: v1.0
 class: CommandLineTool
-baseCommand: /src/OpenEO_insar_coherence.py
+baseCommand: /src/OpenEO_insar_interferogram_snaphu.py
 requirements:
   DockerRequirement:
     dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.11
@@ -15,4 +15,4 @@ outputs:
       type: array
       items: File
     outputBinding:
-      glob: "*2images*"
+      glob: "*phase_coh_*"

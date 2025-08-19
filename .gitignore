@@ -20,6 +20,7 @@ target/
 # custom:
 output
 *2images*
+*phase_coh_*
 S1A_SLC_*
 S1B_SLC_*
 tmp*

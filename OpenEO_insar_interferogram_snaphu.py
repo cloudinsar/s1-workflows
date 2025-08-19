@@ -2,11 +2,11 @@
 import base64
 import glob
 import os
+import shutil
 import subprocess
 import sys
 import urllib.parse
 import urllib.request
-import shutil
 
 import simple_stac_builder
 import tiff_to_gtiff
@@ -155,10 +155,10 @@ for pair in input_dict["InSAR_pairs"]:
     sec_filename = next(filter(lambda x: pair[1].replace("-", "") in str(x), burst_paths))
 
     output_filename_tmp = f"{result_folder}/tmp_phase_coh_{date_from_burst(prm_filename)}_{date_from_burst(sec_filename)}"
+    prm_date = parse_date(pair[0])
+    sec_date = parse_date(pair[1])
 
     if not os.path.exists(output_filename_tmp):
-        prm_date = parse_date(pair[0])
-        sec_date = parse_date(pair[1])
         phase_bandname = f'Phase_ifg_{input_dict["sub_swath"]}_VV_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
         coh_bandname = f'coh_{input_dict["sub_swath"]}_VV_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
 
@@ -206,13 +206,15 @@ for pair in input_dict["InSAR_pairs"]:
         exec_proc(cmd_unwrapping,cwd=os.path.join(result_folder,
                                                   output_filename_tmp))
 
+    result_path = os.path.join(result_folder,
+                               f"geocoded_interferogram_{prm_date.strftime('%d%b%Y')}_{sec_date.strftime('%d%b%Y')}.tif")
+    if not os.path.exists(result_path):
         # Geocode the result (interferogram, unwrapped interferogram, coherence)
         sub_swath = input_dict['sub_swath'].upper()
         phase_bandname = f'Phase_ifg_{sub_swath}_VV_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
         unw_phase_bandname = f'Unw_Phase_ifg_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
         coh_bandname = f'coh_{sub_swath}_VV_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
         unw_phase_filename = glob.glob(os.path.join(os.path.join(result_folder, output_filename_tmp), 'UnwPhase*.img'))[0]
-        result_path = os.path.join(result_folder, f"geocoded_interferogram_{prm_date.strftime('%d%b%Y')}_{sec_date.strftime('%d%b%Y')}.tif")
         gpt_cmd = [
                 "gpt",
                 "-J-Xmx14G",
@@ -239,13 +241,14 @@ for pair in input_dict["InSAR_pairs"]:
 
 print("seconds since start: " + str((datetime.now() - start_time).seconds))
 
-# # # slow when running outside Docker, because the whole home directory is scanned.
+# slow when running outside Docker, because the whole home directory is scanned.
 simple_stac_builder.generate_catalog(
     result_folder,
     files=asset_paths,
     date_regex=re.compile(
         r".*phase_coh_(?P<date1>\d{8}T\d{6})_(?P<date2>\d{8}T\d{6}).tif$"
     ),
+    collection_filename="phase_coh_collection.json",
 )
 
 print("seconds since start: " + str((datetime.now() - start_time).seconds))
