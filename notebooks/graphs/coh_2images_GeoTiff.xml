@@ -70,8 +70,8 @@
       <sourceProduct refid="Back-Geocoding"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <cohWinAz>5</cohWinAz>
-      <cohWinRg>20</cohWinRg>
+      <cohWinAz>${cohWinAz}</cohWinAz>
+      <cohWinRg>${cohWinRg}</cohWinRg>
       <subtractFlatEarthPhase>false</subtractFlatEarthPhase>
       <srpPolynomialDegree>5</srpPolynomialDegree>
       <srpNumberPoints>501</srpNumberPoints>
