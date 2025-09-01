@@ -43,11 +43,13 @@ def tiff_to_gtiff(input_path, output_path, band_names=None):
             date_suffix_regex = re.compile(
                 r"_IW\d_(?P<polarization>\w\w)(_\w\w\w\w?)?_\d\d[A-Z]\w+\d\d\d\d(_\d\d[A-Z]\w+\d\d\d\d)?$"
             )
+            dates_regex = re.compile(r"_\d\d[A-Z]\w{1,4}\d\d\d\d")
             grid_regex = re.compile(r"^(?P<matchgroup>\w+)_band$")
 
             def tag_to_band_name(band_tag):
                 band_name = band_tag.find("BAND_NAME").text
                 band_name = date_suffix_regex.sub(r"_\g<polarization>", band_name)
+                band_name = dates_regex.sub("", band_name)
                 band_name = grid_regex.sub(r"grid_\g<matchgroup>", band_name)
                 return band_name
 
