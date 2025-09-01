@@ -31,6 +31,10 @@ if not input_dict.get("polarization"):
     input_dict["polarization"] = "vv"
 if not input_dict.get("sub_swath"):
     input_dict["sub_swath"] = "IW3"
+if not "coherence_window_rg" in input_dict or not "coherence_window_az" in input_dict:
+    print("Setting default coherence window size")
+    input_dict["coherence_window_rg"] = 10
+    input_dict["coherence_window_az"] = 2
 print(input_dict)
 start_date = min([min(pair) for pair in input_dict["InSAR_pairs"]])
 end_date = max([max(pair) for pair in input_dict["InSAR_pairs"]])
@@ -138,6 +142,8 @@ for pair in input_dict["InSAR_pairs"]:
             str(containing_folder / "notebooks/graphs/coh_2images_GeoTiff.xml"),
             f"-Pmst_filename={mst_filename}",
             f"-Pslv_filename={slv_filename}",
+            f"-PcohWinRg={input_dict['coherence_window_rg']}",
+            f"-PcohWinAz={input_dict['coherence_window_az']}",
             f"-Poutput_filename={output_filename_tmp}",
         ]
         print(gpt_cmd)
