@@ -75,7 +75,8 @@ print("containing_folder: " + str(containing_folder))
 result_folder = Path.cwd()
 # result_folder = containing_folder / "output"
 # result_folder.mkdir(exist_ok=True)
-tmp_insar = result_folder
+tmp_insar = Path("/tmp/insar")
+tmp_insar.mkdir(parents=True, exist_ok=True)
 
 https_request = (
         f"https://catalogue.dataspace.copernicus.eu/odata/v1/Bursts?$filter="
@@ -154,11 +155,15 @@ for pair in input_dict["InSAR_pairs"]:
     prm_filename = next(filter(lambda x: pair[0].replace("-", "") in str(x), burst_paths))
     sec_filename = next(filter(lambda x: pair[1].replace("-", "") in str(x), burst_paths))
 
-    output_filename_tmp = f"{result_folder}/tmp_phase_coh_{date_from_burst(prm_filename)}_{date_from_burst(sec_filename)}"
+    output_filename_tmp = f"{tmp_insar}/tmp_phase_coh_{date_from_burst(prm_filename)}_{date_from_burst(sec_filename)}"
     prm_date = parse_date(pair[0])
     sec_date = parse_date(pair[1])
+    result_path = os.path.join(
+        result_folder,
+        f"tmp_geocoded_interferogram_{prm_date.strftime('%d%b%Y')}_{sec_date.strftime('%d%b%Y')}.tif",
+    )
 
-    if not os.path.exists(output_filename_tmp):
+    if not os.path.exists(result_path):
         phase_bandname = f'Phase_ifg_{input_dict["sub_swath"]}_VV_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
         coh_bandname = f'coh_{input_dict["sub_swath"]}_VV_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
 
@@ -178,7 +183,7 @@ for pair in input_dict["InSAR_pairs"]:
             f"-Poutput_filename={output_filename_tmp}",
         ]
         exec_proc(gpt_cmd)
-        print("")
+
         # Prepare the snaphu export for unwrapping
         gpt_cmd = [
             "gpt",
@@ -188,33 +193,30 @@ for pair in input_dict["InSAR_pairs"]:
                 / "notebooks/graphs/snaphu_export.xml"
             ),
             f"-Pphase_filename={output_filename_tmp}.dim",
-            f"-Poutput_folder_snaphu={result_folder}",
+            f"-Poutput_folder_snaphu={tmp_insar}",
         ]
         exec_proc(gpt_cmd)
 
         # Unwrapping with snaphu
-        snaphu_conf_filename = glob.glob(os.path.join(result_folder, f'{output_filename_tmp}/snaphu.conf'))[0]
-        with open(snaphu_conf_filename, 'r') as file:
+        snaphu_conf_filename = glob.glob(f"{output_filename_tmp}/snaphu.conf")[0]
+        with open(snaphu_conf_filename, "r") as file:
             for line in file:
                 if line.startswith('#'):
                     line = line[1:].lstrip()  # Remove the '#' symbol and whitespaces at the beginning
                     if line.startswith('snaphu'):
                         cmd_unwrapping = line.rstrip()
                         break
-        
 
-        exec_proc(cmd_unwrapping,cwd=os.path.join(result_folder,
-                                                  output_filename_tmp))
+        exec_proc(cmd_unwrapping, cwd=output_filename_tmp)
 
-    result_path = os.path.join(result_folder,
-                               f"geocoded_interferogram_{prm_date.strftime('%d%b%Y')}_{sec_date.strftime('%d%b%Y')}.tif")
-    if not os.path.exists(result_path):
         # Geocode the result (interferogram, unwrapped interferogram, coherence)
         sub_swath = input_dict['sub_swath'].upper()
         phase_bandname = f'Phase_ifg_{sub_swath}_VV_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
         unw_phase_bandname = f'Unw_Phase_ifg_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
         coh_bandname = f'coh_{sub_swath}_VV_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
-        unw_phase_filename = glob.glob(os.path.join(os.path.join(result_folder, output_filename_tmp), 'UnwPhase*.img'))[0]
+        unw_phase_filename = glob.glob(
+            os.path.join(output_filename_tmp, "UnwPhase*.img")
+        )[0]
         gpt_cmd = [
                 "gpt",
                 "-J-Xmx14G",
@@ -229,9 +231,7 @@ for pair in input_dict["InSAR_pairs"]:
             ]
         exec_proc(gpt_cmd)
 
-    shutil.rmtree(os.path.join(result_folder, output_filename_tmp))
-    shutil.rmtree(os.path.join(result_folder, output_filename_tmp + ".data"))
-    os.remove(os.path.join(result_folder, output_filename_tmp + ".dim"))
+    shutil.rmtree(os.path.join(result_folder, tmp_insar))
 
     output_filename = f"{result_folder}/phase_coh_{date_from_burst(prm_filename)}_{date_from_burst(sec_filename)}.tif"
 
