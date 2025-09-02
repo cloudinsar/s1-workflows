@@ -8,7 +8,7 @@
       <file>${interferogram_filename}</file>
       <copyMetadata>true</copyMetadata>
       <bandNames/>
-      <pixelRegion>1,0,2647,503</pixelRegion>
+      <pixelRegion></pixelRegion>
       <maskNames/>
     </parameters>
   </node>
@@ -79,10 +79,22 @@
       <externalAuxFile/>
     </parameters>
   </node>
+  <node id="Convert-Datatype">
+    <operator>Convert-Datatype</operator>
+    <sources>
+      <sourceProduct refid="Terrain-Correction"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <sourceBands/>
+      <targetDataType>float32</targetDataType>
+      <targetScalingStr>Truncate</targetScalingStr>
+      <targetNoDataValue>NaN</targetNoDataValue>
+    </parameters>
+  </node>
   <node id="Write">
     <operator>Write</operator>
     <sources>
-      <sourceProduct refid="Terrain-Correction"/>
+      <sourceProduct refid="Convert-Datatype"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <file>${output_filename}</file>
