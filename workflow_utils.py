@@ -7,6 +7,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict
+import os
 
 origGetAddrInfo = socket.getaddrinfo
 
