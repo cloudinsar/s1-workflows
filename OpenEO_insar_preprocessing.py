@@ -65,6 +65,9 @@ tmp_insar = result_folder
 
 bursts_pol = {}
 prm_filenames_pol = {}
+tmp_files = []
+secondary_paths = []
+primary_paths = []
 
 for pol in input_dict["polarization"]:
 
@@ -84,8 +87,6 @@ for pol in input_dict["polarization"]:
         bursts = json.loads(response.read().decode())
 
     burst_paths = []
-    secondary_paths = []
-    primary_paths = []
 
     for burst in bursts["value"]:
         # Allow for relative imports:
@@ -177,6 +178,7 @@ for pol in input_dict["polarization"]:
         secondary_paths.append(output_sec_filename_tmp)
     if os.path.exists(output_prm_filename_tmp):
         primary_paths.append(output_prm_filename_tmp)
+    tmp_files.extend([output_sec_filename_tmp,output_prm_filename_tmp])
 
 output_prm_filename = (
     f"{result_folder}/S1_2images_{prm_date.strftime('%Y%m%dT%H%M%S')}.tif"
@@ -186,22 +188,19 @@ output_sec_filename = (
 )
 
 if not os.path.exists(output_prm_filename) or not os.path.exists(output_sec_filename):
+    print("++++++++++ tiff_to_gtiff")
+    print(primary_paths, output_prm_filename)
+    print(secondary_paths, output_sec_filename)
     tiff_to_gtiff.tiff_to_gtiff(primary_paths, output_prm_filename)
     tiff_to_gtiff.tiff_to_gtiff(secondary_paths, output_sec_filename)
-    # Delete tmp files
-    # for f in primary_paths:
-    #     os.remove(f)
-    for f in secondary_paths:
-        os.remove(f)
-
 
 #####################################################################
 # Now the rest of the images ########################################
 #####################################################################
 for i in range(len(burst_paths[1:])):
+    secondary_paths = []
     for pol in input_dict["polarization"]:
         burst_paths = bursts_pol[pol]
-        secondary_paths = []
         sec_filename = burst_paths[i+1]
         sec_date = parse_date(date_from_burst(sec_filename))
         sec_bandname = f'{input_dict["sub_swath"].upper()}_{pol.upper()}_slv1_{sec_date.strftime("%d%b%Y")}'
@@ -228,18 +227,23 @@ for i in range(len(burst_paths[1:])):
             subprocess.check_call(gpt_cmd, stderr=subprocess.STDOUT)
         if os.path.exists(output_sec_filename_tmp):
             secondary_paths.append(output_sec_filename_tmp)
+            tmp_files.append(output_sec_filename_tmp)
 
     output_sec_filename = (
         f"{result_folder}/S1_2images_{sec_date.strftime('%Y%m%dT%H%M%S')}.tif"
     )
 
     if not os.path.exists(output_sec_filename):
+        print("++++++++++ tiff_to_gtiff")
+        print(secondary_paths, output_sec_filename)
         tiff_to_gtiff.tiff_to_gtiff(secondary_paths, output_sec_filename)
-        # Delete tmp files
-        # for f in primary_paths:
-        #     os.remove(f)
-        for f in secondary_paths:
-            os.remove(f)
+
+# Delete tmp files
+for f in tmp_files:
+    try:
+        os.remove(f)
+    except Exception as e:
+        print(e)
 
         # slow when running outside Docker, because the whole home directory is scanned.
         # simple_stac_builder.generate_catalog(
