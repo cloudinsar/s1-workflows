@@ -52,6 +52,7 @@ def generate_catalog(
     else:
         raise ValueError("Invalid files parameter: " + str(files))
 
+    crs_set = set()
     tiff_files = [Path(file) for file in tiff_files]
     for file in tiff_files:
         print(file)
@@ -104,13 +105,18 @@ def generate_catalog(
         else:
             collection_stac["cube:dimensions"]["bands"]["values"] = band_names
 
-        del gdalinfo_stac["proj:projjson"]  # remove verbose information
-        del gdalinfo_stac["proj:wkt2"]  # remove verbose information
-        del gdalinfo_stac["proj:epsg"]  # might mess up x/y resolution, so remove
-        if "proj:transform" in gdalinfo_stac:
-            # might mess up x/y resolution, so remove
-            del gdalinfo_stac["proj:transform"]
-        del gdalinfo_stac["proj:shape"]  # might mess up x/y resolution, so remove
+        crs_set.add(gdalinfo_stac["proj:epsg"])
+        # del gdalinfo_stac["proj:projjson"]  # remove verbose information
+        # del gdalinfo_stac["proj:wkt2"]  # remove verbose information
+        # del gdalinfo_stac["proj:epsg"]  # might mess up x/y resolution, so remove
+        # if "proj:transform" in gdalinfo_stac:
+        #     # might mess up x/y resolution, so remove
+        #     del gdalinfo_stac["proj:transform"]
+        proj_shape = list(
+            reversed(gdalinfo_stac["proj:shape"])
+        )  # (height, width) -> (row, col)
+        gdalinfo_stac["proj:shape"] = proj_shape
+        gdalinfo_stac["proj:bbox"] = [0.0, 0.0, proj_shape[1], proj_shape[0]]
         gdalinfo_stac["href"] = "./" + str(Path(file).relative_to(stac_root))
         coordinates = data_gdalinfo_from_subprocess["wgs84Extent"]["coordinates"]
         # assemble with application-specific data:
@@ -178,6 +184,13 @@ def generate_catalog(
         collection_stac["extent"]["spatial"]["bbox"][0][1],
         collection_stac["extent"]["spatial"]["bbox"][0][3],
     ]
+    if len(crs_set) == 1:
+        crs = next(iter(crs_set))
+        collection_stac["cube:dimensions"]["x"]["reference_system"] = crs
+        collection_stac["cube:dimensions"]["y"]["reference_system"] = crs
+    else:
+        print("multiple crs detected, can't set crs in stac root: " + str(crs_set))
+
     collection_stac["cube:dimensions"]["t"]["extent"] = collection_stac["extent"][
         "temporal"
     ]["interval"][0]
