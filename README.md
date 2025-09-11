@@ -32,7 +32,7 @@ An example of the SNAP preprocessing and coherence calculation including Sentine
 
 The selection of sub swath, burstId and InSAR pair list can be accomplished by running the pyhton notebook [InSAR_workflow_input_selection.ipynb](https://github.com/cloudinsar/s1-workflows/blob/main/notebooks/InSAR_workflow_input_selection.ipynb).
 
-The SNAP pre-processing graph ([pre-processing_2images_SaveMst_GeoTiff.xml](https://github.com/cloudinsar/s1-workflows/blob/main/notebooks/graphs/pre-processing_2images_SaveMst_GeoTiff.xml) and [pre-processing_2images_SaveOnlySlv_GeoTiff.xml](https://github.com/cloudinsar/s1-workflows/blob/main/notebooks/graphs/pre-processing_2images_SaveOnlySlv_GeoTiff.xml)) involve the following operations:
+The SNAP pre-processing graph ([pre-processing_2images_SavePrm_GeoTiff.xml](https://github.com/cloudinsar/s1-workflows/blob/main/notebooks/graphs/pre-processing_2images_SavePrm_GeoTiff.xml) and [pre-processing_2images_SaveOnlySec_GeoTiff.xml](https://github.com/cloudinsar/s1-workflows/blob/main/notebooks/graphs/pre-processing_2images_SaveOnlySec_GeoTiff.xml)) involve the following operations:
 ![image](https://github.com/user-attachments/assets/11223d88-3aa3-4f00-9ad8-003c2af5a7aa)
 
 InSAR OpenEO processes will be implemented and available soon.
@@ -47,8 +47,8 @@ When no arguments are passed to the Python script, some example arguments are us
 To run preprocessing, replace OpenEO_insar_coherence.py with OpenEO_insar_preprocessing.py
 `-v $PWD:/src` is for better performance when developing. If it causes issues, you can remove it.
 ```bash
-docker build -t openeo_insar:1.10 . -f OpenEO_Dockerfile
-docker run -it -v $PWD:/src -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --rm openeo_insar:1.10 python3 /src/OpenEO_insar_coherence.py
+docker build -t openeo_insar:1.12 . -f OpenEO_Dockerfile
+docker run -it -v $PWD:/src -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --rm openeo_insar:1.12 python3 /src/OpenEO_insar_coherence.py
 ```
 
 ## More Documentation:

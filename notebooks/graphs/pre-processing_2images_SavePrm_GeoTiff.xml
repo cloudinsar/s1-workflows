@@ -5,7 +5,7 @@
     <sources/>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <useAdvancedOptions>false</useAdvancedOptions>
-      <file>${mst_filename}</file>
+      <file>${prm_filename}</file>
       <copyMetadata>true</copyMetadata>
       <bandNames/>
       <pixelRegion>1,0,25345,1516</pixelRegion>
@@ -17,7 +17,7 @@
     <sources/>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <useAdvancedOptions>false</useAdvancedOptions>
-      <file>${slv_filename}</file>
+      <file>${sec_filename}</file>
       <copyMetadata>true</copyMetadata>
       <bandNames/>
       <pixelRegion>1,0,25563,1517</pixelRegion>
@@ -64,6 +64,17 @@
       <disableReramp>false</disableReramp>
     </parameters>
   </node>
+  <node id="BandSelect">
+    <operator>BandSelect</operator>
+    <sources>
+      <sourceProduct refid="Back-Geocoding"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <selectedPolarisations>${polarisation}</selectedPolarisations>
+      <sourceBands>${i_q_prm_bandnames}</sourceBands>
+      <bandNamePattern/>
+    </parameters>
+  </node>
   <node id="BandSelect(2)">
     <operator>BandSelect</operator>
     <sources>
@@ -71,7 +82,7 @@
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <selectedPolarisations>${polarisation}</selectedPolarisations>
-      <sourceBands>${i_q_slv_bandnames}</sourceBands>
+      <sourceBands>${i_q_sec_bandnames}</sourceBands>
       <bandNamePattern/>
     </parameters>
   </node>
@@ -81,7 +92,31 @@
       <sourceProduct refid="BandSelect(2)"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>${output_slv_filename}</file>
+      <file>${output_sec_filename}</file>
+      <formatName>GeoTIFF</formatName>
+    </parameters>
+  </node>
+  <node id="Update-Geo-Reference">
+    <operator>Update-Geo-Reference</operator>
+    <sources>
+      <sourceProduct refid="BandSelect"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <sourceBands>${i_q_prm_bandnames}</sourceBands>
+      <demName>SRTM 1Sec HGT</demName>
+      <demResamplingMethod>BICUBIC_INTERPOLATION</demResamplingMethod>
+      <externalDEMFile/>
+      <externalDEMNoDataValue>0.0</externalDEMNoDataValue>
+      <reGridMethod>false</reGridMethod>
+    </parameters>
+  </node>
+  <node id="Write">
+    <operator>Write</operator>
+    <sources>
+      <sourceProduct refid="Update-Geo-Reference"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>${output_prm_filename}</file>
       <formatName>GeoTIFF</formatName>
     </parameters>
   </node>
@@ -102,11 +137,20 @@
     <node id="Back-Geocoding">
       <displayPosition x="308.0" y="53.0"/>
     </node>
+    <node id="BandSelect">
+      <displayPosition x="451.0" y="18.0"/>
+    </node>
     <node id="BandSelect(2)">
       <displayPosition x="437.0" y="103.0"/>
     </node>
     <node id="Write(2)">
       <displayPosition x="564.0" y="103.0"/>
+    </node>
+    <node id="Update-Geo-Reference">
+      <displayPosition x="579.0" y="17.0"/>
+    </node>
+    <node id="Write">
+      <displayPosition x="756.0" y="17.0"/>
     </node>
   </applicationData>
 </graph>
