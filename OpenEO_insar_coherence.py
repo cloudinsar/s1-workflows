@@ -92,6 +92,7 @@ for burst in bursts["value"]:
     # Allow for relative imports:
     os.environ["PATH"] = os.environ["PATH"] + ":" + str(containing_folder / "utilities")
     cmd = [
+        "bash",
         "sentinel1_burst_extractor.sh",
         "-n", burst["ParentProductName"],
         "-p", input_dict["polarization"].lower(),
@@ -100,11 +101,11 @@ for burst in bursts["value"]:
         "-o", str(result_folder),
     ]
     print(cmd)
-    output = subprocess.check_output(cmd, cwd=containing_folder / "utilities", stderr=subprocess.STDOUT)
+    _, output = exec_proc(cmd, cwd=containing_folder / "utilities")
     # get paths from stdout:
     needle = "out_path: "
     bursts_from_output = sorted(
-        [Path(line[len(needle):]).absolute() for line in output.decode("utf-8").split("\n") if line.startswith(needle)]
+        [Path(line[len(needle):]).absolute() for line in output.split("\n") if line.startswith(needle)]
     )
     burst_paths.extend(bursts_from_output)
     print("seconds since start: " + str((datetime.now() - start_time).seconds))
