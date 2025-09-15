@@ -38,6 +38,8 @@ if not input_dict.get("polarization"):
     input_dict["polarization"] = "vv"
 if not input_dict.get("sub_swath"):
     input_dict["sub_swath"] = "IW3"
+if not input_dict.get("gdainfo_stac"):
+    input_dict["gdainfo_stac"] = True
 assert (len(input_dict["temporal_extent"]) == 2), "temporal_extent should be a list with two dates"
 print(input_dict)
 
