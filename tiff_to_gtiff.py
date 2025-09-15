@@ -55,7 +55,7 @@ def tiff_to_gtiff(input_path, output_path, band_names=None):
 
             band_names = list(map(tag_to_band_name, band_tags))
 
-    ds_in = gdal.Open(input_path, gdalconst.GA_ReadOnly)
+    ds_in = gdal.Open(str(input_path), gdalconst.GA_ReadOnly)
 
     transform = list(ds_in.GetGeoTransform())
     # print(repr(transform))  # [0.0, 1.0, 0.0, 0.0, 0.0, 1.0]

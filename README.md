@@ -1,6 +1,7 @@
 ## Prerequisites:
 - docker
 - 10-20 GB of disk space
+- `git pull && git submodule update --init --recursive`
 - ...
 
 ## Sentinel-1 SLC burst processing workflow

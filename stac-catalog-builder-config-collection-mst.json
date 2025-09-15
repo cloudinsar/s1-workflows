@@ -1,0 +1,50 @@
+{
+  "collection_id": "2images",
+  "title": "2images",
+  "description": "2images",
+  "instruments": [],
+  "keywords": [],
+  "mission": [],
+  "platform": [],
+  "providers": [
+  ],
+  "layout_strategy_item_template": "",
+  "input_path_parser": {
+    "classname": "DefaultInputPathParser",
+    "parameters": {
+      "regex_pattern": ".*(?P<asset_type>2images)(_\\w\\w\\w)?_(?P<year>\\d{4})(?P<month>\\d{2})(?P<day>\\d{2})T.*\\.tif$",
+      "period": "daily"
+    }
+  },
+  "item_assets": {
+    "2images": {
+      "title": "2images",
+      "description": "2images",
+      "eo_bands": [
+        {
+          "name": "i_VH",
+          "description": "i_VH",
+          "data_type": "float32",
+          "sampling": "area"
+        },
+        {
+          "name": "q_VH",
+          "description": "q_VH",
+          "data_type": "float32",
+          "sampling": "area"
+        },
+        {
+          "name": "grid_lat",
+          "data_type": "float32",
+          "sampling": "area"
+        },
+        {
+          "name": "grid_lon",
+          "data_type": "float32",
+          "sampling": "area"
+        }
+      ]
+    }
+  },
+  "overrides": {}
+}
