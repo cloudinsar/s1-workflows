@@ -90,6 +90,9 @@ def main(
     if (output_path / collection_filename).exists():
         os.remove(output_path / collection_filename)
     os.rename(output_path / "collection.json", output_path / collection_filename)
+    root_content = (output_path / collection_filename).read_text()
+    root_content = root_content.replace("/collection.json", f"/{collection_filename}")
+    (output_path / collection_filename).write_text(root_content)
 
     # Make paths relative:
     # TODO: Find way to generate stac with relative paths out of the box
