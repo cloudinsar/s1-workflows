@@ -23,7 +23,7 @@ def main(
     assert " " not in str(root_dir)
     root_dir = Path(root_dir).absolute()
     collection_config_path = Path(collection_config_path)
-    assert collection_config_path.exists()
+    assert collection_config_path.exists(), f"File should exist: {collection_config_path=}"
 
     # Input Paths
     tiff_input_path = Path(root_dir).absolute()

@@ -1,6 +1,6 @@
-# docker build -t openeo_insar:1.18 . -f OpenEO_Dockerfile
-# skopeo copy --multi-arch=all --format=oci docker-daemon:openeo_insar:1.18 docker://registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.18
-# docker run -it --memory=15G -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --rm openeo_insar:1.18
+# docker build -t openeo_insar:1.19 . -f OpenEO_Dockerfile
+# skopeo copy --multi-arch=all --format=oci docker-daemon:openeo_insar:1.19 docker://registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.19
+# docker run -it --memory=15G -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --rm openeo_insar:1.19
 FROM ghcr.io/osgeo/gdal:ubuntu-small-3.10.0
 
 # Install necessary packages
@@ -94,6 +94,7 @@ ENV PATH="$PATH:/snaphu-v1.4.2_linux/bin"
 COPY ./utilities /src/utilities/
 COPY ./notebooks/graphs /src/notebooks/graphs/
 COPY *.py /src/
+COPY *.json /src/
 
 
 WORKDIR /src
