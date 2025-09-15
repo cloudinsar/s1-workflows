@@ -1,3 +1,5 @@
+import os
+
 from typing import Union
 
 import pprint
@@ -12,14 +14,14 @@ containing_folder = Path(__file__).parent
 
 
 def main(
-        root_dir: Union[str, Path],
-        tiffs_glob: str = "*2images_slv*.tif",
-        collection_filename: str = "collection.json",
-        collection_config_path: Union[str, Path] = containing_folder
-                                                   / "stac-catalog-builder-config-collection-slv.json",
+    root_dir: Union[str, Path],
+    tiffs_glob: str = "*2images_slv*.tif",
+    collection_filename: str = "S1_2images_collection_slaves.json",
+    collection_config_path: Union[str, Path] = containing_folder
+    / "stac-catalog-builder-config-collection-slv.json",
 ):
-    assert " " not in root_dir
-    root_dir = Path(root_dir.rstrip("/")).absolute()
+    assert " " not in str(root_dir)
+    root_dir = Path(root_dir).absolute()
     collection_config_path = Path(collection_config_path)
     assert collection_config_path.exists()
 
@@ -27,12 +29,12 @@ def main(
     tiff_input_path = Path(root_dir).absolute()
 
     # Output Paths with date-time stamp
-    output_path = Path(
-        tempfile.mkdtemp(
-            prefix="stac-" + datetime.now().strftime("%Y-%m-%d_%H-%M") + "-"
-        )
-    )
-    # output_path = Path(os.path.abspath(containing_folder / "tmp/"))
+    # output_path = Path(
+    #     tempfile.mkdtemp(
+    #         prefix="stac-" + datetime.now().strftime("%Y-%m-%d_%H-%M") + "-"
+    #     )
+    # )
+    output_path = root_dir
     print(f"{output_path=}")
 
     # list input files
@@ -68,9 +70,6 @@ def main(
     print("First stac item:")
     print(stac_items[0])
 
-    # if os.path.exists(output_path):
-    #     rmtree(output_path)  # this accidentally deleted my source repo once
-
     # build collection
     stacbuilder.build_collection(
         collection_config_path=collection_config_path,
@@ -81,12 +80,32 @@ def main(
     )
 
     # show collection
-    stacbuilder.load_collection(collection_file=output_path / collection_filename)
+    col = stacbuilder.load_collection(collection_file=output_path / "collection.json")
 
     # validate collection
     stacbuilder.validate_collection(
-        collection_file=output_path / collection_filename,
+        collection_file=output_path / "collection.json",
     )
+
+    if (output_path / collection_filename).exists():
+        os.remove(output_path / collection_filename)
+    os.rename(output_path / "collection.json", output_path / collection_filename)
+
+    # Make paths relative:
+    # TODO: Find way to generate stac with relative paths out of the box
+    for link in col.links:
+        if link.rel == "item":
+            link_path = link.href
+            # open link_path as text:
+            with open(output_path / link_path, "r") as f:
+                item = f.read()
+            root_path_str = str(output_path)
+            if not root_path_str.endswith("/"):
+                root_path_str = root_path_str + "/"
+            item = item.replace(root_path_str, "./")
+            with open(output_path / link_path, "w") as f:
+                f.write(item)
+
 
 
 if __name__ == "__main__":

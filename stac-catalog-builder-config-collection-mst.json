@@ -35,11 +35,13 @@
         },
         {
           "name": "grid_lat",
+          "description": "grid_lat",
           "data_type": "float32",
           "sampling": "area"
         },
         {
           "name": "grid_lon",
+          "description": "grid_lon",
           "data_type": "float32",
           "sampling": "area"
         }

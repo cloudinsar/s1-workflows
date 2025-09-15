@@ -32,6 +32,7 @@ else:
         "temporal_extent": ["2018-01-26", "2018-02-09"],
         "master_date": "2018-01-28",
         "polarization": "vh",
+        "gdainfo_stac": False
     }
 if not input_dict.get("polarization"):
     input_dict["polarization"] = "vv"
@@ -211,8 +212,7 @@ for burst_path in burst_paths[1:]:
         tiff_to_gtiff.tiff_to_gtiff(output_slv_filename_tmp, output_slv_filename)
     # TODO: Delete tmp files
 
-gdainfo_stac = False
-if gdainfo_stac:
+if input_dict["gdainfo_stac"]:
     simple_stac_builder.generate_catalog(
         result_folder,
         files=[output_mst_filename],
