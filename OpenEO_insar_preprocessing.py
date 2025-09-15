@@ -8,6 +8,7 @@ import urllib.parse
 import urllib.request
 
 import simple_stac_builder
+import stac_catalog_builder_run
 import tiff_to_gtiff
 from workflow_utils import *
 
@@ -31,6 +32,7 @@ else:
         "temporal_extent": ["2018-01-26", "2018-02-09"],
         "master_date": "2018-01-28",
         "polarization": "vh",
+        "gdainfo_stac": False
     }
 if not input_dict.get("polarization"):
     input_dict["polarization"] = "vv"
@@ -159,10 +161,10 @@ if not os.path.exists(output_mst_filename_tmp) or not os.path.exists(
     subprocess.check_call(gpt_cmd, stderr=subprocess.STDOUT)
 
 output_mst_filename = (
-    f"{result_folder}/S1_2images_{mst_date.strftime('%Y%m%dT%H%M%S')}.tif"
+    f"{result_folder}/S1_2images_mst_{mst_date.strftime('%Y%m%dT%H%M%S')}.tif"
 )
 output_slv_filename = (
-    f"{result_folder}/S1_2images_{slv_date.strftime('%Y%m%dT%H%M%S')}.tif"
+    f"{result_folder}/S1_2images_slv_{slv_date.strftime('%Y%m%dT%H%M%S')}.tif"
 )
 
 slave_paths = [output_slv_filename]
@@ -202,7 +204,7 @@ for burst_path in burst_paths[1:]:
         subprocess.check_call(gpt_cmd, stderr=subprocess.STDOUT)
 
     output_slv_filename = (
-        f"{result_folder}/S1_2images_{slv_date.strftime('%Y%m%dT%H%M%S')}.tif"
+        f"{result_folder}/S1_2images_slv_{slv_date.strftime('%Y%m%dT%H%M%S')}.tif"
     )
 
     slave_paths.append(output_slv_filename)
@@ -210,19 +212,32 @@ for burst_path in burst_paths[1:]:
         tiff_to_gtiff.tiff_to_gtiff(output_slv_filename_tmp, output_slv_filename)
     # TODO: Delete tmp files
 
-# slow when running outside Docker, because the whole home directory is scanned.
-simple_stac_builder.generate_catalog(
-    result_folder,
-    files=[output_mst_filename],
-    collection_filename="S1_2images_collection_master.json",
-    date_regex=re.compile(r".*_(?P<date1>\d{8}(T\d{6})?)\.tif$"),
-)
-simple_stac_builder.generate_catalog(
-    result_folder,
-    files=slave_paths,
-    collection_filename="S1_2images_collection_slaves.json",
-    date_regex=re.compile(r".*_(?P<date1>\d{8}(T\d{6})?)\.tif$"),
-)
+if input_dict["gdainfo_stac"]:
+    simple_stac_builder.generate_catalog(
+        result_folder,
+        files=[output_mst_filename],
+        collection_filename="S1_2images_collection_master.json",
+        date_regex=re.compile(r".*_(?P<date1>\d{8}(T\d{6})?)\.tif$"),
+    )
+    simple_stac_builder.generate_catalog(
+        result_folder,
+        files=slave_paths,
+        collection_filename="S1_2images_collection_slaves.json",
+        date_regex=re.compile(r".*_(?P<date1>\d{8}(T\d{6})?)\.tif$"),
+    )
+else:
+    stac_catalog_builder_run.main(
+        result_folder,
+        tiffs_glob="*2images_mst*.tif",
+        collection_filename="S1_2images_collection_master.json",
+        collection_config_path=containing_folder / "stac-catalog-builder-config-collection-mst.json",
+    )
+    stac_catalog_builder_run.main(
+        result_folder,
+        tiffs_glob="*2images_slv*.tif",
+        collection_filename="S1_2images_collection_slaves.json",
+        collection_config_path=containing_folder / "stac-catalog-builder-config-collection-slv.json",
+    )
 
 print("seconds since start: " + str((datetime.now() - start_time).seconds))
 
