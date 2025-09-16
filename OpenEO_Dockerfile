@@ -3,9 +3,13 @@
 # docker run -it --memory=15G -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --rm openeo_insar:1.22
 FROM ghcr.io/osgeo/gdal:ubuntu-small-3.10.0
 
+ENV DEBIAN_FRONTEND=noninteractive \
+    LC_ALL=C.UTF-8 \
+    LANG=C.UTF-8
+
 # Install necessary packages
-RUN apt-get update && \
-    apt-get install -y \
+RUN apt-get -qq update && \
+    apt-get -qq install -y \
         jq \
         xmlstarlet \
         zip \
@@ -20,9 +24,9 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Download and install jacksum and s5cmd
-RUN curl -L -O 'https://s3.waw3-2.cloudferro.com/swift/v1/jacksum/jacksum_1.7.0-4.1_all.deb' && \
+RUN curl -sL -O 'https://s3.waw3-2.cloudferro.com/swift/v1/jacksum/jacksum_1.7.0-4.1_all.deb' && \
     dpkg -i jacksum_1.7.0-4.1_all.deb && rm jacksum_1.7.0-4.1_all.deb && \
-    curl -L -O 'https://github.com/peak/s5cmd/releases/download/v2.2.2/s5cmd_2.2.2_linux_amd64.deb' && \
+    curl -sL -O 'https://github.com/peak/s5cmd/releases/download/v2.2.2/s5cmd_2.2.2_linux_amd64.deb' && \
     dpkg -i s5cmd_2.2.2_linux_amd64.deb && rm s5cmd_2.2.2_linux_amd64.deb
 
 #COPY ./utilities /src/utilities/ # Copy at the end of file to avoid slow rebuilds
@@ -38,15 +42,10 @@ ENV AWS_S3_ENDPOINT=eodata.dataspace.copernicus.eu \
 
 
 ### Install esa-snap ###
-ENV DEBIAN_FRONTEND=noninteractive \
-    LC_ALL=C.UTF-8 \
-    LANG=C.UTF-8
-
-RUN apt-get update && \
-    apt-get install -y \
+RUN apt-get -qq update && \
+    apt-get -qq install -y \
       build-essential \
       git \
-      wget \
       python3 \
       python3-venv \
       cmake \
@@ -77,17 +76,17 @@ COPY requirements.txt /src/requirements.txt
 # . /opt/venv/bin/activate -> has no effect in Docker, here we need the following line:
 ENV PATH="/opt/venv/bin:$PATH"
 RUN python3 -m venv /opt/venv && \
-    python3 -m pip install -r /src/requirements.txt && \
-    python3 -m pip install --config-settings="--build-option=build_ext" --config-settings="--build-option=-I/usr/include/gdal" GDAL==`gdal-config --version`
+    python3 -m pip install -q -r /src/requirements.txt && \
+    python3 -m pip install -q --config-settings="--build-option=build_ext" --config-settings="--build-option=-I/usr/include/gdal" GDAL==`gdal-config --version`
 
 ENV PATH="${PATH}:/src/"
 
 RUN cd /opt && \
     git clone --recursive https://github.com/VitoTAP/stac-catalog-builder.git && \
     cd stac-catalog-builder && \
-    python3 -m pip install -e .
+    python3 -m pip install -q -e .
 
-RUN wget https://step.esa.int/thirdparties/snaphu/1.4.2-2/snaphu-v1.4.2_linux.zip && unzip -d / snaphu-v1.4.2_linux.zip
+RUN wget https://step.esa.int/thirdparties/snaphu/1.4.2-2/snaphu-v1.4.2_linux.zip && unzip -q -d / snaphu-v1.4.2_linux.zip
 ENV PATH="$PATH:/snaphu-v1.4.2_linux/bin"
 
 # COPY . /src
