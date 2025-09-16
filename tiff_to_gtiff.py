@@ -57,8 +57,8 @@ def tiff_to_gtiff(input_path, output_path, band_names=None):
 
     ds_in = gdal.Open(str(input_path), gdalconst.GA_ReadOnly)
 
-    transform = list(ds_in.GetGeoTransform())
-    # print(repr(transform))  # [0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+    transform_in = list(ds_in.GetGeoTransform())
+    print(f"{transform_in=}") # [0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
 
     driver = gdal.GetDriverByName("GTiff")
     # Compression is slower, but reduces images from 650Mb to 300Mb for example.
@@ -75,13 +75,13 @@ def tiff_to_gtiff(input_path, output_path, band_names=None):
     projection_in: str = ds_in.GetProjection()
     if (
         '["EPSG","4326"]' in projection_in
-        and transform == [0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+        and transform_in == [0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
         and (ds_in.RasterXSize > 360 or ds_in.RasterYSize > 90)
     ):
         # set CRS to webmercator, to avoid pixels going out of the CRS bounds:
         ds_out.SetProjection("EPSG:3857")
 
-    ds_out.SetGeoTransform(transform)
+    ds_out.SetGeoTransform(transform_in)
     ds_out.FlushCache()  # saves to disk
 
 

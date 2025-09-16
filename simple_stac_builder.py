@@ -113,7 +113,7 @@ def generate_catalog(
         #     # might mess up x/y resolution, so remove
         #     del gdalinfo_stac["proj:transform"]
         proj_shape = list(
-            reversed(gdalinfo_stac["proj:shape"])
+            gdalinfo_stac["proj:shape"]
         )  # (height, width) -> (row, col)
         gdalinfo_stac["proj:shape"] = proj_shape
         gdalinfo_stac["proj:bbox"] = [0.0, 0.0, proj_shape[1], proj_shape[0]]
