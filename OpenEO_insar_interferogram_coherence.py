@@ -158,8 +158,8 @@ for pair in input_dict["InSAR_pairs"]:
     if not os.path.exists(output_filename_tmp):
         mst_date = parse_date(pair[0])
         slv_date = parse_date(pair[1])
-        phase_bandname = f'Phase_ifg_{input_dict["sub_swath"]}_VV_{mst_date.strftime("%d%b%Y")}_{slv_date.strftime("%d%b%Y")}'
-        coh_bandname = f'coh_{input_dict["sub_swath"]}_VV_{mst_date.strftime("%d%b%Y")}_{slv_date.strftime("%d%b%Y")}'
+        phase_bandname = f'Phase_ifg_{input_dict["sub_swath"]}_{input_dict["polarization"].upper()}_{mst_date.strftime("%d%b%Y")}_{slv_date.strftime("%d%b%Y")}'
+        coh_bandname = f'coh_{input_dict["sub_swath"]}_{input_dict["polarization"].upper()}_{mst_date.strftime("%d%b%Y")}_{slv_date.strftime("%d%b%Y")}'
 
         gpt_cmd = [
             "gpt",
