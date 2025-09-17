@@ -16,11 +16,12 @@ dependencies = [
     "exifread",
 ]
 
-[dependency-groups]
+[project.optional-dependencies]
 dev = [
     "pytest>=8.3.5",
     "pytest-cov>=6.2.1",
     "pytest-xdist",
+    "pytest-timeout",
     "PyYAML==5.3.1",
     "rioxarray>=0.13.0",
     "openeo",
@@ -40,3 +41,7 @@ profile = "black"
 [tool.ruff]
 line-length = 120
 target-version = "py310"
+
+[tool.pytest.ini_options]
+testpaths = "tests"
+timeout = 900

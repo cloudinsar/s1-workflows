@@ -25,13 +25,4 @@ jobs:
             -w /src \
             -e AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
             -e AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
-            openeo_insar python3 /src/OpenEO_insar_preprocessing.py
-
-      - name: Run OpenEO_insar_coherence
-        run: |
-          docker run --rm \
-            -v $(pwd):/src \
-            -w /src \
-            -e AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
-            -e AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
-            openeo_insar python3 /src/OpenEO_insar_coherence.py
+            openeo_insar pip install -e ".[dev]" && pytest

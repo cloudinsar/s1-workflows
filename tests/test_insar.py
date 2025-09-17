@@ -10,6 +10,7 @@ from testutils import *
 
 _log = logging.getLogger(__name__)
 
+sys.path.append(".")
 sys.path.append("..")
 from workflow_utils import *
 
