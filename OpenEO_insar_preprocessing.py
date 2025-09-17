@@ -88,7 +88,7 @@ for burst in bursts["value"]:
         "-p", input_dict["polarization"].lower(),
         "-s", str(input_dict["sub_swath"].lower()),
         "-r", str(input_dict["burst_id"]),
-        "-o", str(result_folder),
+        "-o", str(containing_folder),
     ]
     print(cmd)
     output = subprocess.check_output(cmd, cwd=containing_folder / "utilities", stderr=subprocess.STDOUT)

@@ -109,7 +109,7 @@ for burst in bursts["value"]:
         "-p", input_dict["polarization"].lower(),
         "-s", str(input_dict["sub_swath"].lower()),
         "-r", str(input_dict["burst_id"]),
-        "-o", str(result_folder),
+        "-o", str(containing_folder),
     ]
     _, output = exec_proc(
         cmd,
