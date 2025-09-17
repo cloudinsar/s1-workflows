@@ -1,10 +1,8 @@
+import base64
+import logging
 import sys
 
-import json
-
-import base64
-
-import logging
+import rioxarray
 
 from testutils import *
 
