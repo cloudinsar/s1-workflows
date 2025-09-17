@@ -19,7 +19,7 @@ jobs:
       with:
         python-version: 3.11
     - name: Install the project
-      run: uv sync --locked --dev
+      run: uv run pytest --disable-warnings
     # - name: Run pre-commit
     #   run: uv run pre-commit run --all-files
     - name: Test with pytest
