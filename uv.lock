@@ -1098,8 +1098,8 @@ dependencies = [
     { name = "urllib3" },
 ]
 
-[package.optional-dependencies]
-test = [
+[package.dev-dependencies]
+dev = [
     { name = "openeo" },
     { name = "pytest" },
     { name = "pytest-cov" },
@@ -1113,16 +1113,19 @@ requires-dist = [
     { name = "exifread" },
     { name = "jsonschema", specifier = "==4.23.0" },
     { name = "numpy" },
-    { name = "openeo", marker = "extra == 'test'" },
     { name = "pystac", specifier = "==1.14.0" },
-    { name = "pytest", marker = "extra == 'test'", specifier = ">=8.3.5" },
-    { name = "pytest-cov", marker = "extra == 'test'", specifier = ">=6.2.1" },
-    { name = "pytest-xdist", marker = "extra == 'test'" },
-    { name = "pyyaml", marker = "extra == 'test'", specifier = "==5.3.1" },
-    { name = "rioxarray", marker = "extra == 'test'", specifier = ">=0.13.0" },
     { name = "urllib3", specifier = "==2.5.0" },
 ]
-provides-extras = ["test"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "openeo" },
+    { name = "pytest", specifier = ">=8.3.5" },
+    { name = "pytest-cov", specifier = ">=6.2.1" },
+    { name = "pytest-xdist" },
+    { name = "pyyaml", specifier = "==5.3.1" },
+    { name = "rioxarray", specifier = ">=0.13.0" },
+]
 
 [[package]]
 name = "tomli"

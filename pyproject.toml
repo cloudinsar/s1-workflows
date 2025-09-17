@@ -16,8 +16,8 @@ dependencies = [
     "exifread",
 ]
 
-[project.optional-dependencies]
-test = [
+[dependency-groups]
+dev = [
     "pytest>=8.3.5",
     "pytest-cov>=6.2.1",
     "pytest-xdist",
