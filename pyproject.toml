@@ -24,6 +24,7 @@ dev = [
     "PyYAML==5.3.1",
     "rioxarray>=0.13.0",
     "openeo",
+    "Pillow",
 ]
 
 [tool.setuptools.packages.find]
