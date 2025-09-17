@@ -1,41 +1,34 @@
-import numpy as np
-import xarray
-from PIL import Image
-from pathlib import Path
+import logging
 import pytest
-from typing import Union
 import rioxarray
+from pathlib import Path
 
-repository_root = Path(__file__).parent.parent
+from testutils import *
+
+_log = logging.getLogger(__name__)
 
 
-def assert_xarray_equals(
-    xa1: Union[xarray.DataArray, np.ndarray],
-    xa2: Union[xarray.DataArray, np.ndarray],
-    max_nonmatch_ratio=0.01,
-    tolerance=1.0e-6,
-):
-    """
-    this function checks that only up to a portion of values do not match within tolerance
-    """
-    assert xa1.shape == xa2.shape
-    difference_ndarray = xa1 - 1.0 * xa2
-    shape = difference_ndarray.shape
-    shape = (1, shape[1], shape[2])
-    difference_ndarray_rgb = np.append(difference_ndarray, np.zeros(shape), axis=0).transpose(1, 2, 0).astype("|u1")
+@pytest.mark.skip(reason="TODO: Log into openEO backend")
+def test_preprocessing_against_openeo_backend(auto_title):
+    import openeo
 
-    im = Image.fromarray(difference_ndarray_rgb)
-    im.save("tmp_diff.tiff")
+    url = "https://openeo.dataspace.copernicus.eu"
+    connection = openeo.connect(url).authenticate_oidc()
 
-    significantly_different = abs(xa1 - 1.0 * xa2) > tolerance
-    assert significantly_different.mean().item() <= max_nonmatch_ratio
-    np.testing.assert_allclose(
-        xa2.where(~significantly_different),
-        xa2.where(~significantly_different),
-        rtol=0,
-        atol=tolerance,
-        equal_nan=True,
+    datacube = connection.datacube_from_process(
+        process_id="insar_preprocessing_v02",
+        burst_id=329488,
+        sub_swath="IW2",
+        temporal_extent=["2018-01-26", "2018-02-07"],
+        master_date="2018-01-28",
+        polarization="vh",
     )
+
+    datacube = datacube.save_result(format="GTiff")
+
+    job = datacube.create_job(title=auto_title)
+    job.start_and_wait()
+    job.get_results().download_files("tmp" + auto_title)
 
 
 @pytest.mark.skip(reason="TODO: Run against openEO backend to get result?")

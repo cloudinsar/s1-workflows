@@ -1,7 +1,6 @@
-from pathlib import Path
 import yaml
 
-repository_root = Path(__file__).parent.parent
+from testutils import *
 
 
 def test_cwl_syntax():

@@ -23,6 +23,7 @@ test = [
     "pytest-xdist",
     "PyYAML==5.3.1",
     "rioxarray>=0.13.0",
+    "openeo",
 ]
 
 [tool.setuptools.packages.find]
