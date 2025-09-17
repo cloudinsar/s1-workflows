@@ -92,7 +92,7 @@
       <sourceProduct refid="Coherence"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <selectedPolarisations>VV</selectedPolarisations>
+      <selectedPolarisations>${polarisation}</selectedPolarisations>
     </parameters>
   </node>
   <node id="Terrain-Correction">

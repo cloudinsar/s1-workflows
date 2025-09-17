@@ -1,7 +1,4 @@
 import logging
-import pytest
-import rioxarray
-from pathlib import Path
 
 from testutils import *
 
@@ -9,7 +6,7 @@ _log = logging.getLogger(__name__)
 
 
 @pytest.mark.skip(reason="TODO: Log into openEO backend")
-def test_coherence_against_openeo_backend(auto_title):
+def test_insar_coherence_against_openeo_backend(auto_title):
     import openeo
 
     url = "https://openeo.dataspace.copernicus.eu"

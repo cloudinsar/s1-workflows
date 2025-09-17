@@ -16,16 +16,25 @@ start_time = datetime.now()
 if len(sys.argv) > 1:
     input_dict = json.loads(base64.b64decode(sys.argv[1].encode("utf8")).decode("utf8"))
 else:
+    # input_dict = {
+    #     "message": "These are example arguments",
+    #     "burst_id": 249435,
+    #     "sub_swath": "IW2",
+    #     "InSAR_pairs": [
+    #         ["2024-08-09", "2024-08-21"],
+    #         ["2024-08-21", "2024-09-02"],
+    #         ["2024-09-02", "2024-09-14"],
+    #     ],
+    #     "polarization": "vv",
+    # }
     input_dict = {
-        "message": "These are example arguments",
-        "burst_id": 249435,
+        "message": "These are example arguments that match the preprocessing example",
+        "burst_id": 329488,
         "sub_swath": "IW2",
         "InSAR_pairs": [
-            ["2024-08-09", "2024-08-21"],
-            ["2024-08-21", "2024-09-02"],
-            ["2024-09-02", "2024-09-14"],
+            ["2018-01-28", "2018-02-03"],
         ],
-        "polarization": "vv",
+        "polarization": "vh",
     }
 if not input_dict.get("polarization"):
     input_dict["polarization"] = "vv"
@@ -145,10 +154,10 @@ for pair in input_dict["InSAR_pairs"]:
             f"-Pslv_filename={slv_filename}",
             f"-PcohWinRg={input_dict['coherence_window_rg']}",
             f"-PcohWinAz={input_dict['coherence_window_az']}",
+            f"-Ppolarisation={input_dict['polarization'].upper()}",
             f"-Poutput_filename={output_filename_tmp}",
         ]
-        print(gpt_cmd)
-        subprocess.check_call(gpt_cmd, stderr=subprocess.STDOUT)
+        exec_proc(gpt_cmd)
 
     output_filename = f"{result_folder}/S1_coh_2images_{date_from_burst(mst_filename)}_{date_from_burst(slv_filename)}.tif"
     asset_paths.append(output_filename)
