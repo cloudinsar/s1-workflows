@@ -16,6 +16,7 @@ start_time = datetime.now()
 if len(sys.argv) > 1:
     input_dict = json.loads(base64.b64decode(sys.argv[1].encode("utf8")).decode("utf8"))
 else:
+    # Takes about 30min to run
     input_dict = {
         "message": "These are example arguments",
         "burst_id": 249435,

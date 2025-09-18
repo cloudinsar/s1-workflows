@@ -8,7 +8,6 @@ import urllib.parse
 import urllib.request
 
 import simple_stac_builder
-import stac_catalog_builder_run
 import tiff_to_gtiff
 from workflow_utils import *
 
@@ -228,6 +227,7 @@ if input_dict["gdainfo_stac"]:
         date_regex=re.compile(r".*_(?P<date1>\d{8}(T\d{6})?)\.tif$"),
     )
 else:
+    import stac_catalog_builder_run
     stac_catalog_builder_run.main(
         result_folder,
         tiffs_glob="*2images_mst*.tif",

@@ -5,6 +5,8 @@ from PIL import Image
 from pathlib import Path
 from typing import Union
 
+import rioxarray
+
 repository_root = Path(__file__).parent.parent
 
 
@@ -35,6 +37,22 @@ def assert_xarray_equals(
         atol=tolerance,
         equal_nan=True,
     )
+
+
+def slugify(title):
+    title = title.lower().replace(" ", "_").replace(",", "_")
+    windows_characters = ["<", ">", ":", '"', "\\", "|", "?", "*", "[", "]"]
+    for char in windows_characters:
+        title = title.replace(char, "_")
+    title = title.strip("_").replace("__", "_")
+    return title
+
+
+def assert_tif_file_is_healthy(tif_path):
+    tiff_arr = rioxarray.open_rasterio(tif_path)
+    assert tiff_arr.shape[1] > 100
+    assert tiff_arr.shape[2] > 100
+    assert (tiff_arr.values != np.nan).any()
 
 
 @pytest.fixture
