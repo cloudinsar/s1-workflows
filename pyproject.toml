@@ -9,8 +9,8 @@ classifiers = [
     "Programming Language :: Python :: 3",
 ]
 dependencies = [
-    "pystac==1.14.0",
-    "urllib3==2.5.0",
+    "pystac>=1.14.0",
+    "urllib3>=2.5.0",
     "jsonschema==4.23.0",
     "numpy",
     "exifread",
@@ -26,6 +26,10 @@ dev = [
     "rioxarray>=0.13.0",
     "openeo",
     "Pillow",
+    # "openeo_driver",
+    # "openeo-geopyspark",
+    # "geopyspark-openeo",
+    # "openeo-geopyspark @ git+https://github.com/Open-EO/openeo-geopyspark-driver",
 ]
 
 [tool.setuptools.packages.find]

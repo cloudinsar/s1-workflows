@@ -5,8 +5,6 @@ import base64
 import logging
 import sys
 
-from openeogeotrellis.deploy.run_graph_locally import run_graph_locally
-
 from testutils import *
 
 _log = logging.getLogger(__name__)
@@ -55,6 +53,7 @@ def run_stac_catalog_and_verify(catalog_path: Path, tmp_dir: Path):
     }
     openeo_result = tmp_dir / ("openeo_result_" + catalog_path.stem)
     openeo_result.mkdir(exist_ok=True)
+    from openeogeotrellis.deploy.run_graph_locally import run_graph_locally
     run_graph_locally(process_graph, openeo_result)
 
     tiff_files_result = list(openeo_result.glob("*.tif"))
