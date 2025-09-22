@@ -1,35 +1,32 @@
 [project]
-name = "stac-catalog-builder"
+name = "s1-workflows"
 authors = []
 description = ""
 dynamic = ["version"]
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.8"
 classifiers = [
     "Programming Language :: Python :: 3",
 ]
 dependencies = [
-    "pystac>=1.14.0",
-    "urllib3>=2.5.0",
+    "pystac",
+    "urllib3",
     "jsonschema==4.23.0",
     "numpy",
     "exifread",
+    "GDAL>=3.8.4", # GDAL==`gdal-config --version` In docker image: 3.10.0
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=8.3.5",
-    "pytest-cov>=6.2.1",
+    "pytest-cov",
     "pytest-xdist",
     "pytest-timeout",
-    "PyYAML==5.3.1",
+    "PyYAML>=5.3.1",
     "rioxarray>=0.13.0",
-    "openeo",
     "Pillow",
-    # "openeo_driver",
-    # "openeo-geopyspark",
-    # "geopyspark-openeo",
-    # "openeo-geopyspark @ git+https://github.com/Open-EO/openeo-geopyspark-driver",
+    "xarray",
 ]
 
 [tool.setuptools.packages.find]

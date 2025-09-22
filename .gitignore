@@ -24,6 +24,8 @@ output
 S1A_SLC_*
 S1B_SLC_*
 tmp*
+openeo-geopyspark-driver/
+venv/
 
 # Jupyter Notebook
 .ipynb_checkpoints

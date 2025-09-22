@@ -108,7 +108,7 @@ def generate_catalog(
         crs_set.add(gdalinfo_stac["proj:epsg"])
         del gdalinfo_stac["proj:projjson"]  # remove verbose information
         del gdalinfo_stac["proj:wkt2"]  # remove verbose information
-        gdalinfo_stac["proj:epsg"]  # keep epsg, otherwise UTM is assumed
+        # keep "proj:epsg", otherwise UTM is assumed
         # if "proj:transform" in gdalinfo_stac:
         #     # might mess up x/y resolution, so remove
         #     del gdalinfo_stac["proj:transform"]

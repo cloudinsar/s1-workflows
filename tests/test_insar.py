@@ -62,7 +62,7 @@ def run_stac_catalog_and_verify(catalog_path: Path, tmp_dir: Path):
     assert_tif_file_is_healthy(tiff_files_result[0])
 
 
-# @pytest.mark.skip(reason="geotrellis.raster.GeoAttrsError: invalid cols: 0")
+# @pytest.mark.skip()
 @pytest.mark.parametrize(
     "script",
     ["OpenEO_insar_coherence.py"],
@@ -102,7 +102,7 @@ input_dict_2018_vh_preprocessing = {
 }
 
 
-# @pytest.mark.skip(reason="geotrellis.raster.GeoAttrsError: invalid cols: 0")
+@pytest.mark.skip()
 @pytest.mark.parametrize(
     "input_dict",
     [input_dict_2018_vh_preprocessing],
