@@ -5,6 +5,7 @@
 
 # get containing folder:
 cd "$(dirname "$0")"
+# TODO: Make get-jars available as package script, so not the whole repo needs to be downloaded
 git clone --recursive https://github.com/Open-EO/openeo-geopyspark-driver --depth 1
 cd openeo-geopyspark-driver
 python scripts/get-jars.py --force-download jars

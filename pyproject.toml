@@ -14,7 +14,7 @@ dependencies = [
     "jsonschema==4.23.0",
     "numpy",
     "exifread",
-    "GDAL>=3.8.4", # GDAL==`gdal-config --version` In docker image: 3.10.0
+    #  "GDAL",  # Installed depending on version in os
 ]
 
 [project.optional-dependencies]
