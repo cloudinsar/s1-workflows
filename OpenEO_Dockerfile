@@ -84,9 +84,17 @@ RUN python3 -m venv /opt/venv && \
 ENV PATH="${PATH}:/src/"
 
 RUN cd /opt && \
-    git clone --recursive https://github.com/VitoTAP/stac-catalog-builder.git && \
+    git clone --recursive https://github.com/VitoTAP/stac-catalog-builder.git --depth 1 && \
     cd stac-catalog-builder && \
     python3 -m pip install -q -e .
+
+# for testing:
+RUN cd /opt && \
+    git clone --recursive https://github.com/Open-EO/openeo-geopyspark-driver --depth 1 && \
+    python3 -m pip install setuptools==64 && echo "setuptools to fix jep" && \
+    cd /opt/openeo-geopyspark-driver && \
+    git pull && git submodule update --init --recursive && \
+    python3 -m pip install -e .[dev] --extra-index-url https://artifactory.vgt.vito.be/api/pypi/python-openeo/simple
 
 RUN wget https://step.esa.int/thirdparties/snaphu/1.4.2-2/snaphu-v1.4.2_linux.zip && unzip -q -d / snaphu-v1.4.2_linux.zip
 ENV PATH="$PATH:/snaphu-v1.4.2_linux/bin"
@@ -95,6 +103,7 @@ ENV PATH="$PATH:/snaphu-v1.4.2_linux/bin"
 COPY ./utilities /src/utilities/
 COPY ./notebooks/graphs /src/notebooks/graphs/
 COPY *.py /src/
+COPY *.sh /src/
 COPY *.json /src/
 
 
