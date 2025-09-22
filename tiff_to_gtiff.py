@@ -74,9 +74,9 @@ def tiff_to_gtiff(input_path, output_path, band_names=None):
 
     projection_in: str = ds_in.GetProjection()
     if (
-        '["EPSG","4326"]' in projection_in
-        and transform_in == [0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
-        and (ds_in.RasterXSize > 360 or ds_in.RasterYSize > 90)
+            '["EPSG","4326"]' in projection_in  # default
+            and transform_in == [0.0, 1.0, 0.0, 0.0, 0.0, 1.0]  # meaning no geotransform
+            and (ds_in.RasterXSize > 360 or ds_in.RasterYSize > 90)
     ):
         # set CRS to webmercator, to avoid pixels going out of the CRS bounds:
         ds_out.SetProjection("EPSG:3857")
@@ -86,10 +86,14 @@ def tiff_to_gtiff(input_path, output_path, band_names=None):
 
 
 if __name__ == "__main__":
+    from tests.testutils import assert_tif_file_is_healthy
+
+    assert_tif_file_is_healthy("tmp_mst_20180128T062713.tif")
     tiff_to_gtiff(
-        "S1_coh_2images_20240821T170739_20240902T170739.tif",
-        "S1_coh_2images_20240821T170739_20240902T170739.test.tif",
-        # "tmp_mst_20180128T062713.tif",
-        # "tmp_mst_20180128T062713.test.tif",
+        # "S1_coh_2images_20240821T170739_20240902T170739.tif",
+        # "S1_coh_2images_20240821T170739_20240902T170739.test.tif",
+        "tmp_mst_20180128T062713.tif",
+        "tmp_mst_20180128T062713.test.tif",
         band_names=[""],
     )
+    assert_tif_file_is_healthy("tmp_mst_20180128T062713.test.tif")

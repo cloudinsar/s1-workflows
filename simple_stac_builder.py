@@ -106,19 +106,30 @@ def generate_catalog(
             collection_stac["cube:dimensions"]["bands"]["values"] = band_names
 
         crs_set.add(gdalinfo_stac["proj:epsg"])
-        # del gdalinfo_stac["proj:projjson"]  # remove verbose information
-        # del gdalinfo_stac["proj:wkt2"]  # remove verbose information
-        # del gdalinfo_stac["proj:epsg"]  # might mess up x/y resolution, so remove
+        del gdalinfo_stac["proj:projjson"]  # remove verbose information
+        del gdalinfo_stac["proj:wkt2"]  # remove verbose information
+        gdalinfo_stac["proj:epsg"]  # keep epsg, otherwise UTM is assumed
         # if "proj:transform" in gdalinfo_stac:
         #     # might mess up x/y resolution, so remove
         #     del gdalinfo_stac["proj:transform"]
-        proj_shape = list(
-            gdalinfo_stac["proj:shape"]
-        )  # (height, width) -> (row, col)
-        gdalinfo_stac["proj:shape"] = proj_shape
-        gdalinfo_stac["proj:bbox"] = [0.0, 0.0, proj_shape[1], proj_shape[0]]
+        proj_shape = list(gdalinfo_stac["proj:shape"])
+        # https://github.com/stac-extensions/projection?tab=readme-ov-file#projshape
+        gdalinfo_stac["proj:shape"] = [proj_shape[1], proj_shape[0]]
         gdalinfo_stac["href"] = "./" + str(Path(file).relative_to(stac_root))
         coordinates = data_gdalinfo_from_subprocess["wgs84Extent"]["coordinates"]
+        latlon_bbox = [
+                min([c[0] for polygon in coordinates for c in polygon]),
+                min([c[1] for polygon in coordinates for c in polygon]),
+                max([c[0] for polygon in coordinates for c in polygon]),
+                max([c[1] for polygon in coordinates for c in polygon]),
+            ]
+        if gdalinfo_stac["proj:epsg"] == 3857:
+            gdalinfo_stac["proj:bbox"] = [0.0, 0.0, proj_shape[0], proj_shape[1]]
+        elif gdalinfo_stac["proj:epsg"] == 4326:
+            gdalinfo_stac["proj:bbox"] = latlon_bbox
+        else:
+            raise ValueError("Unhandled epsg: " + str(gdalinfo_stac["proj:epsg"]))
+
         # assemble with application-specific data:
         stac = {
             "type": "Feature",
@@ -128,12 +139,7 @@ def generate_catalog(
                 "type": "Polygon",
                 "coordinates": coordinates,
             },
-            "bbox": [
-                min([c[0] for polygon in coordinates for c in polygon]),
-                min([c[1] for polygon in coordinates for c in polygon]),
-                max([c[0] for polygon in coordinates for c in polygon]),
-                max([c[1] for polygon in coordinates for c in polygon]),
-            ],
+            "bbox": latlon_bbox,
             "properties": {
                 "datetime": date1,  # master date
                 # TODO: Get those values out of burst extraction:
@@ -161,7 +167,7 @@ def generate_catalog(
             stac["properties"]["sar:datetime_slave"] = date2
 
         collection_stac["extent"]["spatial"]["bbox"][0] = union_aabbox(
-            collection_stac["extent"]["spatial"]["bbox"][0], stac["bbox"]
+            collection_stac["extent"]["spatial"]["bbox"][0], latlon_bbox
         )
 
         stac_item_filename = str(file) + ".json"
@@ -176,16 +182,21 @@ def generate_catalog(
             }
         )
 
-    collection_stac["cube:dimensions"]["x"]["extent"] = [
-        collection_stac["extent"]["spatial"]["bbox"][0][0],
-        collection_stac["extent"]["spatial"]["bbox"][0][2],
-    ]
-    collection_stac["cube:dimensions"]["y"]["extent"] = [
-        collection_stac["extent"]["spatial"]["bbox"][0][1],
-        collection_stac["extent"]["spatial"]["bbox"][0][3],
-    ]
     if len(crs_set) == 1:
         crs = next(iter(crs_set))
+
+        if crs == 4326:
+            # Only set extent when native crs is latlon
+            # Because there might be some mixups where extent should be in native CRS or always in latlon
+            collection_stac["cube:dimensions"]["x"]["extent"] = [
+                collection_stac["extent"]["spatial"]["bbox"][0][0],
+                collection_stac["extent"]["spatial"]["bbox"][0][2],
+            ]
+            collection_stac["cube:dimensions"]["y"]["extent"] = [
+                collection_stac["extent"]["spatial"]["bbox"][0][1],
+                collection_stac["extent"]["spatial"]["bbox"][0][3],
+            ]
+
         collection_stac["cube:dimensions"]["x"]["reference_system"] = crs
         collection_stac["cube:dimensions"]["y"]["reference_system"] = crs
     else:
@@ -219,23 +230,23 @@ if __name__ == "__main__":
     else:
         print("Using debug arguments!")
         # generate_catalog(Path("./output"))
-        generate_catalog(
-            stac_root=Path("."),
-            files=[
-                "S1_coh_2images_20240809T170739_20240821T170739.tif",
-                "S1_coh_2images_20240809T170739_20240902T170739.tif",
-            ],
-            collection_filename="S1_2images_collection.json",
-            date_regex=re.compile(
-                "S1_coh_2images_(?P<date1>\\d{8}T\\d{6})_(?P<date2>\\d{8}T\\d{6}).tif$"
-            ),
-        )
-
         # generate_catalog(
-        #     Path("."),
-        #     files=["S1_2images_20240809T170739.tif"],
-        #     collection_filename="S1_2images_collection_master.json",
-        #     date_regex=re.compile(r".*_(?P<date1>\d{8}(T\d{6})?)\.tif$"),
+        #     stac_root=Path("."),
+        #     files=[
+        #         "S1_coh_2images_20240809T170739_20240821T170739.tif",
+        #         "S1_coh_2images_20240809T170739_20240902T170739.tif",
+        #     ],
+        #     collection_filename="S1_2images_collection.json",
+        #     date_regex=re.compile(
+        #         "S1_coh_2images_(?P<date1>\\d{8}T\\d{6})_(?P<date2>\\d{8}T\\d{6}).tif$"
+        #     ),
         # )
+
+        generate_catalog(
+            Path("."),
+            files=["tmp_mst_20180128T062713.test.tif"],
+            collection_filename="tmp_mst_20180128T062713.test.tif.collection.json",
+            date_regex=re.compile(r".*_(?P<date1>\d{8}(T\d{6})?).*\.tif$"),
+        )
         # generate_catalog(Path("."), date_regex=re.compile(r".*_(?P<date1>\d{8}T\d{6}).nc$"))
     print("done")
