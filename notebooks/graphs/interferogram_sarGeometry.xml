@@ -53,7 +53,7 @@
       <sourceProduct.1 refid="Apply-Orbit-File(2)"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <demName>SRTM 1Sec HGT</demName>
+      <demName>Copernicus 30m Global DEM</demName>
       <demResamplingMethod>BILINEAR_INTERPOLATION</demResamplingMethod>
       <externalDEMFile/>
       <externalDEMNoDataValue>0.0</externalDEMNoDataValue>
@@ -88,7 +88,7 @@
       <cohWinRg>${cohWinRg}</cohWinRg>
       <squarePixel>false</squarePixel>
       <subtractTopographicPhase>true</subtractTopographicPhase>
-      <demName>SRTM 1Sec HGT</demName>
+      <demName>Copernicus 30m Global DEM</demName>
       <externalDEMFile/>
       <externalDEMNoDataValue>0.0</externalDEMNoDataValue>
       <externalDEMApplyEGM>true</externalDEMApplyEGM>
@@ -105,7 +105,7 @@
       <sourceProduct refid="Multilook"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <alpha>0.3</alpha>
+      <alpha>0.5</alpha>
       <FFTSizeString>64</FFTSizeString>
       <windowSizeString>3</windowSizeString>
       <useCoherenceMask>false</useCoherenceMask>
