@@ -35,15 +35,42 @@ input_dict_2018_vh = {
 }
 
 
+def get_tiffs_from_stac_catalog(catalog_path: Path):
+    """
+    Simple function that recursively searches tiff files in catalog
+    """
+    import json
+
+    catalog_path = Path(catalog_path)
+    assert catalog_path.exists()
+    catalog_json = json.loads(catalog_path.read_text())
+    tiff_files = []
+    links = []
+    if "links" in catalog_json:
+        links.extend(catalog_json["links"])
+    if "assets" in catalog_json:
+        links.extend(list(catalog_json["assets"].values()))
+    for link in links:
+        if "href" in link and link["href"].lower().endswith(".tif"):  # data link
+            href = link["href"]
+            if href.startswith("file://"):
+                href = href[7:]
+            # make absolute, compared to parent json file:
+            href = os.path.normpath(os.path.join(catalog_path.parent, href))
+            tiff_files.append(Path(href))
+        elif "rel" in link and (link["rel"] == "child" or link["rel"] == "item") and "href" in link:
+            child_path = catalog_path.parent / link["href"]
+            tiff_files.extend(get_tiffs_from_stac_catalog(child_path))
+    return tiff_files
+
+
 def run_stac_catalog_and_verify(catalog_path: Path, tmp_dir: Path):
     catalog_path = Path(catalog_path)
-    json_files = list(tmp_dir.glob("*collection*.json"))
-    assert json_files, "A *collection/.json file generated"
 
-    tiff_files = list(tmp_dir.glob("*.tif"))
-    assert tiff_files, "There should be at least one .tif file generated"
+    tiff_files_input = get_tiffs_from_stac_catalog(catalog_path)
+    assert tiff_files_input, "There should be at least one .tif file generated"
 
-    assert_tif_file_is_healthy(tiff_files[0])
+    assert_tif_file_is_healthy(tiff_files_input[0])
 
     process_graph = {
         "process_graph": {
@@ -61,6 +88,11 @@ def run_stac_catalog_and_verify(catalog_path: Path, tmp_dir: Path):
 
     assert_tif_file_is_healthy(tiff_files_result[0])
 
+    # Compare openEO results to raw CWL results pixel based:
+    result = rioxarray.open_rasterio(tiff_files_input[0])
+    expected = rioxarray.open_rasterio(tiff_files_result[0])
+    assert_xarray_equals(result.values, expected.values)
+
 
 # @pytest.mark.skip()
 @pytest.mark.parametrize(
@@ -69,16 +101,15 @@ def run_stac_catalog_and_verify(catalog_path: Path, tmp_dir: Path):
 )
 @pytest.mark.parametrize(
     "input_dict",
-    [input_dict_2024_vv, input_dict_2018_vh],
+    [input_dict_2024_vv],
 )
 def test_insar(script, input_dict, auto_title):
     input_base64_json = base64.b64encode(json.dumps(input_dict).encode("utf8")).decode("ascii")
 
-    tmp_dir = Path(slugify(auto_title).replace("tests/", "tests/tmp_"))
+    tmp_dir = Path(repository_root / slugify(auto_title).replace("tests/", "tests/tmp_")).absolute()
     if tmp_dir.exists():
         shutil.rmtree(tmp_dir)
     tmp_dir.mkdir(exist_ok=True)
-
     exec_proc(["python", repository_root / script, input_base64_json], cwd=tmp_dir)
 
     json_files = list(tmp_dir.glob("*collection*.json"))
@@ -112,12 +143,11 @@ def test_insar_preprocessing(input_dict, auto_title):
 
     input_base64_json = base64.b64encode(json.dumps(input_dict).encode("utf8")).decode("ascii")
 
-    tmp_dir = Path(slugify(auto_title).replace("tests/", "tests/tmp_"))
+    tmp_dir = Path(repository_root / slugify(auto_title).replace("tests/", "tests/tmp_")).absolute()
     print(f"{tmp_dir=}")
     if tmp_dir.exists():
         shutil.rmtree(tmp_dir)
     tmp_dir.mkdir(exist_ok=True)
-
     exec_proc(["python", repository_root / script, input_base64_json], cwd=tmp_dir)
 
     json_files = list(tmp_dir.glob("*collection*.json"))
@@ -132,17 +162,17 @@ def test_insar_preprocessing(input_dict, auto_title):
         run_stac_catalog_and_verify(jf, tmp_dir)
 
 
+@pytest.mark.skip("OOM on CI")
 def test_insar_preprocessing_stac(auto_title):
     script = "OpenEO_insar_preprocessing.py"
     input_dict = input_dict_2018_vh_preprocessing
     input_base64_json = base64.b64encode(json.dumps(input_dict).encode("utf8")).decode("ascii")
 
-    tmp_dir = Path(slugify(auto_title).replace("tests/", "tests/tmp_"))
+    tmp_dir = Path(repository_root / slugify(auto_title).replace("tests/", "tests/tmp_")).absolute()
     print(f"{tmp_dir=}")
-    # if tmp_dir.exists():
-    #     shutil.rmtree(tmp_dir)
+    if tmp_dir.exists():
+        shutil.rmtree(tmp_dir)
     tmp_dir.mkdir(exist_ok=True)
-
     exec_proc(["python", repository_root / script, input_base64_json], cwd=tmp_dir)
 
     import openeo

@@ -31,17 +31,15 @@ def test_insar_preprocessing_v02_against_openeo_backend(auto_title):
 
 @pytest.mark.skip(reason="TODO: Run against openEO backend to get result?")
 def test_compare_raw_with_result():
-    expected_result = Path(repository_root / "tmp_slv_20180203T062631.tif")
-    actual_result = Path(
-        "/home/emile/openeo/VITO/VITO2025/cwl_testing/out-2025-09-16_11_02_49.397206_cwl_insar_preprocessing_test_py/openEO_2018-02-03Z.tif"
-    )
+    expect_result = Path(repository_root / "tests/tmp_test_insar.py_test_insar_preprocessing_input_dict0/S1_2images_slv_20180203T062631.tif")
+    actual_result = Path(repository_root / "tests/tmp_test_insar.py_test_insar_preprocessing_input_dict0/openeo_result_S1_2images_collection_slaves/openEO_2018-02-03Z.tif")
     assert actual_result.exists()
     result = rioxarray.open_rasterio(actual_result)
     # keep only first 2 bands:
     result = result.isel(band=slice(0, 2))
     result = result.values
 
-    assert expected_result.exists()
-    expected = rioxarray.open_rasterio(expected_result)
+    assert expect_result.exists()
+    expected = rioxarray.open_rasterio(expect_result)
     expected = expected.values
     assert_xarray_equals(result, expected)
