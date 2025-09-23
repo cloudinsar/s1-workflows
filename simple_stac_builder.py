@@ -78,6 +78,12 @@ def generate_catalog(
         else:
             date2 = None
 
+        gdal_version = subprocess.check_output(["gdalinfo", "--version"], timeout=60, text=True).strip()
+        # gdal_version = "GDAL 3.8.4, released 2024/02/08"  # example
+        gdal_released = datetime.strptime(gdal_version.split("released ")[1], "%Y/%m/%d").date()
+        # https://github.com/osgeo/gdal/issues/9337
+        gdal_patch_date = datetime.strptime("2024/03/03", "%Y/%m/%d").date()
+
         # get general metadata with gdalinfo:
         cmd = ["gdalinfo", str(file), "-json", "--config", "GDAL_IGNORE_ERRORS", "ALL"]
         out = subprocess.check_output(cmd, timeout=1800, text=True)
@@ -113,8 +119,12 @@ def generate_catalog(
         #     # might mess up x/y resolution, so remove
         #     del gdalinfo_stac["proj:transform"]
         proj_shape = list(gdalinfo_stac["proj:shape"])
+        if gdal_released < gdal_patch_date:
+            # old gdalinfo is reversed
+            proj_shape = list(reversed(proj_shape))
+
         # https://github.com/stac-extensions/projection?tab=readme-ov-file#projshape
-        gdalinfo_stac["proj:shape"] = [proj_shape[1], proj_shape[0]]
+        gdalinfo_stac["proj:shape"] = proj_shape
         gdalinfo_stac["href"] = "./" + str(Path(file).relative_to(stac_root))
         coordinates = data_gdalinfo_from_subprocess["wgs84Extent"]["coordinates"]
         latlon_bbox = [
@@ -124,7 +134,8 @@ def generate_catalog(
                 max([c[1] for polygon in coordinates for c in polygon]),
             ]
         if gdalinfo_stac["proj:epsg"] == 3857:
-            gdalinfo_stac["proj:bbox"] = [0.0, 0.0, proj_shape[0], proj_shape[1]]
+            # special case webmercator:
+            gdalinfo_stac["proj:bbox"] = [0.0, 0.0, proj_shape[1], proj_shape[0]]
         elif gdalinfo_stac["proj:epsg"] == 4326:
             gdalinfo_stac["proj:bbox"] = latlon_bbox
         else:

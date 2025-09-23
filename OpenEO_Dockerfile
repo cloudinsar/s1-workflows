@@ -102,8 +102,8 @@ RUN cd /opt/openeo-geopyspark-driver && \
 
 # TODO: Make get-jars available as package script, so not the whole repo needs to be downloaded
 RUN cd /opt/openeo-geopyspark-driver && \
-python3 -m pip install -e . --extra-index-url https://artifactory.vgt.vito.be/api/pypi/python-openeo/simple && \
-    python scripts/get-jars.py --force-download jars && \
+    python3 -m pip install -e . --extra-index-url https://artifactory.vgt.vito.be/api/pypi/python-openeo/simple && \
+    python3 scripts/get-jars.py --force-download jars && \
     echo "openeo-geopyspark-driver installed for testing"
 
 RUN wget https://step.esa.int/thirdparties/snaphu/1.4.2-2/snaphu-v1.4.2_linux.zip && unzip -q -d / snaphu-v1.4.2_linux.zip

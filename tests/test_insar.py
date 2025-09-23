@@ -102,7 +102,7 @@ input_dict_2018_vh_preprocessing = {
 }
 
 
-@pytest.mark.skip()
+# @pytest.mark.skip()
 @pytest.mark.parametrize(
     "input_dict",
     [input_dict_2018_vh_preprocessing],

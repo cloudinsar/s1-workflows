@@ -157,7 +157,7 @@ for pair in input_dict["InSAR_pairs"]:
             f"-Ppolarisation={input_dict['polarization'].upper()}",
             f"-Poutput_filename={output_filename_tmp}",
         ]
-        exec_proc(gpt_cmd)
+        exec_proc(gpt_cmd, write_output=False)
 
     output_filename = f"{result_folder}/S1_coh_2images_{date_from_burst(mst_filename)}_{date_from_burst(slv_filename)}.tif"
     asset_paths.append(output_filename)
