@@ -13,27 +13,6 @@ sys.path.append(".")
 sys.path.append("..")
 from workflow_utils import *
 
-input_dict_2024_vv = {
-    "InSAR_pairs": [["2024-08-09", "2024-08-21"]],
-    "burst_id": 249435,
-    "coherence_window_az": 2,
-    "coherence_window_rg": 10,
-    "n_az_looks": 1,
-    "n_rg_looks": 4,
-    "polarization": "vv",
-    "sub_swath": "IW2",
-}
-input_dict_2018_vh = {
-    "InSAR_pairs": [["2018-01-28", "2018-02-03"]],
-    "burst_id": 329488,
-    "coherence_window_az": 2,
-    "coherence_window_rg": 10,
-    "n_az_looks": 1,
-    "n_rg_looks": 4,
-    "polarization": "vh",
-    "sub_swath": "IW2",
-}
-
 
 def get_tiffs_from_stac_catalog(catalog_path: Path):
     """
@@ -81,6 +60,7 @@ def run_stac_catalog_and_verify(catalog_path: Path, tmp_dir: Path):
     openeo_result = tmp_dir / ("openeo_result_" + catalog_path.stem)
     openeo_result.mkdir(exist_ok=True)
     from openeogeotrellis.deploy.run_graph_locally import run_graph_locally
+
     run_graph_locally(process_graph, openeo_result)
 
     tiff_files_result = list(openeo_result.glob("*.tif"))
@@ -122,15 +102,6 @@ def test_insar(script, input_dict, auto_title):
 
     for jf in json_files:
         run_stac_catalog_and_verify(jf, tmp_dir)
-
-
-input_dict_2018_vh_preprocessing = {
-    "burst_id": 329488,
-    "master_date": "2018-01-28",
-    "polarization": "vh",
-    "sub_swath": "IW2",
-    "temporal_extent": ["2018-01-26", "2018-02-07"],
-}
 
 
 # @pytest.mark.skip()
@@ -176,22 +147,17 @@ def test_insar_preprocessing_stac(auto_title):
     exec_proc(["python", repository_root / script, input_base64_json], cwd=tmp_dir)
 
     import openeo
+
     stac_root_master = Path(tmp_dir / "S1_2images_collection_master.json").absolute()
     stac_root_slaves = Path(tmp_dir / "S1_2images_collection_slaves.json").absolute()
     assert stac_root_master.exists()
     assert stac_root_slaves.exists()
 
-    datacube_master = openeo.DataCube.load_stac(
-        url=str(stac_root_master), bands=["grid_lat", "grid_lon"]
-    )
+    datacube_master = openeo.DataCube.load_stac(url=str(stac_root_master), bands=["grid_lat", "grid_lon"])
     datacube_master = datacube_master.reduce_dimension(reducer="max", dimension="t")
-    datacube_slaves = openeo.DataCube.load_stac(
-        url=str(stac_root_slaves), bands=["i_VH", "q_VH"]
-    )
+    datacube_slaves = openeo.DataCube.load_stac(url=str(stac_root_slaves), bands=["i_VH", "q_VH"])
     datacube = datacube_slaves.merge_cubes(datacube_master)
-    datacube = datacube.resample_spatial(
-        resolution=1, projection="EPSG:3857"  # webmercator
-    )
+    datacube = datacube.resample_spatial(resolution=1, projection="EPSG:3857")  # webmercator
 
     # datacube = datacube.rename_labels(dimension="t", target=['2018-01-28_2018-02-03'])
     datacube = datacube.reduce_dimension(dimension="t", reducer="mean")

@@ -3,7 +3,7 @@ class: CommandLineTool
 baseCommand: /src/OpenEO_insar_preprocessing.py
 requirements:
   DockerRequirement:
-    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.22
+    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.24
 inputs:
   input_base64_json:
     type: string

@@ -9,12 +9,42 @@ import rioxarray
 
 repository_root = Path(__file__).parent.parent
 
+input_dict_2024_vv = {
+    "InSAR_pairs": [["2024-08-09", "2024-08-21"]],
+    "burst_id": 249435,
+    "coherence_window_az": 2,
+    "coherence_window_rg": 10,
+    "n_az_looks": 1,
+    "n_rg_looks": 4,
+    "polarization": "vv",
+    "sub_swath": "IW2",
+}
+
+input_dict_2018_vh = {
+    "InSAR_pairs": [["2018-01-28", "2018-02-03"]],
+    "burst_id": 329488,
+    "coherence_window_az": 2,
+    "coherence_window_rg": 10,
+    "n_az_looks": 1,
+    "n_rg_looks": 4,
+    "polarization": "vh",
+    "sub_swath": "IW2",
+}
+
+input_dict_2018_vh_preprocessing = {
+    "temporal_extent": ["2018-01-26", "2018-02-07"],
+    "master_date": "2018-01-28",
+    "burst_id": 329488,
+    "polarization": "vh",
+    "sub_swath": "IW2",
+}
+
 
 def assert_xarray_equals(
-        xa1: Union[xarray.DataArray, np.ndarray],
-        xa2: Union[xarray.DataArray, np.ndarray],
-        max_nonmatch_ratio=0.01,
-        tolerance=1.0e-6,
+    xa1: Union[xarray.DataArray, np.ndarray],
+    xa2: Union[xarray.DataArray, np.ndarray],
+    max_nonmatch_ratio=0.01,
+    tolerance=1.0e-6,
 ):
     """
     this function checks that only up to a portion of values do not match within tolerance
@@ -27,7 +57,7 @@ def assert_xarray_equals(
         band_slice_shape: tuple = (
             3 - difference_ndarray.shape[0],
             difference_ndarray.shape[1],
-            difference_ndarray.shape[2]
+            difference_ndarray.shape[2],
         )
         difference_ndarray = np.append(difference_ndarray, np.zeros(band_slice_shape), axis=0)
         difference_ndarray_rgb = difference_ndarray.transpose(1, 2, 0).astype("|u1")
