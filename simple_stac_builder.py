@@ -37,7 +37,7 @@ def generate_catalog(
             "bands": {"type": "bands"},
         },
         "extent": {
-            "spatial": {"bbox": [[9999, 9999, -9999, -9999]]},
+            "spatial": {"bbox": [[float("inf"), float("inf"), -float("inf"), -float("inf")]]},
             "temporal": {
                 "interval": [["9999-12-30T23:59:59Z", "0001-01-01T00:00:00Z"]]
             },
@@ -53,6 +53,8 @@ def generate_catalog(
         raise ValueError("Invalid files parameter: " + str(files))
 
     crs_set = set()
+    native_x_extent = [float("inf"), -float("inf")]
+    native_y_extent = [float("inf"), -float("inf")]
     tiff_files = [Path(file) for file in tiff_files]
     for file in tiff_files:
         print(file)
@@ -133,13 +135,21 @@ def generate_catalog(
                 max([c[0] for polygon in coordinates for c in polygon]),
                 max([c[1] for polygon in coordinates for c in polygon]),
             ]
+        native_coordinates = data_gdalinfo_from_subprocess["cornerCoordinates"]
+        # Can not use lowerLeft and upperRight directly, as min is not always lower left.
+        native_bbox = [
+            min([c[0] for c in native_coordinates.values()]),
+            min([c[1] for c in native_coordinates.values()]),
+            max([c[0] for c in native_coordinates.values()]),
+            max([c[1] for c in native_coordinates.values()]),
+        ]
         if gdalinfo_stac["proj:epsg"] == 3857:
             # special case webmercator:
             gdalinfo_stac["proj:bbox"] = [0.0, 0.0, proj_shape[1], proj_shape[0]]
         elif gdalinfo_stac["proj:epsg"] == 4326:
             gdalinfo_stac["proj:bbox"] = latlon_bbox
         else:
-            print("Unhandled epsg: " + str(gdalinfo_stac["proj:epsg"]))
+            gdalinfo_stac["proj:bbox"] = native_bbox
 
         # assemble with application-specific data:
         stac = {
@@ -181,6 +191,9 @@ def generate_catalog(
             collection_stac["extent"]["spatial"]["bbox"][0], latlon_bbox
         )
 
+        native_x_extent = union_extents(native_x_extent, [native_bbox[0], native_bbox[2]])
+        native_y_extent = union_extents(native_y_extent, [native_bbox[1], native_bbox[3]])
+
         stac_item_filename = str(file) + ".json"
         with open(stac_item_filename, "w") as f:
             json.dump(stac, f, indent=2)
@@ -195,21 +208,11 @@ def generate_catalog(
 
     if len(crs_set) == 1:
         crs = next(iter(crs_set))
-
-        if crs == 4326:
-            # Only set extent when native crs is latlon
-            # Because there might be some mixups where extent should be in native CRS or always in latlon
-            collection_stac["cube:dimensions"]["x"]["extent"] = [
-                collection_stac["extent"]["spatial"]["bbox"][0][0],
-                collection_stac["extent"]["spatial"]["bbox"][0][2],
-            ]
-            collection_stac["cube:dimensions"]["y"]["extent"] = [
-                collection_stac["extent"]["spatial"]["bbox"][0][1],
-                collection_stac["extent"]["spatial"]["bbox"][0][3],
-            ]
-
         collection_stac["cube:dimensions"]["x"]["reference_system"] = crs
         collection_stac["cube:dimensions"]["y"]["reference_system"] = crs
+        # https://github.com/stac-extensions/datacube?tab=readme-ov-file#horizontal-spatial-raster-dimension-object
+        collection_stac["cube:dimensions"]["x"]["extent"] = native_x_extent
+        collection_stac["cube:dimensions"]["y"]["extent"] = native_y_extent
     else:
         print("multiple crs detected, can't set crs in stac root: " + str(crs_set))
 
@@ -231,7 +234,7 @@ def generate_catalog(
         print("pystac validation successful")
     except Exception as e:
         print("pystac validation failed: " + str(e))
-        print("Reproduce error with:")
+        print("Reproduce validation error with:")
         print(function_call_str)
 
 
