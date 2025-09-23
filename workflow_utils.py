@@ -1,3 +1,5 @@
+import math
+
 import json
 import os
 import re
@@ -35,6 +37,20 @@ def parse_date(date_str: str) -> datetime:
     except ValueError:
         pass
     return datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+
+
+def union_extents(a: list, b: list) -> list:
+    """
+    Union of two extents [minx, miny, maxx, maxy].
+    """
+    assert len(a) == 2
+    assert len(b) == 2
+    # check if not infinite first
+    if not math.isinf(a[0]) and not math.isinf(a[1]):
+        assert a[0] <= a[1], "Invalid extent: " + str(a)
+    if not math.isinf(b[0]) and not math.isinf(b[1]):
+        assert b[0] <= b[1], "Invalid extent: " + str(b)
+    return [min(a[0], b[0]), max(a[1], b[1])]
 
 
 def union_aabbox(a: list, b: list) -> list:
