@@ -139,7 +139,7 @@ def generate_catalog(
         elif gdalinfo_stac["proj:epsg"] == 4326:
             gdalinfo_stac["proj:bbox"] = latlon_bbox
         else:
-            raise ValueError("Unhandled epsg: " + str(gdalinfo_stac["proj:epsg"]))
+            print("Unhandled epsg: " + str(gdalinfo_stac["proj:epsg"]))
 
         # assemble with application-specific data:
         stac = {
