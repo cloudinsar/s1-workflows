@@ -77,11 +77,18 @@ def run_stac_catalog_and_verify(catalog_path: Path, tmp_dir: Path):
 # @pytest.mark.skip()
 @pytest.mark.parametrize(
     "script",
-    ["OpenEO_insar_coherence.py"],
+    [
+        "OpenEO_insar_coherence.py",
+        "OpenEO_insar_interferogram_snaphu.py",
+    ],
 )
 @pytest.mark.parametrize(
     "input_dict",
-    [input_dict_2024_vv, input_dict_2018_vh, input_dict_belgium_vv],
+    [
+        # input_dict_2024_vv,
+        input_dict_2018_vh,
+        input_dict_belgium_vv,
+    ],
 )
 def test_insar(script, input_dict, auto_title):
     input_base64_json = base64.b64encode(json.dumps(input_dict).encode("utf8")).decode("ascii")

@@ -138,8 +138,8 @@ for pair in input_dict["InSAR_pairs"]:
     )
 
     if not os.path.exists(result_path):
-        phase_bandname = f'Phase_ifg_{input_dict["sub_swath"]}_VV_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
-        coh_bandname = f'coh_{input_dict["sub_swath"]}_VV_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
+        phase_bandname = f'Phase_ifg_{input_dict["sub_swath"]}_{input_dict["polarization"].upper()}_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
+        coh_bandname = f'coh_{input_dict["sub_swath"]}_{input_dict["polarization"].upper()}_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
 
         gpt_cmd = [
             "gpt",
@@ -185,9 +185,9 @@ for pair in input_dict["InSAR_pairs"]:
 
         # Geocode the result (interferogram, unwrapped interferogram, coherence)
         sub_swath = input_dict["sub_swath"].upper()
-        phase_bandname = f'Phase_ifg_{sub_swath}_VV_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
+        phase_bandname = f'Phase_ifg_{sub_swath}_{input_dict["polarization"].upper()}_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
         unw_phase_bandname = f'Unw_Phase_ifg_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
-        coh_bandname = f'coh_{sub_swath}_VV_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
+        coh_bandname = f'coh_{sub_swath}_{input_dict["polarization"].upper()}_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
         unw_phase_filename = glob.glob(
             os.path.join(output_filename_tmp, "UnwPhase*.img")
         )[0]
