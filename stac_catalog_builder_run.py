@@ -17,8 +17,7 @@ def main(
     root_dir: Union[str, Path],
     tiffs_glob: str = "*2images_slv*.tif",
     collection_filename: str = "S1_2images_collection_slaves.json",
-    collection_config_path: Union[str, Path] = containing_folder
-    / "stac-catalog-builder-config-collection-slv.json",
+    collection_config_path: Union[str, Path] = containing_folder / "stac-catalog-builder-config-collection-slv.json",
 ):
     assert " " not in str(root_dir)
     root_dir = Path(root_dir).absolute()
@@ -38,9 +37,7 @@ def main(
     print(f"{output_path=}")
 
     # list input files
-    input_files = stacbuilder.list_input_files(
-        glob=tiffs_glob, input_dir=tiff_input_path, max_files=None
-    )
+    input_files = stacbuilder.list_input_files(glob=tiffs_glob, input_dir=tiff_input_path, max_files=None)
     assert input_files
     print(f"Found {len(input_files)} input files. 5 first files:")
     for i in input_files[:5]:
@@ -108,7 +105,6 @@ def main(
             item = item.replace(root_path_str, "./")
             with open(output_path / link_path, "w") as f:
                 f.write(item)
-
 
 
 if __name__ == "__main__":

@@ -130,11 +130,11 @@ def generate_catalog(
         gdalinfo_stac["href"] = "./" + str(Path(file).relative_to(stac_root))
         coordinates = data_gdalinfo_from_subprocess["wgs84Extent"]["coordinates"]
         latlon_bbox = [
-                min([c[0] for polygon in coordinates for c in polygon]),
-                min([c[1] for polygon in coordinates for c in polygon]),
-                max([c[0] for polygon in coordinates for c in polygon]),
-                max([c[1] for polygon in coordinates for c in polygon]),
-            ]
+            min([c[0] for polygon in coordinates for c in polygon]),
+            min([c[1] for polygon in coordinates for c in polygon]),
+            max([c[0] for polygon in coordinates for c in polygon]),
+            max([c[1] for polygon in coordinates for c in polygon]),
+        ]
         native_coordinates = data_gdalinfo_from_subprocess["cornerCoordinates"]
         # Can not use lowerLeft and upperRight directly, as min is not always lower left.
         native_bbox = [
@@ -216,9 +216,7 @@ def generate_catalog(
     else:
         print("multiple crs detected, can't set crs in stac root: " + str(crs_set))
 
-    collection_stac["cube:dimensions"]["t"]["extent"] = collection_stac["extent"][
-        "temporal"
-    ]["interval"][0]
+    collection_stac["cube:dimensions"]["t"]["extent"] = collection_stac["extent"]["temporal"]["interval"][0]
 
     with open(stac_root / collection_filename, "w") as f:
         json.dump(collection_stac, f, indent=2)

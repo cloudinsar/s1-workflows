@@ -1,37 +1,58 @@
+import datetime
+
 import logging
 import rioxarray
+import openeo
 
 from testutils import *
 
+#
+# This test file is executed manually for the moment.
+# It is serves as a scratchpad for testing purposes.
+#
+
 _log = logging.getLogger(__name__)
+
+local_openEO = False
+if local_openEO:
+    # Start local openEO by running:
+    #    minikube start
+    #    local.py
+    # https://github.com/Open-EO/openeo-geopyspark-driver/blob/master/docs/calrissian-cwl.md#kubernetes-setup
+    connection = openeo.connect("http://127.0.0.1:8080").authenticate_basic("openeo", "openeo")
+else:
+    url = "https://openeo.dataspace.copernicus.eu"
+    connection = openeo.connect(url).authenticate_oidc()
 
 
 @pytest.mark.skip(reason="TODO: Log into openEO backend")
 def test_insar_coherence_against_openeo_backend(auto_title):
-    import openeo
-
-    url = "https://openeo.dataspace.copernicus.eu"
-    connection = openeo.connect(url).authenticate_oidc()
-
+    now = datetime.datetime.now()
+    tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests/", "tests/tmp_")).absolute()
+    tmp_dir.mkdir(exist_ok=True)
     datacube = connection.datacube_from_process(
         process_id="insar_coherence",
+        # process_id="insar_interferogram_coherence",
+        # process_id="insar_interferogram_snaphu",
         **input_dict_2018_vh,
+        # **input_dict_2024_vv,
     )
 
     datacube = datacube.save_result(format="GTiff")
 
-    job = datacube.create_job(title=auto_title)
-    job.start_and_wait()
-    job.get_results().download_files("tmp" + auto_title)
+    if local_openEO:
+        datacube.download(tmp_dir)
+    else:
+        job = datacube.create_job(title=auto_title)
+        job.start_and_wait()
+        job.get_results().download_files(tmp_dir)
 
 
 @pytest.mark.skip(reason="TODO: Log into openEO backend")
 def test_insar_preprocessing_v02_against_openeo_backend(auto_title):
-    import openeo
-
-    url = "https://openeo.dataspace.copernicus.eu"
-    connection = openeo.connect(url).authenticate_oidc()
-
+    now = datetime.datetime.now()
+    tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests/", "tests/tmp_")).absolute()
+    tmp_dir.mkdir(exist_ok=True)
     datacube = connection.datacube_from_process(
         process_id="insar_preprocessing_v02",
         **input_dict_2018_vh_preprocessing,
@@ -39,9 +60,12 @@ def test_insar_preprocessing_v02_against_openeo_backend(auto_title):
 
     datacube = datacube.save_result(format="GTiff")
 
-    job = datacube.create_job(title=auto_title)
-    job.start_and_wait()
-    job.get_results().download_files("tmp" + auto_title)
+    if local_openEO:
+        datacube.download(tmp_dir)
+    else:
+        job = datacube.create_job(title=auto_title)
+        job.start_and_wait()
+        job.get_results().download_files(tmp_dir)
 
 
 @pytest.mark.skip(reason="TODO: Run against openEO backend to get result?")

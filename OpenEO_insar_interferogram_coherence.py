@@ -17,25 +17,11 @@ if len(sys.argv) > 1:
     input_dict = json.loads(base64.b64decode(sys.argv[1].encode("utf8")).decode("utf8"))
 else:
     # Takes about 30min to run
-    input_dict = {
-        "message": "These are example arguments",
-        "burst_id": 249435,
-        "sub_swath": "IW2",
-        "InSAR_pairs": [
-            ["2024-08-09", "2024-08-21"],
-            # ["2024-08-09", "2024-09-02"],
-            # ["2024-08-21", "2024-09-02"],
-            # ["2024-08-21", "2024-09-14"],
-            # ["2024-09-02", "2024-09-14"],
-        ],
-        "polarization": "vv",
-        # Coherence window size:
-        "coherence_window_rg": 10,
-        "coherence_window_az": 2,
-        # Multillok parameters:
-        "n_rg_looks": 4,
-        "n_az_looks": 1,
-    }
+    print("Using debug arguments!")
+    from tests.testutils import *
+
+    input_dict = input_dict_2018_vh
+
 if not input_dict.get("polarization"):
     input_dict["polarization"] = "vv"
 if not input_dict.get("sub_swath"):
@@ -60,10 +46,6 @@ if primary_dates_duplicates:
         "You can load multiple primary dates over multiple processes if needed."
     )
 
-print("AWS_ACCESS_KEY_ID= " + str(os.environ.get("AWS_ACCESS_KEY_ID", None)))
-if "AWS_ACCESS_KEY_ID" not in os.environ:
-    raise Exception("AWS_ACCESS_KEY_ID should be set in environment")
-
 # __file__ could have exotic values in Docker:
 # __file__ == /src/./OpenEO_insar.py
 # __file__ == //./src/OpenEO_insar.py
@@ -71,8 +53,7 @@ if "AWS_ACCESS_KEY_ID" not in os.environ:
 containing_folder = os.path.dirname(os.path.normpath(__file__).replace("//", "/"))
 containing_folder = Path(containing_folder).absolute()
 print("containing_folder: " + str(containing_folder))
-# result_folder = Path.home()
-result_folder = Path.cwd()
+result_folder = Path.cwd().absolute()
 # result_folder = containing_folder / "output"
 # result_folder.mkdir(exist_ok=True)
 tmp_insar = result_folder
@@ -103,6 +84,7 @@ for burst in bursts["value"]:
         print(f"Skipping burst {burst['BurstId']} ({begin} - {end})")
         continue
     cmd = [
+        "bash",
         "sentinel1_burst_extractor.sh",
         "-n", burst["ParentProductName"],
         "-p", input_dict["polarization"].lower(),
@@ -139,14 +121,6 @@ print(f"{burst_paths=!r}")
 if subprocess.run(["which", "gpt"]).returncode != 0 and os.path.exists("/usr/local/esa-snap/bin/gpt"):
     print("adding SNAP to PATH")  # needed when running outside of docker
     os.environ["PATH"] = os.environ["PATH"] + ":/usr/local/esa-snap/bin"
-
-# print("gpt --diag")
-# subprocess.run(["gpt", "--diag"], stderr=subprocess.STDOUT)
-
-
-def date_from_burst(burst_path):
-    return Path(burst_path).parent.name.split("_")[2]
-
 
 asset_paths = []
 

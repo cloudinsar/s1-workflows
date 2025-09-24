@@ -58,14 +58,12 @@ def tiff_to_gtiff(input_path, output_path, band_names=None):
     ds_in = gdal.Open(str(input_path), gdalconst.GA_ReadOnly)
 
     transform_in = list(ds_in.GetGeoTransform())
-    print(f"{transform_in=}") # [0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+    print(f"{transform_in=}")  # [0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
 
     driver = gdal.GetDriverByName("GTiff")
     # Compression is slower, but reduces images from 650Mb to 300Mb for example.
     # Which might save time when transfering to bucket and reading as stac afterwards
-    ds_out = driver.CreateCopy(
-        output_path, ds_in, options=["TILED=YES", "COMPRESS=DEFLATE"]
-    )
+    ds_out = driver.CreateCopy(output_path, ds_in, options=["TILED=YES", "COMPRESS=DEFLATE"])
 
     if band_names:
         for i in range(1, ds_out.RasterCount + 1):
@@ -74,9 +72,9 @@ def tiff_to_gtiff(input_path, output_path, band_names=None):
 
     projection_in: str = ds_in.GetProjection()
     if (
-            '["EPSG","4326"]' in projection_in  # default
-            and transform_in == [0.0, 1.0, 0.0, 0.0, 0.0, 1.0]  # meaning no geotransform
-            and (ds_in.RasterXSize > 360 or ds_in.RasterYSize > 90)
+        '["EPSG","4326"]' in projection_in  # default
+        and transform_in == [0.0, 1.0, 0.0, 0.0, 0.0, 1.0]  # meaning no geotransform
+        and (ds_in.RasterXSize > 360 or ds_in.RasterYSize > 90)
     ):
         # set CRS to webmercator, to avoid pixels going out of the CRS bounds:
         ds_out.SetProjection("EPSG:3857")

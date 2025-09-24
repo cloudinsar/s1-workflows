@@ -13,6 +13,10 @@ from typing import Any, Dict
 
 origGetAddrInfo = socket.getaddrinfo
 
+print("AWS_ACCESS_KEY_ID= " + str(os.environ.get("AWS_ACCESS_KEY_ID", None)))
+if "AWS_ACCESS_KEY_ID" not in os.environ:
+    raise Exception("AWS_ACCESS_KEY_ID should be set in environment")
+
 
 def getAddrInfoWrapper(host, port, family=0, socktype=0, proto=0, flags=0):
     return origGetAddrInfo(host, port, socket.AF_INET, socktype, proto, flags)

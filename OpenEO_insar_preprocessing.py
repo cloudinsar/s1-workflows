@@ -16,35 +16,20 @@ start_time = datetime.now()
 if len(sys.argv) > 1:
     input_dict = json.loads(base64.b64decode(sys.argv[1].encode("utf8")).decode("utf8"))
 else:
-    # input_dict = {
-    #     "message": "These are example arguments",
-    #     "burst_id": 249435,
-    #     "sub_swath": "IW2",
-    #     "temporal_extent": ["2024-08-09", "2024-09-02"],
-    #     "master_date": "2024-08-09",
-    #     "polarization": "vv",
-    # }
-    input_dict = {
-        "message": "These are example arguments to match SAR2Cube_openEO_examples_coherence_boxcar",
-        "burst_id": 329488,
-        "sub_swath": "IW2",
-        "temporal_extent": ["2018-01-26", "2018-02-09"],
-        "master_date": "2018-01-28",
-        "polarization": "vh",
-        "gdainfo_stac": False
-    }
+    print("Using debug arguments!")
+    from tests.testutils import *
+
+    # input_dict = input_dict_2018_vh_preprocessing
+    input_dict = input_dict_belgium_vv_preprocessing
+
 if not input_dict.get("polarization"):
     input_dict["polarization"] = "vv"
 if not input_dict.get("sub_swath"):
     input_dict["sub_swath"] = "IW3"
 if not input_dict.get("gdainfo_stac"):
     input_dict["gdainfo_stac"] = True
-assert (len(input_dict["temporal_extent"]) == 2), "temporal_extent should be a list with two dates"
+assert len(input_dict["temporal_extent"]) == 2, "temporal_extent should be a list with two dates"
 print(input_dict)
-
-print("AWS_ACCESS_KEY_ID= " + str(os.environ.get("AWS_ACCESS_KEY_ID", None)))
-if "AWS_ACCESS_KEY_ID" not in os.environ:
-    raise Exception("AWS_ACCESS_KEY_ID should be set in environment")
 
 # __file__ could have exotic values in Docker:
 # __file__ == /src/./OpenEO_insar.py
@@ -53,8 +38,7 @@ if "AWS_ACCESS_KEY_ID" not in os.environ:
 containing_folder = os.path.dirname(os.path.normpath(__file__).replace("//", "/"))
 containing_folder = Path(containing_folder).absolute()
 print("containing_folder: " + str(containing_folder))
-# result_folder = Path.home()
-result_folder = Path.cwd()
+result_folder = Path.cwd().absolute()
 # result_folder = containing_folder / "output"
 # result_folder.mkdir(exist_ok=True)
 tmp_insar = result_folder
@@ -82,6 +66,7 @@ for burst in bursts["value"]:
     os.environ["PATH"] = os.environ["PATH"] + ":" + str(containing_folder / "utilities")
 
     cmd = [
+        "bash",
         "sentinel1_burst_extractor.sh",
         "-n", burst["ParentProductName"],
         "-p", input_dict["polarization"].lower(),
@@ -110,16 +95,12 @@ burst_paths = sorted(burst_paths)
 print(f"{burst_paths=!r}")
 
 # GPT means "Graph Processing Toolkit" in this context
-if subprocess.run(["which", "gpt"]).returncode != 0 and os.path.exists(
-    "/usr/local/esa-snap/bin/gpt"
-):
+if subprocess.run(["which", "gpt"]).returncode != 0 and os.path.exists("/usr/local/esa-snap/bin/gpt"):
     print("adding SNAP to PATH")  # needed when running outside of docker
     os.environ["PATH"] = os.environ["PATH"] + ":/usr/local/esa-snap/bin"
 
 input_mst_date = parse_date(input_dict["master_date"])
-mst_filename = next(
-    filter(lambda x: input_mst_date.strftime("%Y%m%d") in str(x), burst_paths), None
-)
+mst_filename = next(filter(lambda x: input_mst_date.strftime("%Y%m%d") in str(x), burst_paths), None)
 if mst_filename is None:
     raise FileNotFoundError("No burst found for master date: " + str(input_mst_date))
 mst_date = parse_date(date_from_burst(mst_filename))
@@ -161,12 +142,8 @@ if not os.path.exists(output_mst_filename_tmp) or not os.path.exists(
     print(gpt_cmd)
     subprocess.check_call(gpt_cmd, stderr=subprocess.STDOUT)
 
-output_mst_filename = (
-    f"{result_folder}/S1_2images_mst_{mst_date.strftime('%Y%m%dT%H%M%S')}.tif"
-)
-output_slv_filename = (
-    f"{result_folder}/S1_2images_slv_{slv_date.strftime('%Y%m%dT%H%M%S')}.tif"
-)
+output_mst_filename = f"{result_folder}/S1_2images_mst_{mst_date.strftime('%Y%m%dT%H%M%S')}.tif"
+output_slv_filename = f"{result_folder}/S1_2images_slv_{slv_date.strftime('%Y%m%dT%H%M%S')}.tif"
 
 slave_paths = [output_slv_filename]
 if not os.path.exists(output_mst_filename) or not os.path.exists(output_slv_filename):
@@ -228,6 +205,7 @@ if input_dict["gdainfo_stac"]:
     )
 else:
     import stac_catalog_builder_run
+
     stac_catalog_builder_run.main(
         result_folder,
         tiffs_glob="*2images_mst*.tif",

@@ -11,7 +11,7 @@ cd /opt || exit
 if [ -d /opt/openeo-geopyspark-driver ]; then
   echo "/opt/openeo-geopyspark-driver already exists, skipping git clone"
 else
-  git clone --recursive --shallow-submodules https://github.com/Open-EO/openeo-geopyspark-driver --depth 1 || echo "Command failed, but ignored"
+  git clone --recursive --shallow-submodules https://github.com/Open-EO/openeo-geopyspark-driver --depth 1
 fi
 cd /opt/openeo-geopyspark-driver || exit
 
@@ -26,7 +26,7 @@ python3 -m pip install -q -e . --extra-index-url https://artifactory.vgt.vito.be
 python3 -m pip install -q -e . --extra-index-url https://artifactory.vgt.vito.be/api/pypi/python-openeo/simple
 
 # TODO: Make get-jars available as package script, so not the whole repo needs to be downloaded
-python3 scripts/get-jars.py --force-download jars
+python3 scripts/get-jars.py jars
 
 cd "$SCRIPT_DIR" || exit
 # General dependencies are probably already installed. Now download test dependencies:
