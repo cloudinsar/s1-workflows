@@ -12,17 +12,19 @@ from testutils import *
 #
 
 _log = logging.getLogger(__name__)
-
 local_openEO = False
-if local_openEO:
-    # Start local openEO by running:
-    #    minikube start
-    #    local.py
-    # https://github.com/Open-EO/openeo-geopyspark-driver/blob/master/docs/calrissian-cwl.md#kubernetes-setup
-    connection = openeo.connect("http://127.0.0.1:8080").authenticate_basic("openeo", "openeo")
-else:
-    url = "https://openeo.dataspace.copernicus.eu"
-    connection = openeo.connect(url).authenticate_oidc()
+
+
+def get_connection():
+    if local_openEO:
+        # Start local openEO by running:
+        #    minikube start
+        #    local.py
+        # https://github.com/Open-EO/openeo-geopyspark-driver/blob/master/docs/calrissian-cwl.md#kubernetes-setup
+        return openeo.connect("http://127.0.0.1:8080").authenticate_basic("openeo", "openeo")
+    else:
+        url = "https://openeo.dataspace.copernicus.eu"
+        return openeo.connect(url).authenticate_oidc()
 
 
 @pytest.mark.skip(reason="TODO: Log into openEO backend")
@@ -30,7 +32,7 @@ def test_insar_coherence_against_openeo_backend(auto_title):
     now = datetime.datetime.now()
     tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests/", "tests/tmp_")).absolute()
     tmp_dir.mkdir(exist_ok=True)
-    datacube = connection.datacube_from_process(
+    datacube = get_connection().datacube_from_process(
         process_id="insar_coherence",
         # process_id="insar_interferogram_coherence",
         # process_id="insar_interferogram_snaphu",
@@ -53,7 +55,7 @@ def test_insar_preprocessing_v02_against_openeo_backend(auto_title):
     now = datetime.datetime.now()
     tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests/", "tests/tmp_")).absolute()
     tmp_dir.mkdir(exist_ok=True)
-    datacube = connection.datacube_from_process(
+    datacube = get_connection().datacube_from_process(
         process_id="insar_preprocessing_v02",
         **input_dict_2018_vh_preprocessing,
     )
