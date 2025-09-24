@@ -1,6 +1,6 @@
-# docker build -t openeo_insar:1.24 . -f OpenEO_Dockerfile
-# skopeo copy --multi-arch=all --format=oci docker-daemon:openeo_insar:1.24 docker://registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.24
-# docker run -it --memory=15G -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --rm openeo_insar:1.24
+# docker build -t openeo_insar:1.25 . -f OpenEO_Dockerfile
+# skopeo copy --multi-arch=all --format=oci docker-daemon:openeo_insar:1.25 docker://registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.25
+# docker run -it --memory=15G -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --rm openeo_insar:1.25
 FROM ghcr.io/osgeo/gdal:ubuntu-small-3.10.0
 
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -87,24 +87,6 @@ RUN cd /opt && \
     git clone --recursive https://github.com/VitoTAP/stac-catalog-builder.git --depth 1 && \
     cd stac-catalog-builder && \
     python3 -m pip install -q -e .
-
-# For testing: TODO: Checkout specific commit
-RUN cd /opt && \
-    git clone --recursive https://github.com/Open-EO/openeo-geopyspark-driver --depth 1 && \
-    cd /opt/openeo-geopyspark-driver && \
-    git pull && git submodule update --init --recursive && \
-    sed -i '/jep==/ s/^/# /' setup.py && \
-    echo "ok" && \
-
-# First install fails, ignore this:
-RUN cd /opt/openeo-geopyspark-driver && \
-    python3 -m pip install -e . --extra-index-url https://artifactory.vgt.vito.be/api/pypi/python-openeo/simple || echo "Command failed, but ignored"
-
-# TODO: Make get-jars available as package script, so not the whole repo needs to be downloaded
-RUN cd /opt/openeo-geopyspark-driver && \
-    python3 -m pip install -e . --extra-index-url https://artifactory.vgt.vito.be/api/pypi/python-openeo/simple && \
-    python3 scripts/get-jars.py --force-download jars && \
-    echo "openeo-geopyspark-driver installed for testing"
 
 RUN wget https://step.esa.int/thirdparties/snaphu/1.4.2-2/snaphu-v1.4.2_linux.zip && unzip -q -d / snaphu-v1.4.2_linux.zip
 ENV PATH="$PATH:/snaphu-v1.4.2_linux/bin"
