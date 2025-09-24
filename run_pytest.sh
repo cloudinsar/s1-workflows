@@ -8,12 +8,14 @@ cd "$(dirname "$0")" || exit
 
 cd /opt || exit
 # TODO: Checkout specific commit
-git clone --recursive https://github.com/Open-EO/openeo-geopyspark-driver --depth 1
+git clone --recursive --shallow-submodules https://github.com/Open-EO/openeo-geopyspark-driver --depth 1
 cd /opt/openeo-geopyspark-driver || exit
-git pull && git submodule update --init --recursive
 
 # jep is difficult to install and is not needed, so disable:
 sed -i '/jep==/ s/^/# /' setup.py
+
+# Avoid "Command 'krb5-config --libs gssapi' returned non-zero exit status 127."
+sed -i '/gssapi>/ s/^/# /' setup.py
 
 # first pip install could fail, so run twice:
 python3 -m pip install -e . --extra-index-url https://artifactory.vgt.vito.be/api/pypi/python-openeo/simple || echo "Command failed, but ignored"
