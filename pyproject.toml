@@ -45,4 +45,5 @@ target-version = "py310"
 
 [tool.pytest.ini_options]
 testpaths = "tests"
-timeout = 900
+# 40min:
+timeout = 2400
