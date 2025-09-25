@@ -34,7 +34,6 @@ def test_insar_coherence_against_openeo_backend(auto_title):
     tmp_dir.mkdir(exist_ok=True)
     datacube = get_connection().datacube_from_process(
         process_id="insar_coherence",
-        # process_id="insar_interferogram_coherence",
         # process_id="insar_interferogram_snaphu",
         **input_dict_2018_vh,
         # **input_dict_2024_vv,
