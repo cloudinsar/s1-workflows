@@ -84,10 +84,11 @@ RUN python3.11 -m venv /opt/venv && \
 
 ENV PATH="${PATH}:/src/"
 
-RUN cd /opt && \
-    git clone --recursive https://github.com/VitoTAP/stac-catalog-builder.git --depth 1 && \
-    cd stac-catalog-builder && \
-    python3 -m pip install -q -e .
+# simple_stac_builder is good enough
+#RUN cd /opt && \
+#    git clone --recursive https://github.com/VitoTAP/stac-catalog-builder.git --depth 1 && \
+#    cd stac-catalog-builder && \
+#    python3 -m pip install -q -e .
 
 RUN wget https://step.esa.int/thirdparties/snaphu/1.4.2-2/snaphu-v1.4.2_linux.zip && unzip -q -d / snaphu-v1.4.2_linux.zip
 ENV PATH="$PATH:/snaphu-v1.4.2_linux/bin"
@@ -98,6 +99,7 @@ COPY ./notebooks/graphs /src/notebooks/graphs/
 COPY *.py /src/
 COPY *.sh /src/
 COPY *.json /src/
+COPY ./tests/testutils.py /src/tests/testutils.py
 
 
 WORKDIR /src

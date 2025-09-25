@@ -26,7 +26,7 @@ python3 -m pip install -q -e . --extra-index-url https://artifactory.vgt.vito.be
 python3 -m pip install -q -e . --extra-index-url https://artifactory.vgt.vito.be/api/pypi/python-openeo/simple
 
 # TODO: Make get-jars available as package script, so not the whole repo needs to be downloaded
-python3 scripts/get-jars.py jars
+python3 scripts/get-jars.py --python-version 3.1 jars
 
 cd "$SCRIPT_DIR" || exit
 # General dependencies are probably already installed. Now download test dependencies:
