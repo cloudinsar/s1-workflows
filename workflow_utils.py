@@ -85,6 +85,17 @@ def parse_json_from_output(output_str: str) -> Dict[str, Any]:
     return json.loads(json_str)
 
 
+def default_serializer(obj):
+    """
+    Function to handle JSON serialization of objects that cannot be natively serialized
+    :param obj: object to seralize
+    :return: JSON-compatible representation of object
+    """
+    if isinstance(obj, datetime):
+        return obj.isoformat()
+    raise TypeError("Type %s not serializable" % type(obj))
+
+
 def merge_two_dicts(x, y):
     z = x.copy()  # start with keys and values of x
     z.update(y)  # modifies z with keys and values of y

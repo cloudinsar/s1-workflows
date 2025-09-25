@@ -104,11 +104,15 @@ def generate_catalog(
         gdalinfo_stac["eo:bands"] = list(map(mapper, gdalinfo_stac["eo:bands"]))
         band_names = [band["name"] for band in gdalinfo_stac["eo:bands"]]
         if "values" in collection_stac["cube:dimensions"]["bands"]:
-            assert collection_stac["cube:dimensions"]["bands"]["values"] == band_names, (
-                "Inconsistent band names: "
-                + str(collection_stac["cube:dimensions"]["bands"]["values"])
-                + " vs "
-                + str(band_names)
+            # assert collection_stac["cube:dimensions"]["bands"]["values"] == band_names, (
+            #     "Inconsistent band names: "
+            #     + str(collection_stac["cube:dimensions"]["bands"]["values"])
+            #     + " vs "
+            #     + str(band_names)
+            # )
+            # TODO: Order bands
+            collection_stac["cube:dimensions"]["bands"]["values"] = list(
+                set(collection_stac["cube:dimensions"]["bands"]["values"]).union(set(band_names))
             )
         else:
             collection_stac["cube:dimensions"]["bands"]["values"] = band_names
@@ -196,7 +200,7 @@ def generate_catalog(
 
         stac_item_filename = str(file) + ".json"
         with open(stac_item_filename, "w") as f:
-            json.dump(stac, f, indent=2)
+            json.dump(stac, f, indent=2, default=default_serializer)
 
         collection_stac["links"].append(
             {
@@ -254,11 +258,22 @@ if __name__ == "__main__":
         #     ),
         # )
 
-        generate_catalog(
-            Path("."),
-            files=["tmp_mst_20180128T062713.test.tif"],
-            collection_filename="tmp_mst_20180128T062713.test.tif.collection.json",
-            date_regex=re.compile(r".*_(?P<date1>\d{8}(T\d{6})?).*\.tif$"),
-        )
+        # generate_catalog(
+        #     Path("."),
+        #     files=["tmp_mst_20180128T062713.test.tif"],
+        #     collection_filename="tmp_mst_20180128T062713.test.tif.collection.json",
+        #     date_regex=re.compile(r".*_(?P<date1>\d{8}(T\d{6})?).*\.tif$"),
+        # )
+        generate_catalog(stac_root=Path('.'),
+                         files=['S1_2images_mst_20240809T055907_i_VV.tif',
+                                'S1_2images_mst_20240809T055907_q_VV.tif',
+                                'S1_2images_mst_20240809T055907_grid_lat.tif',
+                                'S1_2images_mst_20240809T055907_grid_lon.tif',
+                                'S1_2images_slv_20240821T055907_i_VV.tif',
+                                'S1_2images_slv_20240821T055907_q_VV.tif',
+                                'S1_2images_slv_20240902T055908_i_VV.tif',
+                                'S1_2images_slv_20240902T055908_q_VV.tif'],
+                         collection_filename='S1_2images_collection.json',
+                         date_regex=re.compile('.*_(?P<date1>\\d{8}(T\\d{6})?)(_\\w+)?\\.tif$'), )
         # generate_catalog(Path("."), date_regex=re.compile(r".*_(?P<date1>\d{8}T\d{6}).nc$"))
     print("done")
