@@ -4,6 +4,7 @@ set -eo pipefail
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
+# shellcheck source=/dev/null
 . /opt/venv/bin/activate
 
 cd /opt
