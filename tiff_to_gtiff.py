@@ -26,7 +26,7 @@ gdal.UseExceptions()
 #     json.dump(geojson, f)
 
 
-def tiff_to_gtiff(input_path, output_path, band_names=None):
+def tiff_to_gtiff(input_path, output_path, tiff_per_band=False):
     input_path = Path(input_path)
     print(f"tiff_to_gtiff {input_path=}")
     if not os.path.exists(input_path):
@@ -59,39 +59,72 @@ def tiff_to_gtiff(input_path, output_path, band_names=None):
 
     transform_in = list(ds_in.GetGeoTransform())
     print(f"{transform_in=}")  # [0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+    driver_tiff = gdal.GetDriverByName("GTiff")
 
-    driver = gdal.GetDriverByName("GTiff")
-    # Compression is slower, but reduces images from 650Mb to 300Mb for example.
-    # Which might save time when transfering to bucket and reading as stac afterwards
-    ds_out = driver.CreateCopy(output_path, ds_in, options=["TILED=YES", "COMPRESS=DEFLATE"])
+    output_paths = []
+    if tiff_per_band:
+        assert "<band_name>" in output_path, "When tiff_per_band is True, output_path should contain '<band_name>'"
+        # No need to write the inbetween image to disk
+        driver = gdal.GetDriverByName('MEM')
+        ds_out = driver.CreateCopy(output_path, ds_in)
+    else:
+        # Compression is slower, but reduces images from 650Mb to 300Mb for example.
+        # Which might save time when transferring to bucket and reading as stac afterward
+        ds_out = driver_tiff.CreateCopy(output_path, ds_in, options=["TILED=YES", "COMPRESS=DEFLATE"])
+        output_paths.append(output_path)
 
-    if band_names:
-        for i in range(1, ds_out.RasterCount + 1):
-            band = ds_out.GetRasterBand(i)
-            band.SetDescription(band_names[i - 1])
+    for i in range(1, ds_out.RasterCount + 1):
+        band = ds_out.GetRasterBand(i)
+        band.SetDescription(band_names[i - 1])
 
     projection_in: str = ds_in.GetProjection()
     if (
-        '["EPSG","4326"]' in projection_in  # default
-        and transform_in == [0.0, 1.0, 0.0, 0.0, 0.0, 1.0]  # meaning no geotransform
-        and (ds_in.RasterXSize > 360 or ds_in.RasterYSize > 90)
+            '["EPSG","4326"]' in projection_in  # default
+            and transform_in == [0.0, 1.0, 0.0, 0.0, 0.0, 1.0]  # meaning no geotransform
+            and (ds_in.RasterXSize > 360 or ds_in.RasterYSize > 90)
     ):
         # set CRS to webmercator, to avoid pixels going out of the CRS bounds:
         ds_out.SetProjection("EPSG:3857")
 
     ds_out.SetGeoTransform(transform_in)
-    ds_out.FlushCache()  # saves to disk
+    ds_out.FlushCache()  # saves to disk if not in memory
+
+    if tiff_per_band:
+        for i in range(1, ds_out.RasterCount + 1):
+            band_name = band_names[i - 1]
+            band_tmp = ds_out.GetRasterBand(i)
+            output_path_band = output_path.replace("<band_name>", band_name)
+            output_paths.append(output_path_band)
+            ds_single = driver_tiff.Create(
+                output_path_band,
+                band_tmp.XSize,
+                band_tmp.YSize,
+                1,
+                band_tmp.DataType,
+            )
+            ds_single.SetProjection(ds_out.GetProjection())
+            ds_single.SetSpatialRef(ds_out.GetSpatialRef())
+            ds_single.SetGeoTransform(ds_out.GetGeoTransform())
+            ds_single.SetStyleTable(ds_out.GetStyleTable())
+
+            ds_single_band = ds_single.GetRasterBand(1)
+            ds_single_band.WriteArray(band_tmp.ReadAsArray())
+            ds_single_band.SetDescription(band_tmp.GetDescription())
+
+            ds_single_band.FlushCache()
+
+            ds_single.FlushCache()  # saves to disk
+    return output_paths
 
 
 if __name__ == "__main__":
     from tests.testutils import assert_tif_file_is_healthy
 
-    assert_tif_file_is_healthy("tmp_mst_20180128T062713.tif")
+    # assert_tif_file_is_healthy("tmp_mst_20180128T062713.tif")
     tiff_to_gtiff(
         # "S1_coh_2images_20240821T170739_20240902T170739.tif",
         # "S1_coh_2images_20240821T170739_20240902T170739.test.tif",
-        "tmp_mst_20180128T062713.tif",
-        "tmp_mst_20180128T062713.test.tif",
-        band_names=[""],
+        "tmp_slv_20240821T055907.tif",
+        "tmp_slv_20240821T055907_<band_name>.tif",
     )
-    assert_tif_file_is_healthy("tmp_mst_20180128T062713.test.tif")
+    # assert_tif_file_is_healthy("tmp_mst_20180128T062713.test.tif")

@@ -9,8 +9,8 @@ classifiers = [
     "Programming Language :: Python :: 3",
 ]
 dependencies = [
-    "pystac",
-    "urllib3",
+    "pystac>=1.14.0",
+    "urllib3>=2.5.0",
     "jsonschema==4.23.0",
     "numpy",
     "exifread",

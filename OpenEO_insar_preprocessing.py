@@ -20,14 +20,18 @@ else:
     from tests.testutils import *
 
     # input_dict = input_dict_2018_vh_preprocessing
-    input_dict = input_dict_belgium_vv_preprocessing
+    input_dict = {
+        "burst_id": 234893,
+        "master_date": "2024-08-09",
+        "polarization": "vv",
+        "sub_swath": "IW1",
+        "temporal_extent": ["2024-08-09", "2024-09-03"],
+    }
 
 if not input_dict.get("polarization"):
     input_dict["polarization"] = "vv"
 if not input_dict.get("sub_swath"):
     input_dict["sub_swath"] = "IW3"
-if not input_dict.get("gdainfo_stac"):
-    input_dict["gdainfo_stac"] = True
 assert len(input_dict["temporal_extent"]) == 2, "temporal_extent should be a list with two dates"
 print(input_dict)
 
@@ -142,13 +146,13 @@ if not os.path.exists(output_mst_filename_tmp) or not os.path.exists(
     print(gpt_cmd)
     subprocess.check_call(gpt_cmd, stderr=subprocess.STDOUT)
 
-output_mst_filename = f"{result_folder}/S1_2images_mst_{mst_date.strftime('%Y%m%dT%H%M%S')}.tif"
-output_slv_filename = f"{result_folder}/S1_2images_slv_{slv_date.strftime('%Y%m%dT%H%M%S')}.tif"
+output_mst_filename = f"{result_folder}/S1_2images_mst_{mst_date.strftime('%Y%m%dT%H%M%S')}_<band_name>.tif"
+output_slv_filename = f"{result_folder}/S1_2images_slv_{slv_date.strftime('%Y%m%dT%H%M%S')}_<band_name>.tif"
 
-slave_paths = [output_slv_filename]
+output_paths = []
 if not os.path.exists(output_mst_filename) or not os.path.exists(output_slv_filename):
-    tiff_to_gtiff.tiff_to_gtiff(output_mst_filename_tmp, output_mst_filename)
-    tiff_to_gtiff.tiff_to_gtiff(output_slv_filename_tmp, output_slv_filename)
+    output_paths.append(tiff_to_gtiff.tiff_to_gtiff(output_mst_filename_tmp, output_mst_filename, tiff_per_band=True))
+    output_paths.append(tiff_to_gtiff.tiff_to_gtiff(output_slv_filename_tmp, output_slv_filename, tiff_per_band=True))
 # TODO: Delete tmp files
 
 
@@ -182,42 +186,26 @@ for burst_path in burst_paths[1:]:
         subprocess.check_call(gpt_cmd, stderr=subprocess.STDOUT)
 
     output_slv_filename = (
-        f"{result_folder}/S1_2images_slv_{slv_date.strftime('%Y%m%dT%H%M%S')}.tif"
+        f"{result_folder}/S1_2images_slv_{slv_date.strftime('%Y%m%dT%H%M%S')}_<band_name>.tif"
     )
 
-    slave_paths.append(output_slv_filename)
     if not os.path.exists(output_slv_filename):
-        tiff_to_gtiff.tiff_to_gtiff(output_slv_filename_tmp, output_slv_filename)
+        output_paths.append(
+            tiff_to_gtiff.tiff_to_gtiff(output_slv_filename_tmp, output_slv_filename, tiff_per_band=True)
+        )
     # TODO: Delete tmp files
 
-if input_dict["gdainfo_stac"]:
-    simple_stac_builder.generate_catalog(
-        result_folder,
-        files=[output_mst_filename],
-        collection_filename="S1_2images_collection_master.json",
-        date_regex=re.compile(r".*_(?P<date1>\d{8}(T\d{6})?)\.tif$"),
-    )
-    simple_stac_builder.generate_catalog(
-        result_folder,
-        files=slave_paths,
-        collection_filename="S1_2images_collection_slaves.json",
-        date_regex=re.compile(r".*_(?P<date1>\d{8}(T\d{6})?)\.tif$"),
-    )
-else:
-    import stac_catalog_builder_run
+# spread lat lon bands in output_paths:
+latlon_bands = output_paths[0][2:]
+for item in output_paths[1:]:
+    item.extend(latlon_bands)
 
-    stac_catalog_builder_run.main(
-        result_folder,
-        tiffs_glob="*2images_mst*.tif",
-        collection_filename="S1_2images_collection_master.json",
-        collection_config_path=containing_folder / "stac-catalog-builder-config-collection-mst.json",
-    )
-    stac_catalog_builder_run.main(
-        result_folder,
-        tiffs_glob="*2images_slv*.tif",
-        collection_filename="S1_2images_collection_slaves.json",
-        collection_config_path=containing_folder / "stac-catalog-builder-config-collection-slv.json",
-    )
+simple_stac_builder.generate_catalog(
+    result_folder,
+    files=output_paths,
+    collection_filename="S1_2images_collection.json",
+    date_regex=re.compile(r"(?P<feature_id>.*_(?P<date1>\d{8}(T\d{6})?))(_\w+)?\.tif$"),
+)
 
 print("seconds since start: " + str((datetime.now() - start_time).seconds))
 
