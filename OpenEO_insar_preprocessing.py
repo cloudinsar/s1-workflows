@@ -153,8 +153,8 @@ output_slv_filename = f"{result_folder}/S1_2images_slv_{slv_date.strftime('%Y%m%
 
 output_paths = []
 if not os.path.exists(output_mst_filename) or not os.path.exists(output_slv_filename):
-    output_paths.extend(tiff_to_gtiff.tiff_to_gtiff(output_mst_filename_tmp, output_mst_filename, tiff_per_band=True))
-    output_paths.extend(tiff_to_gtiff.tiff_to_gtiff(output_slv_filename_tmp, output_slv_filename, tiff_per_band=True))
+    output_paths.append(tiff_to_gtiff.tiff_to_gtiff(output_mst_filename_tmp, output_mst_filename, tiff_per_band=True))
+    output_paths.append(tiff_to_gtiff.tiff_to_gtiff(output_slv_filename_tmp, output_slv_filename, tiff_per_band=True))
 # TODO: Delete tmp files
 
 
@@ -192,17 +192,22 @@ for burst_path in burst_paths[1:]:
     )
 
     if not os.path.exists(output_slv_filename):
-        output_paths.extend(
+        output_paths.append(
             tiff_to_gtiff.tiff_to_gtiff(output_slv_filename_tmp, output_slv_filename, tiff_per_band=True)
         )
     # TODO: Delete tmp files
+
+# spread lat lon bands in output_paths:
+latlon_bands = output_paths[0][2:]
+for item in output_paths[1:]:
+    item.extend(latlon_bands)
 
 if input_dict["gdainfo_stac"]:
     simple_stac_builder.generate_catalog(
         result_folder,
         files=output_paths,
         collection_filename="S1_2images_collection.json",
-        date_regex=re.compile(r".*_(?P<date1>\d{8}(T\d{6})?)(_\w+)?\.tif$"),
+        date_regex=re.compile(r"(?P<feature_id>.*_(?P<date1>\d{8}(T\d{6})?))(_\w+)?\.tif$"),
     )
     # simple_stac_builder.generate_catalog(
     #     result_folder,
