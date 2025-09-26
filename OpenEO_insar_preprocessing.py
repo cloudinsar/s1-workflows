@@ -32,8 +32,6 @@ if not input_dict.get("polarization"):
     input_dict["polarization"] = "vv"
 if not input_dict.get("sub_swath"):
     input_dict["sub_swath"] = "IW3"
-if not input_dict.get("gdainfo_stac"):
-    input_dict["gdainfo_stac"] = True
 assert len(input_dict["temporal_extent"]) == 2, "temporal_extent should be a list with two dates"
 print(input_dict)
 
@@ -202,34 +200,12 @@ latlon_bands = output_paths[0][2:]
 for item in output_paths[1:]:
     item.extend(latlon_bands)
 
-if input_dict["gdainfo_stac"]:
-    simple_stac_builder.generate_catalog(
-        result_folder,
-        files=output_paths,
-        collection_filename="S1_2images_collection.json",
-        date_regex=re.compile(r"(?P<feature_id>.*_(?P<date1>\d{8}(T\d{6})?))(_\w+)?\.tif$"),
-    )
-    # simple_stac_builder.generate_catalog(
-    #     result_folder,
-    #     files=slave_paths,
-    #     collection_filename="S1_2images_collection_slaves.json",
-    #     date_regex=re.compile(r".*_(?P<date1>\d{8}(T\d{6})?)\.tif$"),
-    # )
-else:
-    import stac_catalog_builder_run
-
-    stac_catalog_builder_run.main(
-        result_folder,
-        tiffs_glob="*2images_mst*.tif",
-        collection_filename="S1_2images_collection_master.json",
-        collection_config_path=containing_folder / "stac-catalog-builder-config-collection-mst.json",
-    )
-    stac_catalog_builder_run.main(
-        result_folder,
-        tiffs_glob="*2images_slv*.tif",
-        collection_filename="S1_2images_collection_slaves.json",
-        collection_config_path=containing_folder / "stac-catalog-builder-config-collection-slv.json",
-    )
+simple_stac_builder.generate_catalog(
+    result_folder,
+    files=output_paths,
+    collection_filename="S1_2images_collection.json",
+    date_regex=re.compile(r"(?P<feature_id>.*_(?P<date1>\d{8}(T\d{6})?))(_\w+)?\.tif$"),
+)
 
 print("seconds since start: " + str((datetime.now() - start_time).seconds))
 
