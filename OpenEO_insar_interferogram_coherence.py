@@ -11,6 +11,8 @@ import simple_stac_builder
 import tiff_to_gtiff
 from workflow_utils import *
 
+# TODO: This file and pipeline can be removed.
+
 start_time = datetime.now()
 
 if len(sys.argv) > 1:
