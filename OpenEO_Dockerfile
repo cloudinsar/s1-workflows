@@ -98,7 +98,6 @@ COPY ./utilities /src/utilities/
 COPY ./notebooks/graphs /src/notebooks/graphs/
 COPY *.py /src/
 COPY *.sh /src/
-COPY ./tests/testutils.py /src/tests/testutils.py
 
 
 WORKDIR /src

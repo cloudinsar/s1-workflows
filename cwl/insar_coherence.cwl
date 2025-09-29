@@ -15,4 +15,4 @@ outputs:
       type: array
       items: File
     outputBinding:
-      glob: "*2images*"
+      glob: ["S1_2images_collection.json", "*2images*"]

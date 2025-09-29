@@ -17,8 +17,6 @@ if len(sys.argv) > 1:
     input_dict = json.loads(base64.b64decode(sys.argv[1].encode("utf8")).decode("utf8"))
 else:
     print("Using debug arguments!")
-    from tests.testutils import *
-
     input_dict = input_dict_2018_vh
 
 if not input_dict.get("polarization"):

@@ -9,58 +9,6 @@ import rioxarray
 
 repository_root = Path(__file__).parent.parent
 
-input_dict_2024_vv = {
-    "InSAR_pairs": [
-        ["2024-08-09", "2024-08-21"],
-        # ["2024-08-09", "2024-09-02"],
-        # ["2024-08-21", "2024-09-02"],
-        # ["2024-08-21", "2024-09-14"],
-        # ["2024-09-02", "2024-09-14"],
-    ],
-    "burst_id": 249435,
-    # Coherence window size:
-    "coherence_window_az": 2,
-    "coherence_window_rg": 10,
-    # Multillok parameters:
-    "n_az_looks": 1,
-    "n_rg_looks": 4,
-    "polarization": "vv",
-    "sub_swath": "IW2",
-}
-
-input_dict_2018_vh = {
-    "InSAR_pairs": [["2018-01-28", "2018-02-03"]],
-    "burst_id": 329488,
-    "coherence_window_az": 2,
-    "coherence_window_rg": 10,
-    "n_az_looks": 1,
-    "n_rg_looks": 4,
-    "polarization": "vh",
-    "sub_swath": "IW2",
-}
-
-input_dict_belgium_vv = {
-    "InSAR_pairs": [["2024-08-09", "2024-08-21"]],
-    "burst_id": 234893,
-    "polarization": "vv",
-    "sub_swath": "IW1",
-}
-input_dict_2018_vh_preprocessing = {
-    "temporal_extent": ["2018-01-26", "2018-02-07"],
-    "master_date": "2018-01-28",
-    "burst_id": 329488,
-    "polarization": "vh",
-    "sub_swath": "IW2",
-}
-
-input_dict_belgium_vv_preprocessing = {
-    "burst_id": 234893,
-    "master_date": "2024-08-09",
-    "polarization": "vv",
-    "sub_swath": "IW1",
-    "temporal_extent": ["2024-08-09", "2024-08-21"],
-}
-
 
 def assert_xarray_equals(
     xa1: Union[xarray.DataArray, np.ndarray],
