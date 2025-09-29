@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any, Dict
 
 if not "S3_ENDPOINT_URL" in os.environ:
-    os.environ["S3_ENDPOINT_URL"] = "eodata.dataspace.copernicus.eu"
+    os.environ["S3_ENDPOINT_URL"] = "https://eodata.dataspace.copernicus.eu"
 
 print("S3_ENDPOINT_URL= " + str(os.environ.get("S3_ENDPOINT_URL", None)))
 print("AWS_ACCESS_KEY_ID= " + str(os.environ.get("AWS_ACCESS_KEY_ID", None)))
