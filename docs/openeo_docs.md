@@ -67,7 +67,7 @@ url = "https://openeo.dataspace.copernicus.eu"
 connection = openeo.connect(url).authenticate_oidc()
 
 datacube = connection.datacube_from_process(
-    process_id="insar_interferogram_coherence",
+    process_id="insar_coherence",
     InSAR_pairs=[["2024-08-09", "2024-09-02"], ["2024-08-21", "2024-09-02"]],
     burst_id=249435,
     coherence_window_az=2,

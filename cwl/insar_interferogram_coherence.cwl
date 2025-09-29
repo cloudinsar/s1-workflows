@@ -1,9 +1,9 @@
 cwlVersion: v1.0
 class: CommandLineTool
-baseCommand: /src/OpenEO_insar_interferogram_coherence.py
+baseCommand: /src/test_non_existent.py
 requirements:
   DockerRequirement:
-    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.27
+    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/test_non_existent:latest
 inputs:
   input_base64_json:
     type: string
