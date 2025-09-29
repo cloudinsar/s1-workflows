@@ -11,12 +11,15 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict
 
-origGetAddrInfo = socket.getaddrinfo
+if not "S3_ENDPOINT_URL" in os.environ:
+    os.environ["S3_ENDPOINT_URL"] = "eodata.dataspace.copernicus.eu"
 
+print("S3_ENDPOINT_URL= " + str(os.environ.get("S3_ENDPOINT_URL", None)))
 print("AWS_ACCESS_KEY_ID= " + str(os.environ.get("AWS_ACCESS_KEY_ID", None)))
 if "AWS_ACCESS_KEY_ID" not in os.environ:
     raise Exception("AWS_ACCESS_KEY_ID should be set in environment")
 
+origGetAddrInfo = socket.getaddrinfo
 
 def getAddrInfoWrapper(host, port, family=0, socktype=0, proto=0, flags=0):
     return origGetAddrInfo(host, port, socket.AF_INET, socktype, proto, flags)
