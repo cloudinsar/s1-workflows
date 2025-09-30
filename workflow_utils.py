@@ -14,6 +14,9 @@ from typing import Any, Dict
 if not "S3_ENDPOINT_URL" in os.environ:
     os.environ["S3_ENDPOINT_URL"] = "https://eodata.dataspace.copernicus.eu"
 
+if not "AWS_S3_ENDPOINT" in os.environ:
+    os.environ["AWS_S3_ENDPOINT"] = "https://eodata.dataspace.copernicus.eu"
+
 print("S3_ENDPOINT_URL= " + str(os.environ.get("S3_ENDPOINT_URL", None)))
 print("AWS_ACCESS_KEY_ID= " + str(os.environ.get("AWS_ACCESS_KEY_ID", None)))
 if "AWS_ACCESS_KEY_ID" not in os.environ:
@@ -187,7 +190,7 @@ def exec_proc(command, cwd=None, write_output=True, env=None):
     new_env = merge_two_dicts(os.environ, env)
 
     # print commands that can be pasted in the console
-    print(f'> cwd "{cwd}"')
+    print(f'> cd "{cwd}"')
     for key in env:
         print(key + "=" + str(subprocess.list2cmdline([env[key], ""])[:-3]))
     print("" + command_to_display)

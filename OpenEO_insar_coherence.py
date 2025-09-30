@@ -88,7 +88,6 @@ for burst in bursts["value"]:
         "-r", str(input_dict["burst_id"]),
         "-o", str(tmp_insar),
     ]
-    print(cmd)
     _, output = exec_proc(cmd, cwd=containing_folder / "utilities")
     # get paths from stdout:
     needle = "out_path: "
