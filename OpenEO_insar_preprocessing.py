@@ -46,7 +46,8 @@ print("containing_folder: " + str(containing_folder))
 result_folder = Path.cwd().absolute()
 # result_folder = containing_folder / "output"
 # result_folder.mkdir(exist_ok=True)
-tmp_insar = result_folder
+tmp_insar = Path("/tmp/insar")
+tmp_insar.mkdir(parents=True, exist_ok=True)
 
 date_to_output_paths: Dict[datetime, list] = dict()
 
@@ -86,7 +87,7 @@ for pol in input_dict["polarization"]:
             "-p", pol.lower(),
             "-s", str(input_dict["sub_swath"].lower()),
             "-r", str(input_dict["burst_id"]),
-            "-o", str(containing_folder),
+            "-o", str(tmp_insar),
         ]
         print(cmd)
         output = subprocess.check_output(cmd, cwd=containing_folder / "utilities", stderr=subprocess.STDOUT)

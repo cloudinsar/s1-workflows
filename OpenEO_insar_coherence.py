@@ -49,7 +49,8 @@ print("containing_folder: " + str(containing_folder))
 result_folder = Path.cwd().absolute()
 # result_folder = containing_folder / "output"
 # result_folder.mkdir(exist_ok=True)
-tmp_insar = result_folder
+tmp_insar = Path("/tmp/insar")
+tmp_insar.mkdir(parents=True, exist_ok=True)
 
 https_request = (
         f"https://catalogue.dataspace.copernicus.eu/odata/v1/Bursts?$filter="
@@ -85,7 +86,7 @@ for burst in bursts["value"]:
         "-p", input_dict["polarization"].lower(),
         "-s", str(input_dict["sub_swath"].lower()),
         "-r", str(input_dict["burst_id"]),
-        "-o", str(containing_folder),
+        "-o", str(tmp_insar),
     ]
     print(cmd)
     _, output = exec_proc(cmd, cwd=containing_folder / "utilities")
