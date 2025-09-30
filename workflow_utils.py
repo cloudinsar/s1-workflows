@@ -11,11 +11,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict
 
-if not "S3_ENDPOINT_URL" in os.environ:
-    os.environ["S3_ENDPOINT_URL"] = "https://eodata.dataspace.copernicus.eu"
-
 if not "AWS_S3_ENDPOINT" in os.environ:
-    os.environ["AWS_S3_ENDPOINT"] = "https://eodata.dataspace.copernicus.eu"
+    os.environ["AWS_S3_ENDPOINT"] = "eodata.dataspace.copernicus.eu"
+
+if not "S3_ENDPOINT_URL" in os.environ:
+    os.environ["S3_ENDPOINT_URL"] = "https://" + os.environ["AWS_S3_ENDPOINT"]
 
 print("S3_ENDPOINT_URL= " + str(os.environ.get("S3_ENDPOINT_URL", None)))
 print("AWS_ACCESS_KEY_ID= " + str(os.environ.get("AWS_ACCESS_KEY_ID", None)))
@@ -220,5 +220,5 @@ def exec_proc(command, cwd=None, write_output=True, env=None):
     if ret != 0:
         if not write_output:
             print(output)
-        raise Exception("Process returned error status code: " + str(ret), ret, output)
+        raise Exception("Process returned error status code: " + str(ret), ret)
     return ret, output
