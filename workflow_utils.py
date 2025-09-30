@@ -71,6 +71,14 @@ input_dict_belgium_vv_preprocessing = {
     "temporal_extent": ["2024-08-09", "2024-08-21"],
 }
 
+input_dict_belgium_preprocessing = {
+    "burst_id": 234893,
+    "master_date": "2024-08-09",
+    "polarization": ["vv", "vh"],
+    "sub_swath": "IW1",
+    "temporal_extent": ["2024-08-09", "2024-08-21"],
+}
+
 origGetAddrInfo = socket.getaddrinfo
 
 def getAddrInfoWrapper(host, port, family=0, socktype=0, proto=0, flags=0):

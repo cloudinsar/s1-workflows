@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import pytest
 import xarray
@@ -6,6 +7,10 @@ from pathlib import Path
 from typing import Union
 
 import rioxarray
+
+sys.path.append(".")
+sys.path.append("..")
+from workflow_utils import *
 
 repository_root = Path(__file__).parent.parent
 

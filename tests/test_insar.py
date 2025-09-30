@@ -9,10 +9,6 @@ from testutils import *
 
 _log = logging.getLogger(__name__)
 
-sys.path.append(".")
-sys.path.append("..")
-from workflow_utils import *
-
 
 def get_tiffs_from_stac_catalog(catalog_path: Path):
     """
@@ -115,7 +111,10 @@ def test_insar(script, input_dict, auto_title):
 # @pytest.mark.skip()
 @pytest.mark.parametrize(
     "input_dict",
-    [input_dict_2018_vh_preprocessing],
+    [
+        # input_dict_2018_vh_preprocessing,
+        input_dict_belgium_preprocessing,
+    ],
 )
 def test_insar_preprocessing(input_dict, auto_title):
     script = "OpenEO_insar_preprocessing.py"
@@ -139,53 +138,3 @@ def test_insar_preprocessing(input_dict, auto_title):
 
     for jf in json_files:
         run_stac_catalog_and_verify(jf, tmp_dir)
-
-
-@pytest.mark.skip("OOM on CI")
-def test_insar_preprocessing_stac(auto_title):
-    script = "OpenEO_insar_preprocessing.py"
-    input_dict = input_dict_2018_vh_preprocessing
-    input_base64_json = base64.b64encode(json.dumps(input_dict).encode("utf8")).decode("ascii")
-
-    tmp_dir = Path(repository_root / slugify(auto_title).replace("tests/", "tests/tmp_")).absolute()
-    print(f"{tmp_dir=}")
-    if tmp_dir.exists():
-        shutil.rmtree(tmp_dir)
-    tmp_dir.mkdir(exist_ok=True)
-    exec_proc(["python", repository_root / script, input_base64_json], cwd=tmp_dir)
-
-    import openeo
-
-    stac_root_master = Path(tmp_dir / "S1_2images_collection_master.json").absolute()
-    stac_root_slaves = Path(tmp_dir / "S1_2images_collection_slaves.json").absolute()
-    assert stac_root_master.exists()
-    assert stac_root_slaves.exists()
-
-    datacube_master = openeo.DataCube.load_stac(url=str(stac_root_master), bands=["grid_lat", "grid_lon"])
-    datacube_master = datacube_master.reduce_dimension(reducer="max", dimension="t")
-    datacube_slaves = openeo.DataCube.load_stac(url=str(stac_root_slaves), bands=["i_VH", "q_VH"])
-    datacube = datacube_slaves.merge_cubes(datacube_master)
-    datacube = datacube.resample_spatial(resolution=1, projection="EPSG:3857")  # webmercator
-
-    # datacube = datacube.rename_labels(dimension="t", target=['2018-01-28_2018-02-03'])
-    datacube = datacube.reduce_dimension(dimension="t", reducer="mean")
-    # datacube = datacube.filter_bbox(
-    #     west=-50,
-    #     east=50,
-    #     south=-50,
-    #     north=50,
-    #     crs="EPSG:3857"
-    # )
-
-    output_dir = (tmp_dir / "tmp_local_output").absolute()
-    output_dir.mkdir(exist_ok=True)
-    datacube.print_json(file=output_dir / "process_graph.json", indent=2)
-
-    ###################################
-    # Step 2, run process graph locally
-    ###################################
-    containing_folder = Path(__file__).parent.absolute()
-
-    from openeogeotrellis.deploy.run_graph_locally import run_graph_locally
-
-    run_graph_locally(output_dir / "process_graph.json", output_dir)

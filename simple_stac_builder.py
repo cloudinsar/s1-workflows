@@ -101,10 +101,11 @@ def generate_catalog(
             if res is None:
                 print("Skipping: ", file)
                 continue
-            if "feature_id" in res.groupdict():
-                stac["id"] = res.group("feature_id")  # TODO: Check if same for each product
-            else:
-                stac["id"] = file.name
+            if not "_grid_" in file.name:  # TODO: Use better way to select date
+                if "feature_id" in res.groupdict():
+                    stac["id"] = res.group("feature_id")  # TODO: Check if same for each product
+                else:
+                    stac["id"] = file.name
             date1 = parse_date(res.group("date1"))
             date1 = date1.isoformat() + "Z"
             if date1 < collection_stac["extent"]["temporal"]["interval"][0][0]:
