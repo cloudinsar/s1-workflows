@@ -1,6 +1,6 @@
-# docker build -t openeo_insar:1.30 . -f OpenEO_Dockerfile
-# skopeo copy --multi-arch=all --format=oci docker-daemon:openeo_insar:1.30 docker://registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.30
-# docker run -it --memory=15G -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --rm openeo_insar:1.30
+# docker build -t openeo_insar:1.31 . -f OpenEO_Dockerfile
+# skopeo copy --multi-arch=all --format=oci docker-daemon:openeo_insar:1.31 docker://registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.31
+# docker run -it --memory=15G -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --rm openeo_insar:1.31
 FROM ghcr.io/osgeo/gdal:ubuntu-small-3.10.0
 
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -33,12 +33,8 @@ RUN curl -sL -O 'https://s3.waw3-2.cloudferro.com/swift/v1/jacksum/jacksum_1.7.0
 ENV PATH="${PATH}:/src/utilities/"
 
 # Set environment variables
-ENV AWS_S3_ENDPOINT=eodata.dataspace.copernicus.eu \
-    # AWS_ACCESS_KEY_ID=ACCESS \
-    # AWS_SECRET_ACCESS_KEY=DATA \
-    AWS_HTTPS=YES \
+ENV AWS_HTTPS=YES \
     AWS_VIRTUAL_HOSTING=FALSE
-
 
 
 RUN add-apt-repository -y ppa:deadsnakes/ppa
