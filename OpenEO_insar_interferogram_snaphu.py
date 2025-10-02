@@ -203,8 +203,6 @@ for pair in input_dict["InSAR_pairs"]:
             ]
         exec_proc(gpt_cmd)
 
-    shutil.rmtree(os.path.join(result_folder, tmp_insar))
-
     output_filename = f"{result_folder}/phase_coh_{date_from_burst(prm_filename)}_{date_from_burst(sec_filename)}.tif"
 
     asset_paths.append(output_filename)

@@ -53,11 +53,7 @@ datacube = connection.datacube_from_process(
     polarization="vv"
 )
 
-job = datacube.create_job(job_options={  # TODO: Use less memory
-    "driver-memory": "7G",
-    "driver-memoryOverhead": "5G",
-    "executor-memory": "5G",
-    "executor-memoryOverhead": "5G",
+job = datacube.create_job(job_options={
     "python-memory": "4200m",
 })
 job.start_and_wait()

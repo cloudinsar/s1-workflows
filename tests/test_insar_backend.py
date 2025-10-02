@@ -49,15 +49,6 @@ def test_insar_coherence_against_openeo_backend(auto_title):
         job.get_results().download_files(tmp_dir)
 
 
-heavy_job_options = {
-    "driver-memory": "7G",
-    "driver-memoryOverhead": "5G",
-    "executor-memory": "5G",
-    "executor-memoryOverhead": "5G",
-    "python-memory": "4200m",
-}
-
-
 @pytest.mark.skip(reason="TODO: Log into openEO backend")
 def test_insar_preprocessing_v02_against_openeo_backend(auto_title):
     now = datetime.now()
@@ -75,7 +66,12 @@ def test_insar_preprocessing_v02_against_openeo_backend(auto_title):
         datacube.download(tmp_dir / "result.nc")
     else:
         datacube = datacube.save_result(format="GTiff")
-        job = datacube.create_job(title=auto_title, job_options=heavy_job_options)
+        job = datacube.create_job(
+            title=auto_title,
+            job_options={
+                "python-memory": "4200m",
+            },
+        )
         job.start_and_wait()
         job.get_results().download_files(tmp_dir)
 
