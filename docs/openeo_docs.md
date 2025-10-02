@@ -53,7 +53,9 @@ datacube = connection.datacube_from_process(
     polarization="vv"
 )
 
-job = datacube.create_job()
+job = datacube.create_job(job_options={
+    "python-memory": "4200m",
+})
 job.start_and_wait()
 job.get_results().download_files()
 ```

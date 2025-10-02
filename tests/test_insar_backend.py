@@ -1,5 +1,3 @@
-import datetime
-
 import logging
 import rioxarray
 import openeo
@@ -23,13 +21,15 @@ def get_connection():
         # https://github.com/Open-EO/openeo-geopyspark-driver/blob/master/docs/calrissian-cwl.md#kubernetes-setup
         return openeo.connect("http://127.0.0.1:8080").authenticate_basic("openeo", "openeo")
     else:
-        url = "https://openeo.dataspace.copernicus.eu"
+        # url = "https://openeo.dataspace.copernicus.eu"
+        # url = "https://openeo.dev.warsaw.openeo.dataspace.copernicus.eu/"  # needs VPN
+        url = "https://openeo-staging.dataspace.copernicus.eu/"
         return openeo.connect(url).authenticate_oidc()
 
 
 @pytest.mark.skip(reason="TODO: Log into openEO backend")
 def test_insar_coherence_against_openeo_backend(auto_title):
-    now = datetime.datetime.now()
+    now = datetime.now()
     tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests/", "tests/tmp_")).absolute()
     tmp_dir.mkdir(exist_ok=True)
     datacube = get_connection().datacube_from_process(
@@ -39,11 +39,11 @@ def test_insar_coherence_against_openeo_backend(auto_title):
         # **input_dict_2024_vv,
     )
 
-    datacube = datacube.save_result(format="GTiff")
-
     if local_openEO:
-        datacube.download(tmp_dir)
+        datacube = datacube.save_result(format="NetCDF")
+        datacube.download(tmp_dir / "result.nc")
     else:
+        datacube = datacube.save_result(format="GTiff")
         job = datacube.create_job(title=auto_title)
         job.start_and_wait()
         job.get_results().download_files(tmp_dir)
@@ -51,20 +51,27 @@ def test_insar_coherence_against_openeo_backend(auto_title):
 
 @pytest.mark.skip(reason="TODO: Log into openEO backend")
 def test_insar_preprocessing_v02_against_openeo_backend(auto_title):
-    now = datetime.datetime.now()
+    now = datetime.now()
     tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests/", "tests/tmp_")).absolute()
     tmp_dir.mkdir(exist_ok=True)
     datacube = get_connection().datacube_from_process(
-        process_id="insar_preprocessing_v02",
-        **input_dict_2018_vh_preprocessing,
+        process_id="insar_preprocessing",
+        # process_id="insar_preprocessing_v02",
+        # **input_dict_2018_vh_preprocessing,
+        **input_dict_belgium_vv_vh_preprocessing,
     )
 
-    datacube = datacube.save_result(format="GTiff")
-
     if local_openEO:
-        datacube.download(tmp_dir)
+        datacube = datacube.save_result(format="NetCDF")
+        datacube.download(tmp_dir / "result.nc")
     else:
-        job = datacube.create_job(title=auto_title)
+        datacube = datacube.save_result(format="GTiff")
+        job = datacube.create_job(
+            title=auto_title,
+            job_options={
+                "python-memory": "4200m",
+            },
+        )
         job.start_and_wait()
         job.get_results().download_files(tmp_dir)
 

@@ -82,7 +82,7 @@ def run_stac_catalog_and_verify(catalog_path: Path, tmp_dir: Path):
 @pytest.mark.parametrize(
     "input_dict",
     [
-        # input_dict_2024_vv,
+        input_dict_2024_vv,
         input_dict_2018_vh,
         input_dict_belgium_vv,
     ],
@@ -113,7 +113,7 @@ def test_insar(script, input_dict, auto_title):
     "input_dict",
     [
         # input_dict_2018_vh_preprocessing,
-        input_dict_belgium_preprocessing,
+        input_dict_belgium_vv_vh_preprocessing,
     ],
 )
 def test_insar_preprocessing(input_dict, auto_title):

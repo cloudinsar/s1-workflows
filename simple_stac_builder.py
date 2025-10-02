@@ -159,10 +159,9 @@ def generate_catalog(
                 #     + " vs "
                 #     + str(band_names)
                 # )
-                # TODO: Order bands
-                collection_stac["cube:dimensions"]["bands"]["values"] = list(
-                    set(collection_stac["cube:dimensions"]["bands"]["values"]).union(set(band_names))
-                )
+                for new_band in band_names:
+                    if new_band not in collection_stac["cube:dimensions"]["bands"]["values"]:
+                        collection_stac["cube:dimensions"]["bands"]["values"].append(new_band)
             else:
                 collection_stac["cube:dimensions"]["bands"]["values"] = band_names
 

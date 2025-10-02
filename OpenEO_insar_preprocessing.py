@@ -89,7 +89,6 @@ for pol in input_dict["polarization"]:
             "-r", str(input_dict["burst_id"]),
             "-o", str(tmp_insar),
         ]
-        print(cmd)
         output = subprocess.check_output(cmd, cwd=containing_folder / "utilities", stderr=subprocess.STDOUT)
         # get paths from stdout:
         needle = "out_path: "
@@ -131,10 +130,10 @@ for pol in input_dict["polarization"]:
     slv_bandname = f'{input_dict["sub_swath"].upper()}_{pol.upper()}_slv1_{slv_date.strftime("%d%b%Y")}'
     # Avoid "2images" in the name here:
     output_mst_filename_tmp = (
-        f"{result_folder}/tmp_2images_mst_{mst_date.strftime('%Y%m%dT%H%M%S')}_{pol.lower()}.tif"
+        f"{result_folder}/tmp_mst_{mst_date.strftime('%Y%m%dT%H%M%S')}_{pol.lower()}.tif"
     )
     output_slv_filename_tmp = (
-        f"{result_folder}/tmp_2images_slv_{slv_date.strftime('%Y%m%dT%H%M%S')}_{pol.lower()}.tif"
+        f"{result_folder}/tmp_slv_{slv_date.strftime('%Y%m%dT%H%M%S')}_{pol.lower()}.tif"
     )
     if not os.path.exists(output_mst_filename_tmp) or not os.path.exists(
             output_slv_filename_tmp
@@ -176,7 +175,7 @@ for pol in input_dict["polarization"]:
         slv_bandname = f'{input_dict["sub_swath"].upper()}_{pol.upper()}_slv1_{slv_date.strftime("%d%b%Y")}'
         # Avoid "2images" in the name here:
         output_slv_filename_tmp = (
-            f"{result_folder}/tmp_2images_slv_{slv_date.strftime('%Y%m%dT%H%M%S')}_{pol.lower()}.tif"
+            f"{result_folder}/tmp_slv_{slv_date.strftime('%Y%m%dT%H%M%S')}_{pol.lower()}.tif"
         )
 
         if not os.path.exists(output_slv_filename_tmp):

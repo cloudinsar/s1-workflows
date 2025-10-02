@@ -22,8 +22,7 @@ if "AWS_ACCESS_KEY_ID" not in os.environ:
 input_dict_2024_vv = {
     "InSAR_pairs": [
         ["2024-08-09", "2024-08-21"],
-        # ["2024-08-09", "2024-09-02"],
-        # ["2024-08-21", "2024-09-02"],
+        ["2024-08-21", "2024-09-02"],
         # ["2024-08-21", "2024-09-14"],
         # ["2024-09-02", "2024-09-14"],
     ],
@@ -71,12 +70,12 @@ input_dict_belgium_vv_preprocessing = {
     "temporal_extent": ["2024-08-09", "2024-08-21"],
 }
 
-input_dict_belgium_preprocessing = {
+input_dict_belgium_vv_vh_preprocessing = {
     "burst_id": 234893,
     "master_date": "2024-08-09",
     "polarization": ["vv", "vh"],
     "sub_swath": "IW1",
-    "temporal_extent": ["2024-08-09", "2024-08-21"],
+    "temporal_extent": ["2024-08-09", "2024-09-02"],
 }
 
 origGetAddrInfo = socket.getaddrinfo
