@@ -265,7 +265,7 @@ def find_optimal_master(SAFE_image_list):
     return InSARStackOverview.findOptimalMasterProduct(products).getName()
   
 
-def sbas_pairs(SAFE_image_list, max_temporal_baseline, max_perp_baseline, min_temporal_baseline=0):
+def sbas_pairs(SAFE_image_list, max_temporal_baseline, max_perp_baseline, min_temporal_baseline=1):
 
     df = compute_baseline(SAFE_image_list)
     optimal_master = find_optimal_master(SAFE_image_list)
