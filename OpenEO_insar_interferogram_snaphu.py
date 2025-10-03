@@ -187,7 +187,7 @@ for pair in input_dict["InSAR_pairs"]:
         unw_phase_bandname = f'Unw_Phase_ifg_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
         coh_bandname = f'coh_{sub_swath}_{input_dict["polarization"].upper()}_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
         unw_phase_filename = glob.glob(
-            os.path.join(output_filename_tmp, "UnwPhase*.hdr")
+            os.path.join(output_filename_tmp, "UnwPhase*.img")
         )[0]
         gpt_cmd = [
                 "gpt",
@@ -202,8 +202,6 @@ for pair in input_dict["InSAR_pairs"]:
                 f'-Poutput_filename={result_path}'
             ]
         exec_proc(gpt_cmd)
-
-        shutil.rmtree(output_filename_tmp)
 
     output_filename = f"{result_folder}/phase_coh_{date_from_burst(prm_filename)}_{date_from_burst(sec_filename)}.tif"
 
