@@ -1,6 +1,6 @@
-# docker build -t openeo_insar:1.39 . -f OpenEO_Dockerfile
-# skopeo copy --multi-arch=all --format=oci docker-daemon:openeo_insar:1.39 docker://registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.39
-# docker run -it --memory=15G -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --rm openeo_insar:1.39
+# docker build -t openeo_insar:1.40 . -f OpenEO_Dockerfile
+# skopeo copy --multi-arch=all --format=oci docker-daemon:openeo_insar:1.40 docker://registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.40
+# docker run -it --memory=15G -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --rm openeo_insar:1.40
 FROM ghcr.io/osgeo/gdal:ubuntu-small-3.10.0
 
 ENV DEBIAN_FRONTEND=noninteractive \
