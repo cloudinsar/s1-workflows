@@ -307,7 +307,8 @@ def ps_pairs(SAFE_image_list):
 
     zero_reference_date = optimal_master.split("_")[5][:4] + "-" + optimal_master.split("_")[5][4:6] + "-" + optimal_master.split("_")[5][6:8]
 
-    df_filtered_ = df[df["master_date"]==zero_reference_date].reset_index()
+    df_filtered_ = df[(df['master_date'] == zero_reference_date) & (df['slave_date'] != zero_reference_date)].reset_index()
+    #df_filtered_ = df[df["master_date"]==zero_reference_date].reset_index()
     ax = df[df["master_date"]==zero_reference_date].plot.scatter(
         x='slave_date',
         y='perp_baseline',
