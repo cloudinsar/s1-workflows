@@ -51,7 +51,7 @@ LABEL authors="Michele Claus, Emile Sonneveld"
 LABEL maintainer="michele.claus@eurac.edu, emile.sonneveld@vito.be"
 
 ### Install esa-snap ###
-ENV SNAPVER=11
+ENV SNAPVER=12
 
 RUN mkdir -p /src/esa-snap-docker
 COPY esa-snap-docker/response.varfile /src/esa-snap-docker/response.varfile
