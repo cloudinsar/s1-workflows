@@ -187,7 +187,7 @@ for pair in input_dict["InSAR_pairs"]:
         unw_phase_bandname = f'Unw_Phase_ifg_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
         coh_bandname = f'coh_{sub_swath}_{input_dict["polarization"].upper()}_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
         unw_phase_filename = glob.glob(
-            os.path.join(output_filename_tmp, "UnwPhase*.img")
+            os.path.join(output_filename_tmp, "UnwPhase*.hdr")
         )[0]
         gpt_cmd = [
                 "gpt",

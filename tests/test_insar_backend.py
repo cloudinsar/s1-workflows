@@ -1,6 +1,5 @@
 import logging
 import rioxarray
-import openeo
 
 from testutils import *
 
@@ -14,6 +13,7 @@ local_openEO = False
 
 
 def get_connection():
+    import openeo
     if local_openEO:
         # Start local openEO by running:
         #    minikube start

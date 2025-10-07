@@ -3,6 +3,8 @@
 # docker run -it --memory=15G -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --rm openeo_insar:1.39
 FROM ghcr.io/osgeo/gdal:ubuntu-small-3.10.0
 
+SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
+
 ENV DEBIAN_FRONTEND=noninteractive \
     LC_ALL=C.UTF-8 \
     LANG=C.UTF-8
@@ -63,7 +65,7 @@ RUN wget -q -O /src/esa-snap-docker/esa-snap_all_unix_${SNAPVER}_0_0.sh "https:/
 
 # update SNAP
 COPY esa-snap-docker/update_snap.sh /src/esa-snap-docker/update_snap.sh
-RUN sh /src/esa-snap-docker/update_snap.sh
+RUN bash /src/esa-snap-docker/update_snap.sh
 
 # add gpt to PATH
 ENV PATH="${PATH}:/usr/local/esa-snap/bin"
@@ -86,8 +88,11 @@ ENV PATH="${PATH}:/src/"
 #    cd stac-catalog-builder && \
 #    python3 -m pip install -q -e .
 
-RUN wget https://step.esa.int/thirdparties/snaphu/1.4.2-2/snaphu-v1.4.2_linux.zip && unzip -q -d / snaphu-v1.4.2_linux.zip
-ENV PATH="$PATH:/snaphu-v1.4.2_linux/bin"
+RUN wget https://step.esa.int/thirdparties/snaphu/2.0.4/snaphu-v2.0.4_linux.zip && \
+    unzip -q -d /opt snaphu-v2.0.4_linux.zip && \
+    chmod +x /opt/snaphu-v2.0.4_linux/bin/snaphu && \
+    rm snaphu-v2.0.4_linux.zip
+ENV PATH="$PATH:/opt/snaphu-v2.0.4_linux/bin"
 
 # COPY . /src
 COPY ./utilities /src/utilities/
