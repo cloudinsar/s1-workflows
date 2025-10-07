@@ -65,7 +65,7 @@ RUN wget -q -O /src/esa-snap-docker/esa-snap_all_unix_${SNAPVER}_0_0.sh "https:/
 
 # update SNAP
 COPY esa-snap-docker/update_snap.sh /src/esa-snap-docker/update_snap.sh
-RUN sh /src/esa-snap-docker/update_snap.sh
+RUN bash /src/esa-snap-docker/update_snap.sh
 
 # add gpt to PATH
 ENV PATH="${PATH}:/usr/local/esa-snap/bin"
