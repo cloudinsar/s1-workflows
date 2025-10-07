@@ -44,7 +44,7 @@ RUN apt-get -qq update && \
     apt-get -qq install -y \
       build-essential \
       git \
-      python3.13 python3.13-dev python3.13-venv \
+      python3.11 python3.11-distutils python3.11-dev python3.11-venv \
       cmake \
       autoconf \
       libgfortran5
@@ -53,7 +53,7 @@ LABEL authors="Michele Claus, Emile Sonneveld"
 LABEL maintainer="michele.claus@eurac.edu, emile.sonneveld@vito.be"
 
 ### Install esa-snap ###
-ENV SNAPVER=12
+ENV SNAPVER=11
 
 RUN mkdir -p /src/esa-snap-docker
 COPY esa-snap-docker/response.varfile /src/esa-snap-docker/response.varfile
@@ -74,7 +74,7 @@ COPY cwl/ /src/cwl/
 COPY pyproject.toml /src/pyproject.toml
 # . /opt/venv/bin/activate -> has no effect in Docker, here we need the following line:
 ENV PATH="/opt/venv/bin:$PATH"
-RUN python3.13 -m venv /opt/venv && \
+RUN python3.11 -m venv /opt/venv && \
     cd /src && \
     pip config set global.disable-pip-version-check true && \
     python3 -m pip install -q . && \
