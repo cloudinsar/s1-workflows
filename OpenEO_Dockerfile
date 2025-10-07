@@ -86,8 +86,8 @@ ENV PATH="${PATH}:/src/"
 #    cd stac-catalog-builder && \
 #    python3 -m pip install -q -e .
 
-RUN wget https://step.esa.int/thirdparties/snaphu/1.4.2-2/snaphu-v1.4.2_linux.zip && unzip -q -d / snaphu-v1.4.2_linux.zip
-ENV PATH="$PATH:/snaphu-v1.4.2_linux/bin"
+RUN wget https://step.esa.int/thirdparties/snaphu/2.0.4/snaphu-v2.0.4_linux.zip && unzip -q -d / snaphu-v2.0.4_linux.zip
+ENV PATH="$PATH:/snaphu-v2.0.4_linux/bin"
 
 # COPY . /src
 COPY ./utilities /src/utilities/
