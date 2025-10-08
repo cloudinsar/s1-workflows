@@ -114,6 +114,7 @@ def test_insar(script, input_dict, auto_title):
     [
         # input_dict_2018_vh_preprocessing,
         input_dict_belgium_vv_vh_preprocessing,
+        input_dict_2024_vv_preprocessing,
     ],
 )
 def test_insar_preprocessing(input_dict, auto_title):
@@ -134,7 +135,7 @@ def test_insar_preprocessing(input_dict, auto_title):
     tiff_files = list(tmp_dir.glob("*.tif"))
     assert tiff_files, "There should be at least one .tif file generated"
 
-    assert_tif_file_is_healthy(tiff_files[0])
-
+    for file in tiff_files:
+        assert_tif_file_is_healthy(file)
     for jf in json_files:
         run_stac_catalog_and_verify(jf, tmp_dir)

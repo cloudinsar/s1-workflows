@@ -78,6 +78,17 @@ input_dict_belgium_vv_vh_preprocessing = {
     "temporal_extent": ["2024-08-09", "2024-09-02"],
 }
 
+# Parameters that gave empty bands on staging:
+input_dict_2024_vv_preprocessing = {
+        "burst_id": 249435,
+        "master_date": "2024-08-09",
+        "polarization": "vv",
+        "sub_swath": "IW2",
+        "temporal_extent": [
+          "2024-08-08",
+          "2024-09-03"
+        ]
+      }
 origGetAddrInfo = socket.getaddrinfo
 
 def getAddrInfoWrapper(host, port, family=0, socktype=0, proto=0, flags=0):
@@ -216,5 +227,5 @@ def exec_proc(command, cwd=None, write_output=True, env=None):
     if ret != 0:
         if not write_output:
             print(output)
-        raise Exception("Process returned error status code: " + str(ret), ret)
+        raise Exception("Process returned error status code: " + str(ret))
     return ret, output

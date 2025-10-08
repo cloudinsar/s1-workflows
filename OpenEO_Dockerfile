@@ -34,11 +34,6 @@ RUN curl -sL -O 'https://s3.waw3-2.cloudferro.com/swift/v1/jacksum/jacksum_1.7.0
 #COPY ./utilities /src/utilities/ # Copy at the end of file to avoid slow rebuilds
 ENV PATH="${PATH}:/src/utilities/"
 
-# Set environment variables
-ENV AWS_HTTPS=YES \
-    AWS_VIRTUAL_HOSTING=FALSE
-
-
 RUN add-apt-repository -y ppa:deadsnakes/ppa
 RUN apt-get -qq update && \
     apt-get -qq install -y \

@@ -89,13 +89,13 @@ for pol in input_dict["polarization"]:
             "-r", str(input_dict["burst_id"]),
             "-o", str(tmp_insar),
         ]
-        output = subprocess.check_output(cmd, cwd=containing_folder / "utilities", stderr=subprocess.STDOUT)
+        _, output = exec_proc(cmd, cwd=containing_folder / "utilities")
         # get paths from stdout:
         needle = "out_path: "
         bursts_from_output = sorted(
             [
                 Path(line[len(needle):]).absolute()
-                for line in output.decode("utf-8").split("\n")
+                for line in output.split("\n")
                 if line.startswith(needle)
             ]
         )

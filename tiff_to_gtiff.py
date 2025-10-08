@@ -101,6 +101,7 @@ def tiff_to_gtiff(input_path, output_path, tiff_per_band=False):
                 band_tmp.YSize,
                 1,
                 band_tmp.DataType,
+                options = ["TILED=YES", "COMPRESS=DEFLATE"],
             )
             ds_single.SetProjection(ds_out.GetProjection())
             ds_single.SetSpatialRef(ds_out.GetSpatialRef())

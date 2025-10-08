@@ -66,7 +66,9 @@ def assert_tif_file_is_healthy(tif_path):
     assert shape[1] > 100
     assert shape[2] > 100
     assert shape[2] >= shape[1]
-    assert (tiff_arr.values != np.nan).any()
+    for b in range(shape[0]):
+        band = tiff_arr[b, :, :]
+        assert (band.values != np.nan).any()
 
 
 @pytest.fixture
