@@ -43,7 +43,7 @@ def test_insar_coherence_against_openeo_backend(auto_title):
         datacube = datacube.save_result(format="NetCDF")
         datacube.download(tmp_dir / "result.nc")
     else:
-        datacube = datacube.save_result(format="GTiff")
+        datacube = datacube.save_result(format="GTiff", options={"overviews": "OFF"})
         job = datacube.create_job(title=auto_title)
         job.start_and_wait()
         job.get_results().download_files(tmp_dir)
@@ -65,7 +65,7 @@ def test_insar_preprocessing_v02_against_openeo_backend(auto_title):
         datacube = datacube.save_result(format="NetCDF")
         datacube.download(tmp_dir / "result.nc")
     else:
-        datacube = datacube.save_result(format="GTiff")
+        datacube = datacube.save_result(format="GTiff", options={"overviews": "OFF"})
         job = datacube.create_job(
             title=auto_title,
             job_options={
