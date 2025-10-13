@@ -8,7 +8,7 @@
       <file>${mst_filename}</file>
       <copyMetadata>true</copyMetadata>
       <bandNames/>
-      <pixelRegion>1,0,25345,1516</pixelRegion>
+      <pixelRegion></pixelRegion>
       <maskNames/>
     </parameters>
   </node>
@@ -20,7 +20,7 @@
       <file>${slv_filename}</file>
       <copyMetadata>true</copyMetadata>
       <bandNames/>
-      <pixelRegion>1,0,25563,1517</pixelRegion>
+      <pixelRegion></pixelRegion>
       <maskNames/>
     </parameters>
   </node>
@@ -57,7 +57,7 @@
       <demResamplingMethod>BILINEAR_INTERPOLATION</demResamplingMethod>
       <externalDEMFile/>
       <externalDEMNoDataValue>0.0</externalDEMNoDataValue>
-      <resamplingType>BILINEAR_INTERPOLATION</resamplingType>
+      <resamplingType>BISINC_21_POINT_INTERPOLATION</resamplingType>
       <maskOutAreaWithoutElevation>true</maskOutAreaWithoutElevation>
       <outputRangeAzimuthOffset>false</outputRangeAzimuthOffset>
       <outputDerampDemodPhase>false</outputDerampDemodPhase>
@@ -86,10 +86,22 @@
       <bandNamePattern/>
     </parameters>
   </node>
+  <node id="Convert-Datatype">
+    <operator>Convert-Datatype</operator>
+    <sources>
+      <sourceProduct refid="BandSelect(2)"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <sourceBands/>
+      <targetDataType>float32</targetDataType>
+      <targetScalingStr>Truncate</targetScalingStr>
+      <targetNoDataValue>NaN</targetNoDataValue>
+    </parameters>
+  </node>
   <node id="Write(2)">
     <operator>Write</operator>
     <sources>
-      <sourceProduct refid="BandSelect(2)"/>
+      <sourceProduct refid="Convert-Datatype"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <file>${output_slv_filename}</file>
