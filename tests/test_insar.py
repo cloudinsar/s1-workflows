@@ -1,3 +1,5 @@
+import os
+
 import pytest
 import shutil
 
@@ -60,14 +62,14 @@ def run_stac_catalog_and_verify(catalog_path: Path, tmp_dir: Path):
 
     run_graph_locally(process_graph, openeo_result)
 
-    tiff_files_result = list(openeo_result.glob("*.tif"))
-    assert tiff_files_result, "There should be at least one .tif file generated"
-
-    assert_tif_file_is_healthy(tiff_files_result[0])
+    tiff_file_results = list(openeo_result.glob("*.tif"))
+    assert tiff_file_results, "There should be at least one .tif file generated"
+    for file in tiff_file_results:
+        assert_tif_file_is_healthy(file)
 
     # Compare openEO results to raw CWL results pixel based:
     # result = rioxarray.open_rasterio(tiff_files_input[0])
-    # expected = rioxarray.open_rasterio(tiff_files_result[0])
+    # expected = rioxarray.open_rasterio(tiff_file_results[0])
     # assert_xarray_equals(result.values, expected.values)
 
 

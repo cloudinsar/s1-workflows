@@ -48,6 +48,9 @@ def test_insar_coherence_against_openeo_backend(auto_title):
         job.start_and_wait()
         job.get_results().download_files(tmp_dir)
 
+        tif_paths = list(tmp_dir.glob("*.tif"))
+        for tif_path in tif_paths:
+            assert_tif_file_is_healthy(tif_path)
 
 @pytest.mark.skip(reason="TODO: Log into openEO backend")
 def test_insar_preprocessing_v02_against_openeo_backend(auto_title):
@@ -69,11 +72,15 @@ def test_insar_preprocessing_v02_against_openeo_backend(auto_title):
         job = datacube.create_job(
             title=auto_title,
             job_options={
-                "python-memory": "4200m",
+                "python-memory": "4000m",  # did also work with 3G
             },
         )
         job.start_and_wait()
         job.get_results().download_files(tmp_dir)
+
+        tif_paths = list(tmp_dir.glob("*.tif"))
+        for tif_path in tif_paths:
+            assert_tif_file_is_healthy(tif_path)
 
 
 @pytest.mark.skip(reason="TODO: Run against openEO backend to get result?")
