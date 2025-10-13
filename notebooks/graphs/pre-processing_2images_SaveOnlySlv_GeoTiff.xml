@@ -20,7 +20,7 @@
       <file>${slv_filename}</file>
       <copyMetadata>true</copyMetadata>
       <bandNames/>
-      <pixelRegion>1,0,25563,1517</pixelRegion>
+      <pixelRegion></pixelRegion>
       <maskNames/>
     </parameters>
   </node>
@@ -75,10 +75,22 @@
       <bandNamePattern/>
     </parameters>
   </node>
+  <node id="Convert-Datatype(2)">
+    <operator>Convert-Datatype</operator>
+    <sources>
+      <sourceProduct refid="BandSelect(2)"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <sourceBands/>
+      <targetDataType>float32</targetDataType>
+      <targetScalingStr>Truncate</targetScalingStr>
+      <targetNoDataValue>NaN</targetNoDataValue>
+    </parameters>
+  </node>
   <node id="Write(2)">
     <operator>Write</operator>
     <sources>
-      <sourceProduct refid="BandSelect(2)"/>
+      <sourceProduct refid="Convert-Datatype(2)"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <file>${output_slv_filename}</file>
