@@ -1,12 +1,12 @@
 import sys
-import numpy as np
-import pytest
-import xarray
-from PIL import Image
 from pathlib import Path
 from typing import Union
 
+import numpy as np
+import pytest
 import rioxarray
+import xarray
+from PIL import Image
 
 sys.path.append(".")
 sys.path.append("..")

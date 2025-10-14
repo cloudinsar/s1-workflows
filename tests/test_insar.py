@@ -1,12 +1,10 @@
-import os
-
-import pytest
-import shutil
-
 import base64
 import logging
+import os
+import shutil
 import sys
 
+import pytest
 from testutils import *
 
 _log = logging.getLogger(__name__)

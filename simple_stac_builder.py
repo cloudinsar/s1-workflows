@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import logging
 import os
-from typing import Union, List
+from typing import List, Union
 
 from workflow_utils import *
 

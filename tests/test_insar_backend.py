@@ -1,6 +1,6 @@
 import logging
-import rioxarray
 
+import rioxarray
 from testutils import *
 
 #
