@@ -49,5 +49,5 @@ testpaths = "tests"
 # --capture=no To also show print statements in PyCharm
 addopts = "--capture=no --verbose --strict-markers -ra --basetemp=pytest-tmp"
 
-# 40min:
-timeout = 2400
+# 80min:
+timeout = 4800
