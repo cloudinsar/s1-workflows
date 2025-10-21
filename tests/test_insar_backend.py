@@ -52,14 +52,14 @@ def test_insar_coherence_against_openeo_backend(auto_title):
         for tif_path in tif_paths:
             assert_tif_file_is_healthy(tif_path)
 
+
 @pytest.mark.skip(reason="TODO: Log into openEO backend")
-def test_insar_preprocessing_v02_against_openeo_backend(auto_title):
+def test_insar_preprocessing_against_openeo_backend(auto_title):
     now = datetime.now()
     tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests/", "tests/tmp_")).absolute()
     tmp_dir.mkdir(exist_ok=True)
     datacube = get_connection().datacube_from_process(
         process_id="insar_preprocessing",
-        # process_id="insar_preprocessing_v02",
         # **input_dict_2018_vh_preprocessing,
         **input_dict_belgium_vv_vh_preprocessing,
     )

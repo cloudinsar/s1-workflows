@@ -26,16 +26,17 @@ def get_tiffs_from_stac_catalog(catalog_path: Path):
     if "assets" in catalog_json:
         links.extend(list(catalog_json["assets"].values()))
     for link in links:
-        if "href" in link and link["href"].lower().endswith(".tif"):  # data link
+        if "href" in link:  # data link
             href = link["href"]
             if href.startswith("file://"):
                 href = href[7:]
             # make absolute, compared to parent json file:
             href = os.path.normpath(os.path.join(catalog_path.parent, href))
-            tiff_files.append(Path(href))
-        elif "rel" in link and (link["rel"] == "child" or link["rel"] == "item") and "href" in link:
-            child_path = catalog_path.parent / link["href"]
-            tiff_files.extend(get_tiffs_from_stac_catalog(child_path))
+            if href.lower().endswith(".tif"):
+                tiff_files.append(Path(href))
+            if "rel" in link and (link["rel"] == "child" or link["rel"] == "item"):
+                child_path = catalog_path.parent / link["href"]
+                tiff_files.extend(get_tiffs_from_stac_catalog(child_path))
     return tiff_files
 
 

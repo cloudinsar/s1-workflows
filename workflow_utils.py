@@ -10,6 +10,12 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict
 
+if os.path.exists("notebooks/CDSE_SECRET"):
+    # same credentials as in the notebooks
+    with open("notebooks/CDSE_SECRET", "r") as file:
+        lines = file.readlines()
+    os.environ["AWS_ACCESS_KEY_ID"] = lines[0].strip().split(": ")[1]
+    os.environ["AWS_SECRET_ACCESS_KEY"] = lines[1].strip().split(": ")[1]
 if not "AWS_ENDPOINT_URL_S3" in os.environ:
     os.environ["AWS_ENDPOINT_URL_S3"] = "https://eodata.dataspace.copernicus.eu"
 
@@ -201,8 +207,8 @@ def exec_proc(command, cwd=None, write_output=True, env=None):
         print(key + "=" + str(subprocess.list2cmdline([env[key], ""])[:-3]))
     print("" + command_to_display)
 
+    output = ""
     try:
-        output = ""
         process = subprocess.Popen(
             command_list,
             cwd=cwd,
@@ -222,6 +228,9 @@ def exec_proc(command, cwd=None, write_output=True, env=None):
     except subprocess.CalledProcessError as ex:
         ret = ex.returncode
         output = ex.output
+    except KeyboardInterrupt:
+        # Allows to still write output
+        ret = 1
 
     if ret != 0:
         if not write_output:
