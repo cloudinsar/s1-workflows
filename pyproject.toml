@@ -28,6 +28,7 @@ dev = [
     "Pillow",
     "xarray",
     "rasterio",
+    "rio-cogeo",
 ]
 
 [tool.setuptools.packages.find]
