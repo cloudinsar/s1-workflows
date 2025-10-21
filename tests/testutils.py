@@ -70,6 +70,13 @@ def assert_tif_file_is_healthy(tif_path):
         band = tiff_arr[b, :, :]
         assert (band.values != np.nan).any()
 
+    # - The offset of the main IFD should be < 300. It is 21236950 instead
+    # - The offset of the IFD for overview of index 0 is 684, whereas it should be greater than the one of the main image, which is at byte 21236950
+    from rio_cogeo import cog_validate
+
+    is_valid_cog, errors, _ = cog_validate(str(tif_path))
+    # assert is_valid_cog, str(errors)  # does not pass test ATM
+
 
 @pytest.fixture
 def auto_title(request) -> str:

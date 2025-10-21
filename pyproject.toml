@@ -27,6 +27,7 @@ dev = [
     "rioxarray>=0.13.0",
     "Pillow",
     "xarray",
+    "rasterio",
 ]
 
 [tool.setuptools.packages.find]
