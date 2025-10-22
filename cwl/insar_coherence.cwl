@@ -4,7 +4,7 @@ class: CommandLineTool
 baseCommand: /src/OpenEO_insar_coherence.py
 requirements:
   DockerRequirement:
-    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.43
+    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.44
 inputs:
   input_base64_json:
     type: string
