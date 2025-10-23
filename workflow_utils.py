@@ -93,7 +93,18 @@ input_dict_2024_vv_preprocessing = {
           "2024-08-08",
           "2024-09-03"
         ]
-      }
+}
+
+snap_extra_arguments = [
+    "-J-Dsnap.dataio.bigtiff.tiling.height=256",
+    "-J-Dsnap.dataio.bigtiff.tiling.width=256",
+    "-J-Dsnap.gpf.useFileTileCache=true",
+    "-J-Dsnap.parallelism=4",
+    "-J-Dsnap.dataio.gdal.creationoptions=COMPRESS=DEFLATE;TILED=TRUE",
+    "-J-Dsnap.jai.defaultTileSize=128",
+    "-J-Dsnap.jai.tileCacheSize=1024",
+]
+
 origGetAddrInfo = socket.getaddrinfo
 
 def getAddrInfoWrapper(host, port, family=0, socktype=0, proto=0, flags=0):

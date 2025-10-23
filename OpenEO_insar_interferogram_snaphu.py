@@ -153,7 +153,7 @@ for pair in input_dict["InSAR_pairs"]:
             f"-PnRgLooks={input_dict['n_rg_looks']}",
             f"-PnAzLooks={input_dict['n_az_looks']}",
             f"-Poutput_filename={output_filename_tmp}",
-        ]
+        ] + snap_extra_arguments
         exec_proc(gpt_cmd)
 
         # Prepare the snaphu export for unwrapping
@@ -166,7 +166,7 @@ for pair in input_dict["InSAR_pairs"]:
             ),
             f"-Pphase_filename={output_filename_tmp}.dim",
             f"-Poutput_folder_snaphu={tmp_insar}",
-        ]
+        ] + snap_extra_arguments
         exec_proc(gpt_cmd)
 
         # Unwrapping with snaphu
@@ -200,7 +200,7 @@ for pair in input_dict["InSAR_pairs"]:
                 f'-Punw_interferogram_filename={unw_phase_filename}',
                 f'-Pphase_coh_bandnames={phase_bandname},{unw_phase_bandname},{coh_bandname}',
                 f'-Poutput_filename={result_path}'
-            ]
+            ] + snap_extra_arguments
         exec_proc(gpt_cmd)
 
     output_filename = f"{result_folder}/phase_coh_{date_from_burst(prm_filename)}_{date_from_burst(sec_filename)}.tif"

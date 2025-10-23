@@ -152,7 +152,7 @@ for pol in input_dict["polarization"]:
             f"-Pi_q_slv_bandnames=i_{slv_bandname},q_{slv_bandname}",
             f"-Poutput_mst_filename={output_mst_filename_tmp}",
             f"-Poutput_slv_filename={output_slv_filename_tmp}",
-        ]
+        ] + snap_extra_arguments
         print(gpt_cmd)
         subprocess.check_call(gpt_cmd, stderr=subprocess.STDOUT)
 
@@ -191,7 +191,7 @@ for pol in input_dict["polarization"]:
                 f"-Ppolarisation={pol.upper()}",
                 f"-Pi_q_slv_bandnames=i_{slv_bandname},q_{slv_bandname}",
                 f"-Poutput_slv_filename={output_slv_filename_tmp}",
-            ]
+            ] + snap_extra_arguments
             print(gpt_cmd)
             subprocess.check_call(gpt_cmd, stderr=subprocess.STDOUT)
 
