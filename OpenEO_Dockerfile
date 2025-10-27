@@ -65,12 +65,12 @@ RUN bash /src/esa-snap-docker/update_snap.sh
 # add gpt to PATH
 ENV PATH="${PATH}:/usr/local/esa-snap/bin"
 
-COPY cwl/ /src/cwl/
 COPY pyproject.toml /src/pyproject.toml
 # . /opt/venv/bin/activate -> has no effect in Docker, here we need the following line:
 ENV PATH="/opt/venv/bin:$PATH"
 RUN python3.11 -m venv /opt/venv && \
     cd /src && \
+    mkdir sar && \
     pip config set global.disable-pip-version-check true && \
     python3 -m pip install -q . && \
     python3 -m pip install -q --config-settings="--build-option=build_ext" --config-settings="--build-option=-I/usr/include/gdal" GDAL==`gdal-config --version`
@@ -90,6 +90,7 @@ RUN wget https://step.esa.int/thirdparties/snaphu/2.0.4/snaphu-v2.0.4_linux.zip 
 ENV PATH="$PATH:/opt/snaphu-v2.0.4_linux/bin"
 
 # COPY . /src
+COPY cwl/ /src/cwl/
 COPY ./utilities /src/utilities/
 COPY ./notebooks/graphs /src/notebooks/graphs/
 COPY *.py /src/
