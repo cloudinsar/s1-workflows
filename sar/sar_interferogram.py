@@ -44,15 +44,8 @@ if primary_dates_duplicates:
         "You can load multiple primary dates over multiple processes if needed."
     )
 
-# __file__ could have exotic values in Docker:
-# __file__ == /src/./OpenEO_insar.py
-# __file__ == //./src/OpenEO_insar.py
-# So we do a lot of normalisation:
-containing_folder = os.path.dirname(os.path.normpath(__file__).replace("//", "/"))
-containing_folder = Path(containing_folder).absolute()
-print("containing_folder: " + str(containing_folder))
 result_folder = Path.cwd().absolute()
-# result_folder = containing_folder / "output"
+# result_folder = repo_directory / "output"
 # result_folder.mkdir(exist_ok=True)
 tmp_insar = Path("/tmp/insar")
 tmp_insar.mkdir(parents=True, exist_ok=True)
@@ -92,10 +85,10 @@ for burst in bursts["value"]:
     ]
     _, output = exec_proc(
         cmd,
-        cwd=containing_folder / "utilities",
+        cwd=repo_directory / "utilities",
         env={
             # Allow for relative imports:
-            "PATH": os.environ["PATH"] + ":" + str(containing_folder / "utilities")
+            "PATH": os.environ["PATH"] + ":" + str(repo_directory / "utilities")
         },
     )
     # get paths from stdout:
@@ -143,7 +136,7 @@ for pair in input_dict["InSAR_pairs"]:
             "gpt",
             "-J-Xmx14G",
             str(
-                containing_folder
+                repo_directory
                 / "notebooks/graphs/interferogram_sarGeometry.xml"
             ),
             f"-Pprm_filename={prm_filename}",
@@ -161,7 +154,7 @@ for pair in input_dict["InSAR_pairs"]:
             "gpt",
             "-J-Xmx14G",
             str(
-                containing_folder
+                repo_directory
                 / "notebooks/graphs/snaphu_export.xml"
             ),
             f"-Pphase_filename={output_filename_tmp}.dim",
@@ -193,7 +186,7 @@ for pair in input_dict["InSAR_pairs"]:
                 "gpt",
                 "-J-Xmx14G",
                 str(
-                    containing_folder
+                    repo_directory
                     / "notebooks/graphs/geocode_snaphuInterferogram.xml"
                 ),
                 f'-Pinterferogram_filename={output_filename_tmp}.dim',

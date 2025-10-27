@@ -31,9 +31,6 @@ dev = [
     "rio-cogeo",
 ]
 
-[tool.setuptools.packages.find]
-where = ["sar"]
-
 [tool.black]
 line-length = 120
 

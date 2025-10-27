@@ -39,15 +39,9 @@ if primary_dates_duplicates:
         "You can load multiple primary dates over multiple processes if needed."
     )
 
-# __file__ could have exotic values in Docker:
-# __file__ == /src/./OpenEO_insar.py
-# __file__ == //./src/OpenEO_insar.py
-# So we do a lot of normalisation:
-containing_folder = os.path.dirname(os.path.normpath(__file__).replace("//", "/"))
-containing_folder = Path(containing_folder).absolute()
-print("containing_folder: " + str(containing_folder))
+
 result_folder = Path.cwd().absolute()
-# result_folder = containing_folder / "output"
+# result_folder = repo_directory / "output"
 # result_folder.mkdir(exist_ok=True)
 tmp_insar = Path("/tmp/insar")
 tmp_insar.mkdir(parents=True, exist_ok=True)
@@ -78,7 +72,7 @@ for burst in bursts["value"]:
         print(f"Skipping burst {burst['BurstId']} ({begin} - {end})")
         continue
     # Allow for relative imports:
-    os.environ["PATH"] = os.environ["PATH"] + ":" + str(containing_folder / "utilities")
+    os.environ["PATH"] = os.environ["PATH"] + ":" + str(repo_directory / "utilities")
     cmd = [
         "bash",
         "sentinel1_burst_extractor.sh",
@@ -88,7 +82,7 @@ for burst in bursts["value"]:
         "-r", str(input_dict["burst_id"]),
         "-o", str(tmp_insar),
     ]
-    _, output = exec_proc(cmd, cwd=containing_folder / "utilities")
+    _, output = exec_proc(cmd, cwd=repo_directory / "utilities")
     # get paths from stdout:
     needle = "out_path: "
     bursts_from_output = sorted(
@@ -119,7 +113,7 @@ for pair in input_dict["InSAR_pairs"]:
         gpt_cmd = [
             "gpt",
             "-J-Xmx14G",
-            str(containing_folder / "notebooks/graphs/coh_2images_GeoTiff.xml"),
+            str(repo_directory / "notebooks/graphs/coh_2images_GeoTiff.xml"),
             f"-Pmst_filename={mst_filename}",
             f"-Pslv_filename={slv_filename}",
             f"-PcohWinRg={input_dict['coherence_window_rg']}",

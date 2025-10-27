@@ -19,6 +19,14 @@ if os.path.exists("notebooks/CDSE_SECRET"):
 if not "AWS_ENDPOINT_URL_S3" in os.environ:
     os.environ["AWS_ENDPOINT_URL_S3"] = "https://eodata.dataspace.copernicus.eu"
 
+# __file__ could have exotic values in Docker:
+# __file__ == /src/./OpenEO_insar.py
+# __file__ == //./src/OpenEO_insar.py
+# So we do a lot of normalisation:
+repo_directory = os.path.dirname(os.path.normpath(__file__).replace("//", "/"))
+repo_directory = Path(repo_directory).parent.parent.absolute()
+print("repo_directory: " + str(repo_directory))
+
 print("S3_ENDPOINT_URL= " + str(os.environ.get("S3_ENDPOINT_URL", None)))
 print("AWS_ACCESS_KEY_ID= " + str(os.environ.get("AWS_ACCESS_KEY_ID", None)))
 if "AWS_ACCESS_KEY_ID" not in os.environ:

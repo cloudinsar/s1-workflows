@@ -76,8 +76,8 @@ def run_stac_catalog_and_verify(catalog_path: Path, tmp_dir: Path):
 @pytest.mark.parametrize(
     "script",
     [
-        "sar/sar_coherence.py",
-        "sar/sar_interferogram.py",
+        "sar_coherence.py",
+        "sar_interferogram.py",
     ],
 )
 @pytest.mark.parametrize(
@@ -95,7 +95,7 @@ def test_insar(script, input_dict, auto_title):
     if tmp_dir.exists():
         shutil.rmtree(tmp_dir)
     tmp_dir.mkdir(exist_ok=True)
-    exec_proc(["python", repository_root / script, input_base64_json], cwd=tmp_dir)
+    exec_proc(["python", repository_root / "sar" / script, input_base64_json], cwd=tmp_dir)
 
     json_files = list(tmp_dir.glob("*collection*.json"))
     assert json_files, "A *collection*.json file generated"
