@@ -27,7 +27,7 @@ def get_connection():
         return openeo.connect(url).authenticate_oidc()
 
 
-# @pytest.mark.skip(reason="TODO: Log into openEO backend")
+@pytest.mark.skip(reason="TODO: Log into openEO backend")
 @pytest.mark.parametrize(
     "process_id",
     [
