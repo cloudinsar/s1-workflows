@@ -8,9 +8,9 @@ import urllib.parse
 import urllib.request
 from typing import Any, Dict, Optional
 
-import simple_stac_builder
-import tiff_to_gtiff
-from workflow_utils import *
+from utils import simple_stac_builder
+from utils import tiff_to_gtiff
+from utils.workflow_utils import *
 
 start_time = datetime.now()
 

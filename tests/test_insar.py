@@ -76,8 +76,8 @@ def run_stac_catalog_and_verify(catalog_path: Path, tmp_dir: Path):
 @pytest.mark.parametrize(
     "script",
     [
-        "OpenEO_insar_coherence.py",
-        "OpenEO_insar_interferogram_snaphu.py",
+        "sar/sar_coherence.py",
+        "sar/sar_interferogram.py",
     ],
 )
 @pytest.mark.parametrize(
@@ -119,7 +119,7 @@ def test_insar(script, input_dict, auto_title):
     ],
 )
 def test_insar_preprocessing(input_dict, auto_title):
-    script = "OpenEO_insar_preprocessing.py"
+    script = "sar/sar_slc_preprocessing.py"
 
     input_base64_json = base64.b64encode(json.dumps(input_dict).encode("utf8")).decode("ascii")
 
