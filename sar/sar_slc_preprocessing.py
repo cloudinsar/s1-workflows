@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import argparse
 import base64
 import glob
 import os
@@ -13,28 +14,16 @@ from utils import tiff_to_gtiff
 from utils.workflow_utils import *
 
 start_time = datetime.now()
-
-if len(sys.argv) > 1:
-    input_dict = json.loads(base64.b64decode(sys.argv[1].encode("utf8")).decode("utf8"))
-else:
-    print("Using debug arguments!")
-    # input_dict = input_dict_2018_vh_preprocessing
-    input_dict = {
-        "burst_id": 234893,
-        "master_date": "2024-08-09",
-        "polarization": ["vv", "vh"],
-        "sub_swath": "IW1",
-        "temporal_extent": ["2024-08-09", "2024-08-21"],
-    }
-
-if not input_dict.get("polarization"):
-    input_dict["polarization"] = ["vv", "vh"]
-elif isinstance(input_dict.get("polarization"), str):
-    input_dict["polarization"] = [input_dict.get("polarization")]
-if not input_dict.get("sub_swath"):
-    input_dict["sub_swath"] = "IW3"
-assert len(input_dict["temporal_extent"]) == 2, "temporal_extent should be a list with two dates"
-print(input_dict)
+parser = argparse.ArgumentParser()
+parser.add_argument("--temporal_extent", type=str, required=True)
+parser.add_argument("--master_date", type=str, required=True)
+parser.add_argument("--burst_id", type=int, required=True)
+parser.add_argument("--coherence_window_az", type=int, default=2)
+parser.add_argument("--coherence_window_rg", type=int, default=10)
+parser.add_argument("--polarization", nargs="+", required=True)
+parser.add_argument("--sub_swath", type=str, choices=["IW1", "IW2", "IW3"], required=True)
+args = parser.parse_args()
+temporal_extent_iso = parse_date_tuple(args.temporal_extent)
 
 result_folder = Path.cwd().absolute()
 # result_folder = repo_directory / "output"
@@ -52,15 +41,15 @@ def add_to_date_dict(date: datetime, paths: list):
 
 
 mst_date: Optional[datetime] = None
-for pol in input_dict["polarization"]:
+for pol in args.polarization:
     https_request = (
             f"https://catalogue.dataspace.copernicus.eu/odata/v1/Bursts?$filter="
             + urllib.parse.quote(
-        f"ContentDate/Start ge {input_dict['temporal_extent'][0]}T00:00:00.000Z and ContentDate/Start le {input_dict['temporal_extent'][1]}T23:59:59.000Z and "
+        f"ContentDate/Start ge {temporal_extent_iso[0]}T00:00:00.000Z and ContentDate/Start le {temporal_extent_iso[1]}T23:59:59.000Z and "
         f"PolarisationChannels eq '{pol.upper()}' and "
-        f"BurstId eq {input_dict['burst_id']} and "
+        f"BurstId eq {args.burst_id} and "
         # f"(OData.CSC.Intersects(Footprint=geography'SRID=4326;POINT ({lon} {lat})')) and "
-        f"SwathIdentifier eq '{input_dict['sub_swath'].upper()}'"
+        f"SwathIdentifier eq '{args.sub_swath.upper()}'"
     )
             + "&$top=1000"
     )
@@ -78,8 +67,8 @@ for pol in input_dict["polarization"]:
             "sentinel1_burst_extractor.sh",
             "-n", burst["ParentProductName"],
             "-p", pol.lower(),
-            "-s", str(input_dict["sub_swath"].lower()),
-            "-r", str(input_dict["burst_id"]),
+            "-s", str(args.sub_swath.lower()),
+            "-r", str(args.burst_id),
             "-o", str(tmp_insar),
         ]
         _, output = exec_proc(cmd, cwd=repo_directory / "utilities")
@@ -106,12 +95,12 @@ for pol in input_dict["polarization"]:
         print("adding SNAP to PATH")  # needed when running outside of docker
         os.environ["PATH"] = os.environ["PATH"] + ":/usr/local/esa-snap/bin"
 
-    input_mst_date = parse_date(input_dict["master_date"])
+    input_mst_date = parse_date(args.master_date)
     mst_filename = next(filter(lambda x: input_mst_date.strftime("%Y%m%d") in str(x), burst_paths), None)
     if mst_filename is None:
         raise FileNotFoundError("No burst found for master date: " + str(input_mst_date))
     mst_date = parse_date(date_from_burst(mst_filename))
-    mst_bandname = f'{input_dict["sub_swath"].upper()}_{pol.upper()}_mst_{mst_date.strftime("%d%b%Y")}'
+    mst_bandname = f'{args.sub_swath.upper()}_{pol.upper()}_mst_{mst_date.strftime("%d%b%Y")}'
 
     burst_paths.remove(mst_filename)  # don't let master and slave be the same
 
@@ -120,7 +109,7 @@ for pol in input_dict["polarization"]:
     #####################################################################
     slv_filename = burst_paths[0]
     slv_date = parse_date(date_from_burst(slv_filename))
-    slv_bandname = f'{input_dict["sub_swath"].upper()}_{pol.upper()}_slv1_{slv_date.strftime("%d%b%Y")}'
+    slv_bandname = f'{args.sub_swath.upper()}_{pol.upper()}_slv1_{slv_date.strftime("%d%b%Y")}'
     # Avoid "2images" in the name here:
     output_mst_filename_tmp = (
         f"{result_folder}/tmp_mst_{mst_date.strftime('%Y%m%dT%H%M%S')}_{pol.lower()}.tif"
@@ -165,7 +154,7 @@ for pol in input_dict["polarization"]:
     for burst_path in burst_paths[1:]:
         slv_filename = burst_path
         slv_date = parse_date(date_from_burst(slv_filename))
-        slv_bandname = f'{input_dict["sub_swath"].upper()}_{pol.upper()}_slv1_{slv_date.strftime("%d%b%Y")}'
+        slv_bandname = f'{args.sub_swath.upper()}_{pol.upper()}_slv1_{slv_date.strftime("%d%b%Y")}'
         # Avoid "2images" in the name here:
         output_slv_filename_tmp = (
             f"{result_folder}/tmp_slv_{slv_date.strftime('%Y%m%dT%H%M%S')}_{pol.lower()}.tif"
@@ -215,10 +204,10 @@ for pol in input_dict["polarization"]:
 # TODO: Assert latlon are the same for all polarizations
 # remove latlon bands from master date:
 mst_output_paths_element = date_to_output_paths.get(mst_date)
-if len(input_dict["polarization"]) > 1:
-    # remove elements matching  "_" + input_dict["polarization"][0] + "_grid_"
+if len(args.polarization) > 1:
+    # remove elements matching  "_" + args.polarization[0] + "_grid_"
     mst_output_paths_element = [
-        path for path in mst_output_paths_element if f"_{input_dict['polarization'][0]}_grid_" not in str(path)
+        path for path in mst_output_paths_element if f"_{args.polarization[0]}_grid_" not in str(path)
     ]
     date_to_output_paths[mst_date] = mst_output_paths_element
 latlon_band_files = [path for path in mst_output_paths_element if "_grid_" in str(path)]
