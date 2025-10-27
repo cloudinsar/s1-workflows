@@ -140,6 +140,13 @@ def parse_date(date_str: str) -> datetime:
     return datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S.%fZ")
 
 
+def parse_date_tuple(date_tuple_str: str) -> tuple:
+    dates = date_tuple_str.split("_")
+    if len(dates) != 2:
+        raise ValueError(f"Invalid date pair: {date_tuple_str}")
+    return (parse_date(dates[0]).date().isoformat(), parse_date(dates[1]).date().isoformat())
+
+
 def union_extents(a: list, b: list) -> list:
     """
     Union of two extents [minx, miny, maxx, maxy].

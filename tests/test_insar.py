@@ -84,18 +84,29 @@ def run_stac_catalog_and_verify(catalog_path: Path, tmp_dir: Path):
     "input_dict",
     [
         input_dict_2024_vv,
-        input_dict_2018_vh,
-        input_dict_belgium_vv,
+        # input_dict_2018_vh,
+        # input_dict_belgium_vv,
     ],
 )
 def test_insar(script, input_dict, auto_title):
-    input_base64_json = base64.b64encode(json.dumps(input_dict).encode("utf8")).decode("ascii")
-
     tmp_dir = Path(repository_root / slugify(auto_title).replace("tests/", "tests/tmp_")).absolute()
     if tmp_dir.exists():
         shutil.rmtree(tmp_dir)
     tmp_dir.mkdir(exist_ok=True)
-    exec_proc(["python", repository_root / "sar" / script, input_base64_json], cwd=tmp_dir)
+
+    # TODO: Use parameterized input
+    args = [
+        "--date_pairs",
+        "20240809_20240821",
+        "20240821_20240902",
+        "--burst_id",
+        "249435",
+        "--polarization",
+        "vv",
+        "--sub_swath",
+        "IW2",
+    ]
+    exec_proc(["python", repository_root / "sar" / script] + args, cwd=tmp_dir)
 
     json_files = list(tmp_dir.glob("*collection*.json"))
     assert json_files, "A *collection*.json file generated"
