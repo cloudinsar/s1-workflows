@@ -237,6 +237,9 @@ def generate_catalog(
 
     collection_stac["cube:dimensions"]["t"]["extent"] = collection_stac["extent"]["temporal"]["interval"][0]
 
+    if not collection_filename.endswith("collection.json"):
+        raise ValueError("collection_filename should end with collection.json, but got: " + collection_filename)
+
     with open(stac_root / collection_filename, "w") as f:
         json.dump(collection_stac, f, indent=2)
 

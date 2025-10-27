@@ -4,7 +4,7 @@ class: CommandLineTool
 baseCommand: /src/OpenEO_insar_preprocessing.py
 requirements:
   DockerRequirement:
-    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.41
+    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.44
 inputs:
   input_base64_json:
     type: string
@@ -12,8 +12,6 @@ inputs:
       position: 1
 outputs:
   output_file:
-    type:
-      type: array
-      items: File
+    type: File[]
     outputBinding:
       glob: ["S1_2images_collection.json", "*2images*"]

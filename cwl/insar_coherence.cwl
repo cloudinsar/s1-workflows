@@ -12,8 +12,6 @@ inputs:
       position: 1
 outputs:
   output_file:
-    type:
-      type: array
-      items: File
+    type: File[]
     outputBinding:
       glob: ["S1_2images_collection.json", "*2images*"]

@@ -22,22 +22,32 @@ def get_connection():
         return openeo.connect("http://127.0.0.1:8080").authenticate_basic("openeo", "openeo")
     else:
         # url = "https://openeo.dataspace.copernicus.eu"
-        # url = "https://openeo.dev.warsaw.openeo.dataspace.copernicus.eu/"  # needs VPN
-        url = "https://openeo-staging.dataspace.copernicus.eu/"
+        url = "https://openeo.dev.warsaw.openeo.dataspace.copernicus.eu/"  # needs VPN
+        # url = "https://openeo-staging.dataspace.copernicus.eu/"
         return openeo.connect(url).authenticate_oidc()
 
 
-@pytest.mark.skip(reason="TODO: Log into openEO backend")
-def test_insar_coherence_against_openeo_backend(auto_title):
+# @pytest.mark.skip(reason="TODO: Log into openEO backend")
+@pytest.mark.parametrize(
+    "process_id",
+    [
+        "insar_coherence",
+        "insar_interferogram_snaphu",
+    ],
+)
+@pytest.mark.parametrize(
+    "input_dict",
+    [
+        input_dict_2024_vv,
+        # input_dict_2018_vh,
+        # input_dict_belgium_vv,
+    ],
+)
+def test_georeferenced_insar_against_openeo_backend(process_id, input_dict, auto_title):
     now = datetime.now()
     tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests/", "tests/tmp_")).absolute()
     tmp_dir.mkdir(exist_ok=True)
-    datacube = get_connection().datacube_from_process(
-        process_id="insar_coherence",
-        # process_id="insar_interferogram_snaphu",
-        **input_dict_2018_vh,
-        # **input_dict_2024_vv,
-    )
+    datacube = get_connection().datacube_from_process(process_id=process_id, **input_dict)
 
     if local_openEO:
         datacube = datacube.save_result(format="NetCDF")
@@ -54,15 +64,19 @@ def test_insar_coherence_against_openeo_backend(auto_title):
 
 
 @pytest.mark.skip(reason="TODO: Log into openEO backend")
-def test_insar_preprocessing_against_openeo_backend(auto_title):
+@pytest.mark.parametrize(
+    "input_dict",
+    [
+        # input_dict_2018_vh_preprocessing,
+        input_dict_belgium_vv_vh_preprocessing,
+        # input_dict_2024_vv_preprocessing,
+    ],
+)
+def test_insar_preprocessing_against_openeo_backend(input_dict, auto_title):
     now = datetime.now()
     tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests/", "tests/tmp_")).absolute()
     tmp_dir.mkdir(exist_ok=True)
-    datacube = get_connection().datacube_from_process(
-        process_id="insar_preprocessing",
-        # **input_dict_2018_vh_preprocessing,
-        **input_dict_belgium_vv_vh_preprocessing,
-    )
+    datacube = get_connection().datacube_from_process(process_id="insar_preprocessing", **input_dict)
 
     if local_openEO:
         datacube = datacube.save_result(format="NetCDF")

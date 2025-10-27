@@ -28,7 +28,7 @@ gdal.UseExceptions()
 
 def tiff_to_gtiff(input_path, output_path, tiff_per_band=False):
     input_path = Path(input_path)
-    print(f"tiff_to_gtiff {input_path=}")
+    print(f"tiff_to_gtiff({input_path=})")
     if not os.path.exists(input_path):
         raise FileNotFoundError(f"Input file {input_path} does not exist.")
 
@@ -59,7 +59,8 @@ def tiff_to_gtiff(input_path, output_path, tiff_per_band=False):
 
     transform_in = list(ds_in.GetGeoTransform())
     print(f"{transform_in=}")  # [0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
-    driver_tiff = gdal.GetDriverByName("GTiff")
+    # TODO: Avoid: "The offset of the first block of the image should be after its IFD"
+    driver_tiff = gdal.GetDriverByName("GTiff")  # COG GTiff
 
     output_paths = []
     if tiff_per_band:
@@ -71,6 +72,7 @@ def tiff_to_gtiff(input_path, output_path, tiff_per_band=False):
         # Compression is slower, but reduces images from 650Mb to 300Mb for example.
         # Which might save time when transferring to bucket and reading as stac afterward
         ds_out = driver_tiff.CreateCopy(output_path, ds_in, options=["TILED=YES", "COMPRESS=DEFLATE"])
+        # ds_out.BuildOverviews("NONE", overviewlist=[])  # TODO: remove overviews?
         output_paths.append(output_path)
 
     for i in range(1, ds_out.RasterCount + 1):
@@ -85,6 +87,7 @@ def tiff_to_gtiff(input_path, output_path, tiff_per_band=False):
     ):
         # set CRS to webmercator, to avoid pixels going out of the CRS bounds:
         ds_out.SetProjection("EPSG:3857")
+        # TODO: Remove GeoTiePoints
 
     ds_out.SetGeoTransform(transform_in)
     ds_out.FlushCache()  # saves to disk if not in memory

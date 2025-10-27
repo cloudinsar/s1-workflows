@@ -74,7 +74,9 @@ def assert_tif_file_is_healthy(tif_path):
     # - The offset of the IFD for overview of index 0 is 684, whereas it should be greater than the one of the main image, which is at byte 21236950
     from rio_cogeo import cog_validate
 
-    is_valid_cog, errors, _ = cog_validate(str(tif_path))
+    is_valid_cog, errors, _ = cog_validate(str(tif_path), quiet=True)
+    if errors:
+        print(f"COG validation errors for {tif_path}: {errors}")
     # assert is_valid_cog, str(errors)  # does not pass test ATM
 
 
