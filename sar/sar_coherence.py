@@ -56,7 +56,7 @@ with urllib.request.urlopen(https_request) as response:
     bursts = json.loads(response.read().decode())
 
 flattened_pairs = set()
-for pair in date_pairs_parsed:
+for pair in date_pairs_iso:
     for date in pair:
         flattened_pairs.add(parse_date(date).date())
 burst_paths = []
