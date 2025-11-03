@@ -10,22 +10,22 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict
 
-if os.path.exists("notebooks/CDSE_SECRET"):
-    # same credentials as in the notebooks
-    with open("notebooks/CDSE_SECRET", "r") as file:
-        lines = file.readlines()
-    os.environ["AWS_ACCESS_KEY_ID"] = lines[0].strip().split(": ")[1]
-    os.environ["AWS_SECRET_ACCESS_KEY"] = lines[1].strip().split(": ")[1]
-if not "AWS_ENDPOINT_URL_S3" in os.environ:
-    os.environ["AWS_ENDPOINT_URL_S3"] = "https://eodata.dataspace.copernicus.eu"
-
 # __file__ could have exotic values in Docker:
 # __file__ == /src/./OpenEO_insar.py
 # __file__ == //./src/OpenEO_insar.py
-# So we do a lot of normalisation:
+# So we do a lot of normalization:
 repo_directory = os.path.dirname(os.path.normpath(__file__).replace("//", "/"))
 repo_directory = Path(repo_directory).parent.parent.absolute()
 print("repo_directory: " + str(repo_directory))
+
+if os.path.exists(repo_directory / "notebooks/CDSE_SECRET"):
+    # same credentials as in the notebooks
+    with open(repo_directory / "notebooks/CDSE_SECRET", "r") as file:
+        lines = file.readlines()
+    os.environ["AWS_ACCESS_KEY_ID"] = lines[0].split(":")[1].strip()
+    os.environ["AWS_SECRET_ACCESS_KEY"] = lines[1].split(":")[1].strip()
+if not "AWS_ENDPOINT_URL_S3" in os.environ:
+    os.environ["AWS_ENDPOINT_URL_S3"] = "https://eodata.dataspace.copernicus.eu"
 
 print("S3_ENDPOINT_URL= " + str(os.environ.get("S3_ENDPOINT_URL", None)))
 print("AWS_ACCESS_KEY_ID= " + str(os.environ.get("AWS_ACCESS_KEY_ID", None)))

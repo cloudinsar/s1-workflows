@@ -26,6 +26,7 @@ S1B_SLC_*
 tmp*
 openeo-geopyspark-driver/
 venv/
+CDSE_SECRET
 
 # Jupyter Notebook
 .ipynb_checkpoints
