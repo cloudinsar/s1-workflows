@@ -139,21 +139,7 @@ def test_insar_preprocessing(input_dict, auto_title):
     if tmp_dir.exists():
         shutil.rmtree(tmp_dir)
     tmp_dir.mkdir(exist_ok=True)
-
-    # TODO: Use parameterized input
-    args = [
-        "--temporal_extent",
-        "20240809_20240821",
-        "--master_date",
-        "2024-08-09",
-        "--burst_id",
-        "234893",
-        "--polarization",
-        "vv",
-        "--sub_swath",
-        "IW1",
-    ]
-    exec_proc(["python", repository_root / script] + args, cwd=tmp_dir)
+    exec_proc(["python", repository_root / script, input_base64_json], cwd=tmp_dir)
 
     json_files = list(tmp_dir.glob("*collection*.json"))
     assert json_files, "A *collection*.json file generated"
