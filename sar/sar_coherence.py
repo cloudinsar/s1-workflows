@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import argparse
 import base64
 import glob
 import os
@@ -8,29 +7,35 @@ import sys
 import urllib.parse
 import urllib.request
 
-from utils import simple_stac_builder, tiff_to_gtiff
+from utils import simple_stac_builder
+from utils import tiff_to_gtiff
 from utils.workflow_utils import *
 
 start_time = datetime.now()
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--date_pairs", nargs="+", required=True)
-parser.add_argument("--burst_id", type=int, required=True)
-parser.add_argument("--coherence_window_az", type=int, default=2)
-parser.add_argument("--coherence_window_rg", type=int, default=10)
-parser.add_argument("--polarization", type=str, choices=["vv", "vh"], required=True)
-parser.add_argument("--sub_swath", type=str, choices=["IW1", "IW2", "IW3"], required=True)
-args = parser.parse_args()
-date_pairs_iso = [parse_date_tuple(t) for t in args.date_pairs]
+if len(sys.argv) > 1:
+    input_dict = json.loads(base64.b64decode(sys.argv[1].encode("utf8")).decode("utf8"))
+else:
+    print("Using debug arguments!")
+    input_dict = input_dict_2018_vh
 
-start_date = min([min(pair) for pair in date_pairs_iso])
-end_date = max([max(pair) for pair in date_pairs_iso])
+if not input_dict.get("polarization"):
+    input_dict["polarization"] = "vv"
+if not input_dict.get("sub_swath"):
+    input_dict["sub_swath"] = "IW3"
+if not "coherence_window_rg" in input_dict or not "coherence_window_az" in input_dict:
+    print("Setting default coherence window size")
+    input_dict["coherence_window_rg"] = 10
+    input_dict["coherence_window_az"] = 2
+print(input_dict)
+start_date = min([min(pair) for pair in input_dict["InSAR_pairs"]])
+end_date = max([max(pair) for pair in input_dict["InSAR_pairs"]])
 
-primary_dates = [pair[0] for pair in date_pairs_iso]
+primary_dates = [pair[0] for pair in input_dict["InSAR_pairs"]]
 primary_dates_duplicates = set([d for d in primary_dates if primary_dates.count(d) > 1])
 if primary_dates_duplicates:
     raise ValueError(
-        f"Duplicate primary date(s) found in date_pairs: {primary_dates_duplicates}. "
+        f"Duplicate primary date(s) found in InSAR_pairs: {primary_dates_duplicates}. "
         "You can load multiple primary dates over multiple processes if needed."
     )
 
@@ -45,9 +50,9 @@ https_request = (
         f"https://catalogue.dataspace.copernicus.eu/odata/v1/Bursts?$filter="
         + urllib.parse.quote(
     f"ContentDate/Start ge {start_date}T00:00:00.000Z and ContentDate/Start le {end_date}T23:59:59.000Z and "
-    f"PolarisationChannels eq '{args.polarization.upper()}' and "
-    f"BurstId eq {args.burst_id} and "
-    f"SwathIdentifier eq '{args.sub_swath.upper()}'"
+    f"PolarisationChannels eq '{input_dict['polarization'].upper()}' and "
+    f"BurstId eq {input_dict['burst_id']} and "
+    f"SwathIdentifier eq '{input_dict['sub_swath'].upper()}'"
 )
         + "&$top=1000"
 )
@@ -56,7 +61,7 @@ with urllib.request.urlopen(https_request) as response:
     bursts = json.loads(response.read().decode())
 
 flattened_pairs = set()
-for pair in date_pairs_iso:
+for pair in input_dict["InSAR_pairs"]:
     for date in pair:
         flattened_pairs.add(parse_date(date).date())
 burst_paths = []
@@ -72,9 +77,9 @@ for burst in bursts["value"]:
         "bash",
         "sentinel1_burst_extractor.sh",
         "-n", burst["ParentProductName"],
-        "-p", args.polarization.lower(),
-        "-s", str(args.sub_swath.lower()),
-        "-r", str(args.burst_id),
+        "-p", input_dict["polarization"].lower(),
+        "-s", str(input_dict["sub_swath"].lower()),
+        "-r", str(input_dict["burst_id"]),
         "-o", str(tmp_insar),
     ]
     _, output = exec_proc(cmd, cwd=repo_directory / "utilities")
@@ -98,7 +103,7 @@ if subprocess.run(["which", "gpt"]).returncode != 0 and os.path.exists("/usr/loc
 
 asset_paths = []
 
-for pair in date_pairs_iso:
+for pair in input_dict["InSAR_pairs"]:
     mst_filename = next(filter(lambda x: pair[0].replace("-", "") in str(x), burst_paths))
     slv_filename = next(filter(lambda x: pair[1].replace("-", "") in str(x), burst_paths))
 
@@ -111,9 +116,9 @@ for pair in date_pairs_iso:
             str(repo_directory / "notebooks/graphs/coh_2images_GeoTiff.xml"),
             f"-Pmst_filename={mst_filename}",
             f"-Pslv_filename={slv_filename}",
-            f"-PcohWinRg={args.coherence_window_rg}",
-            f"-PcohWinAz={args.coherence_window_az}",
-            f"-Ppolarisation={args.polarization.upper()}",
+            f"-PcohWinRg={input_dict['coherence_window_rg']}",
+            f"-PcohWinAz={input_dict['coherence_window_az']}",
+            f"-Ppolarisation={input_dict['polarization'].upper()}",
             f"-Poutput_filename={output_filename_tmp}",
         ] + snap_extra_arguments
         exec_proc(gpt_cmd, write_output=False)

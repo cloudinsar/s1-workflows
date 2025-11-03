@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import argparse
 import base64
 import glob
 import os
@@ -15,22 +14,29 @@ from utils.workflow_utils import *
 
 start_time = datetime.now()
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--date_pairs", nargs="+", required=True)
-parser.add_argument("--burst_id", type=int, required=True)
-parser.add_argument("--coherence_window_az", type=int, default=2)
-parser.add_argument("--coherence_window_rg", type=int, default=10)
-parser.add_argument("--polarization", type=str, choices=["vv", "vh"], required=True)
-parser.add_argument("--sub_swath", type=str, choices=["IW1", "IW2", "IW3"], required=True)
-parser.add_argument("--n_az_looks", type=int, default=1)
-parser.add_argument("--n_rg_looks", type=int, default=4)
-args = parser.parse_args()
-date_pairs_iso = [parse_date_tuple(t) for t in args.date_pairs]
+if len(sys.argv) > 1:
+    input_dict = json.loads(base64.b64decode(sys.argv[1].encode("utf8")).decode("utf8"))
+else:
+    print("Using debug arguments!")
+    input_dict = input_dict_2018_vh
 
-start_date = min([min(pair) for pair in date_pairs_iso])
-end_date = max([max(pair) for pair in date_pairs_iso])
+if not input_dict.get("polarization"):
+    input_dict["polarization"] = "vv"
+if not input_dict.get("sub_swath"):
+    input_dict["sub_swath"] = "IW3"
+if not "coherence_window_rg" in input_dict or not "coherence_window_az" in input_dict:
+    print("Setting default coherence window size")
+    input_dict["coherence_window_rg"] = 10
+    input_dict["coherence_window_az"] = 2
+if not "n_rg_looks" in input_dict or not "n_az_looks" in input_dict:
+    print("Setting default multillok parameters")
+    input_dict["n_rg_looks"] = 4
+    input_dict["n_az_looks"] = 1
+print(input_dict)
+start_date = min([min(pair) for pair in input_dict["InSAR_pairs"]])
+end_date = max([max(pair) for pair in input_dict["InSAR_pairs"]])
 
-primary_dates = [pair[0] for pair in date_pairs_iso]
+primary_dates = [pair[0] for pair in input_dict["InSAR_pairs"]]
 primary_dates_duplicates = set([d for d in primary_dates if primary_dates.count(d) > 1])
 if primary_dates_duplicates:
     raise ValueError(
@@ -48,9 +54,9 @@ https_request = (
         f"https://catalogue.dataspace.copernicus.eu/odata/v1/Bursts?$filter="
         + urllib.parse.quote(
     f"ContentDate/Start ge {start_date}T00:00:00.000Z and ContentDate/Start le {end_date}T23:59:59.000Z and "
-    f"PolarisationChannels eq '{args.polarization.upper()}' and "
-    f"BurstId eq {args.burst_id} and "
-    f"SwathIdentifier eq '{args.sub_swath.upper()}'"
+    f"PolarisationChannels eq '{input_dict['polarization'].upper()}' and "
+    f"BurstId eq {input_dict['burst_id']} and "
+    f"SwathIdentifier eq '{input_dict['sub_swath'].upper()}'"
 )
         + "&$top=1000"
 )
@@ -59,7 +65,7 @@ with urllib.request.urlopen(https_request) as response:
     bursts = json.loads(response.read().decode())
 
 flattened_pairs = set()
-for pair in date_pairs_iso:
+for pair in input_dict["InSAR_pairs"]:
     for date in pair:
         flattened_pairs.add(parse_date(date).date())
 burst_paths = []
@@ -72,9 +78,9 @@ for burst in bursts["value"]:
     cmd = [
         "sentinel1_burst_extractor.sh",
         "-n", burst["ParentProductName"],
-        "-p", args.polarization.lower(),
-        "-s", str(args.sub_swath.lower()),
-        "-r", str(args.burst_id),
+        "-p", input_dict["polarization"].lower(),
+        "-s", str(input_dict["sub_swath"].lower()),
+        "-r", str(input_dict["burst_id"]),
         "-o", str(tmp_insar),
     ]
     _, output = exec_proc(
@@ -110,7 +116,7 @@ if subprocess.run(["which", "gpt"]).returncode != 0 and os.path.exists("/usr/loc
 
 asset_paths = []
 
-for pair in date_pairs_iso:
+for pair in input_dict["InSAR_pairs"]:
     prm_filename = next(filter(lambda x: pair[0].replace("-", "") in str(x), burst_paths))
     sec_filename = next(filter(lambda x: pair[1].replace("-", "") in str(x), burst_paths))
 
@@ -123,8 +129,8 @@ for pair in date_pairs_iso:
     )
 
     if not os.path.exists(result_path):
-        phase_bandname = f'Phase_ifg_{args.sub_swath}_{args.polarization.upper()}_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
-        coh_bandname = f'coh_{args.sub_swath}_{args.polarization.upper()}_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
+        phase_bandname = f'Phase_ifg_{input_dict["sub_swath"]}_{input_dict["polarization"].upper()}_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
+        coh_bandname = f'coh_{input_dict["sub_swath"]}_{input_dict["polarization"].upper()}_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
 
         gpt_cmd = [
             "gpt",
@@ -135,10 +141,10 @@ for pair in date_pairs_iso:
             ),
             f"-Pprm_filename={prm_filename}",
             f"-Psec_filename={sec_filename}",
-            f"-PcohWinRg={args.coherence_window_rg}",
-            f"-PcohWinAz={args.coherence_window_az}",
-            f"-PnRgLooks={args.n_rg_looks}",
-            f"-PnAzLooks={args.n_az_looks}",
+            f"-PcohWinRg={input_dict['coherence_window_rg']}",
+            f"-PcohWinAz={input_dict['coherence_window_az']}",
+            f"-PnRgLooks={input_dict['n_rg_looks']}",
+            f"-PnAzLooks={input_dict['n_az_looks']}",
             f"-Poutput_filename={output_filename_tmp}",
         ] + snap_extra_arguments
         exec_proc(gpt_cmd)
@@ -169,10 +175,10 @@ for pair in date_pairs_iso:
         exec_proc(cmd_unwrapping, cwd=output_filename_tmp)
 
         # Geocode the result (interferogram, unwrapped interferogram, coherence)
-        sub_swath = args.sub_swath.upper()
-        phase_bandname = f'Phase_ifg_{sub_swath}_{args.polarization.upper()}_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
+        sub_swath = input_dict["sub_swath"].upper()
+        phase_bandname = f'Phase_ifg_{sub_swath}_{input_dict["polarization"].upper()}_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
         unw_phase_bandname = f'Unw_Phase_ifg_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
-        coh_bandname = f'coh_{sub_swath}_{args.polarization.upper()}_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
+        coh_bandname = f'coh_{sub_swath}_{input_dict["polarization"].upper()}_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
         unw_phase_filename = glob.glob(
             os.path.join(output_filename_tmp, "UnwPhase*.hdr")
         )[0]
