@@ -14,7 +14,11 @@ from utils.workflow_utils import *
 start_time = datetime.now()
 
 if len(sys.argv) > 1:
-    input_dict = json.loads(base64.b64decode(sys.argv[1].encode("utf8")).decode("utf8"))
+    arg = sys.argv[1]
+    if os.path.isfile(arg):
+        input_dict = json.loads(Path(arg).read_text())
+    else:
+        input_dict = json.loads(base64.b64decode(arg.encode("utf8")).decode("utf8"))
 else:
     print("Using debug arguments!")
     input_dict = input_dict_2018_vh
