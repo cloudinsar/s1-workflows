@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import base64
-import glob
 import os
 import subprocess
 import sys
@@ -23,14 +22,14 @@ else:
     print("Using debug arguments!")
     input_dict = input_dict_2018_vh
 
-if not input_dict.get("polarization"):
-    input_dict["polarization"] = "vv"
-if not input_dict.get("sub_swath"):
-    input_dict["sub_swath"] = "IW3"
-if not "coherence_window_rg" in input_dict or not "coherence_window_az" in input_dict:
-    print("Setting default coherence window size")
-    input_dict["coherence_window_rg"] = 10
-    input_dict["coherence_window_az"] = 2
+default_dict = {
+    "polarization": "vv",
+    "sub_swath": "IW3",
+    "coherence_window_rg": 10,
+    "coherence_window_az": 2,
+}
+input_dict = {k: v for k, v in input_dict.items() if v is not None}
+input_dict = {**default_dict, **input_dict}  # merge with defaults
 print(input_dict)
 start_date = min([min(pair) for pair in input_dict["InSAR_pairs"]])
 end_date = max([max(pair) for pair in input_dict["InSAR_pairs"]])

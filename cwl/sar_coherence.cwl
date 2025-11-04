@@ -9,11 +9,10 @@ requirements:
       - entryname: "arguments.json"
         entry: $(inputs)
   - class: DockerRequirement
-    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.45
+    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.46
   - class: NetworkAccess
     networkAccess: true
 
-# TODO: Make optional
 inputs:
   InSAR_pairs:
     type:
@@ -24,17 +23,17 @@ inputs:
   burst_id:
     type: int
   coherence_window_az:
-    type: int
+    type: int?
   coherence_window_rg:
-    type: int
+    type: int?
   n_az_looks:
-    type: int
+    type: int?
   n_rg_looks:
-    type: int
+    type: int?
   polarization:
     type: string
   sub_swath:
-    type: string
+    type: string?
 
 arguments:
   - arguments.json
