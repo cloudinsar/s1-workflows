@@ -9,7 +9,9 @@ requirements:
       - entryname: "arguments.json"
         entry: $(inputs)
   - class: DockerRequirement
-    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:openeo_insar:1.45
+    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.45
+  - class: NetworkAccess
+    networkAccess: true
 
 # TODO: Make optional
 inputs:
