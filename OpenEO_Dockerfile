@@ -92,8 +92,7 @@ ENV PATH="$PATH:/opt/snaphu-v2.0.4_linux/bin"
 # COPY . /src
 COPY cwl/ /src/cwl/
 COPY ./utilities /src/utilities/
-COPY ./notebooks/graphs /src/notebooks/graphs/
-COPY ./notebooks/CDSE_SECRET /src/notebooks/CDSE_SECRET
+COPY ./notebooks/ /src/notebooks/
 COPY ./sar /src/sar/
 COPY *.sh /src/
 
