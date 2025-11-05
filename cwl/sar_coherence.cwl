@@ -98,9 +98,9 @@ $graph:
     class: CommandLineTool
     requirements:
       - class: DockerRequirement
-        dockerPull: vito-docker.artifactory.vgt.vito.be/openeo-geopyspark-driver-example-stac-catalog:1.6
+        dockerPull: vito-docker.artifactory.vgt.vito.be/openeo-geopyspark-driver-example-stac-catalog:1.7
 
-    baseCommand: "/data/simple_stac_merge.py"
+    baseCommand: ["/data/simple_stac_merge.py", "S1_2images_collection.json"]
     inputs:
       simple_stac_merge_in1:
         type: Directory[]
