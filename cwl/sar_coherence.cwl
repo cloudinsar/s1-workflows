@@ -4,14 +4,14 @@ cwlVersion: v1.2
 $graph:
   - id: sub_collection_maker
     class: CommandLineTool
-    baseCommand: /src/sar/sar_coherence.py
+    baseCommand: /home/emile/openeo/s1-workflows/sar/sar_coherence.py
     requirements:
       - class: InitialWorkDirRequirement
         listing:
           - entryname: "arguments.json"
             entry: $(inputs)
       - class: DockerRequirement
-        dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.48
+        dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.49
       - class: NetworkAccess
         networkAccess: true
 

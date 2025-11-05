@@ -138,6 +138,7 @@ for pair in input_dict["InSAR_pairs"]:
 simple_stac_builder.generate_catalog(
     result_folder,
     files=asset_paths,
+    collection_filename="collection.json",
 )
 
 print("seconds since start: " + str((datetime.now() - start_time).seconds))
