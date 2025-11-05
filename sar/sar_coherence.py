@@ -31,6 +31,9 @@ default_dict = {
 input_dict = {k: v for k, v in input_dict.items() if v is not None}
 input_dict = {**default_dict, **input_dict}  # merge with defaults
 print(input_dict)
+if isinstance(input_dict["InSAR_pairs"][0], str):
+    print("Single pair detected in InSAR_pairs, converting to list of pairs.")
+    input_dict["InSAR_pairs"] = [input_dict["InSAR_pairs"]]
 start_date = min([min(pair) for pair in input_dict["InSAR_pairs"]])
 end_date = max([max(pair) for pair in input_dict["InSAR_pairs"]])
 
