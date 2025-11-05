@@ -18,7 +18,7 @@ repo_directory = os.path.dirname(os.path.normpath(__file__).replace("//", "/"))
 repo_directory = Path(repo_directory).parent.parent.absolute()
 print("repo_directory: " + str(repo_directory))
 
-if os.path.exists(repo_directory / "notebooks/CDSE_SECRET"):
+if "AWS_ACCESS_KEY_ID" not in os.environ and os.path.exists(repo_directory / "notebooks/CDSE_SECRET"):
     # same credentials as in the notebooks
     with open(repo_directory / "notebooks/CDSE_SECRET", "r") as file:
         lines = file.readlines()

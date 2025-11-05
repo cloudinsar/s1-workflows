@@ -1,6 +1,6 @@
-# docker build -t openeo_insar:1.47 . -f OpenEO_Dockerfile
-# skopeo copy --multi-arch=all --format=oci docker-daemon:openeo_insar:1.47 docker://registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.47
-# docker run -it --memory=15G -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --rm openeo_insar:1.47
+# docker build -t openeo_insar:1.48 . -f OpenEO_Dockerfile
+# skopeo copy --multi-arch=all --format=oci docker-daemon:openeo_insar:1.48 docker://registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.48
+# docker run -it --memory=15G -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --rm openeo_insar:1.48
 FROM ghcr.io/osgeo/gdal:ubuntu-small-3.10.0
 
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
@@ -90,7 +90,6 @@ RUN wget https://step.esa.int/thirdparties/snaphu/2.0.4/snaphu-v2.0.4_linux.zip 
 ENV PATH="$PATH:/opt/snaphu-v2.0.4_linux/bin"
 
 # COPY . /src
-COPY cwl/ /src/cwl/
 COPY ./utilities /src/utilities/
 COPY ./notebooks/ /src/notebooks/
 COPY ./sar /src/sar/
