@@ -1,5 +1,5 @@
 #!/usr/bin/env cwl-runner
-# Example on how to run locally: cwltool --tmpdir-prefix=$HOME/tmp/ --force-docker-pull --leave-container --parallel sar_coherence.cwl /home/emile/openeo/s1-workflows/sar/example_inputs/input_dict_2024_vv.json
+# Example on how to run locally: cwltool --tmpdir-prefix=$HOME/tmp/ --force-docker-pull --leave-container --leave-tmpdir --parallel sar_coherence.cwl /home/emile/openeo/s1-workflows/sar/example_inputs/input_dict_2024_vv.json
 cwlVersion: v1.2
 $graph:
   - id: sub_collection_maker
@@ -16,7 +16,7 @@ $graph:
         networkAccess: true
 
     inputs:
-      # TODO: rename toInSAR_pairs?
+      # TODO: Make original array of pairs form?
       InSAR_pairs:
         type:
           type: array
@@ -98,7 +98,7 @@ $graph:
     class: CommandLineTool
     requirements:
       - class: DockerRequirement
-        dockerPull: vito-docker.artifactory.vgt.vito.be/openeo-geopyspark-driver-example-stac-catalog:1.4
+        dockerPull: vito-docker.artifactory.vgt.vito.be/openeo-geopyspark-driver-example-stac-catalog:1.6
 
     baseCommand: "/data/simple_stac_merge.py"
     inputs:
