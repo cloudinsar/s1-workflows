@@ -4,7 +4,7 @@ cwlVersion: v1.2
 $graph:
   - id: sub_collection_maker
     class: CommandLineTool
-    baseCommand: /home/emile/openeo/s1-workflows/sar/sar_coherence.py
+    baseCommand: /src/sar/sar_coherence.py
     requirements:
       - class: InitialWorkDirRequirement
         listing:
