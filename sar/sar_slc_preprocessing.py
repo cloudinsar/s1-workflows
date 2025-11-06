@@ -235,7 +235,7 @@ output_paths = list(date_to_output_paths.values())
 simple_stac_builder.generate_catalog(
     result_folder,
     files=output_paths,
-    collection_filename="S1_2images_collection.json",
+    collection_filename="collection.json",
     date_regex=re.compile(r"(?P<feature_id>.*_(?P<date1>\d{8}(T\d{6})?))(_\w+)?\.tif$"),
 )
 

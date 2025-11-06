@@ -211,7 +211,7 @@ simple_stac_builder.generate_catalog(
     date_regex=re.compile(
         r".*phase_coh_(?P<date1>\d{8}T\d{6})_(?P<date2>\d{8}T\d{6}).tif$"
     ),
-    collection_filename="phase_coh_collection.json",
+    collection_filename="collection.json",
 )
 
 print("seconds since start: " + str((datetime.now() - start_time).seconds))
