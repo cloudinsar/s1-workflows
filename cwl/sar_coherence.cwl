@@ -99,6 +99,8 @@ $graph:
     requirements:
       - class: DockerRequirement
         dockerPull: vito-docker.artifactory.vgt.vito.be/openeo-geopyspark-driver-example-stac-catalog:1.7
+      - class: NetworkAccess
+        networkAccess: true
 
     baseCommand: ["/data/simple_stac_merge.py", "S1_2images_collection.json"]
     inputs:

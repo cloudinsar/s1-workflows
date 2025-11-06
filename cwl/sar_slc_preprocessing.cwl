@@ -14,4 +14,4 @@ outputs:
   output_file:
     type: File[]
     outputBinding:
-      glob: ["S1_2images_collection.json", "*2images*"]
+      glob: ["collection.json", "*2images*"]
