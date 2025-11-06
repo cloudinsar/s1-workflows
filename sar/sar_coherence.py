@@ -1,33 +1,39 @@
 #!/usr/bin/env python3
 import base64
-import glob
 import os
 import subprocess
 import sys
 import urllib.parse
 import urllib.request
 
-import simple_stac_builder
-import tiff_to_gtiff
-from workflow_utils import *
+from utils import simple_stac_builder
+from utils import tiff_to_gtiff
+from utils.workflow_utils import *
 
 start_time = datetime.now()
 
 if len(sys.argv) > 1:
-    input_dict = json.loads(base64.b64decode(sys.argv[1].encode("utf8")).decode("utf8"))
+    arg = sys.argv[1]
+    if os.path.isfile(arg):
+        input_dict = json.loads(Path(arg).read_text())
+    else:
+        input_dict = json.loads(base64.b64decode(arg.encode("utf8")).decode("utf8"))
 else:
     print("Using debug arguments!")
     input_dict = input_dict_2018_vh
 
-if not input_dict.get("polarization"):
-    input_dict["polarization"] = "vv"
-if not input_dict.get("sub_swath"):
-    input_dict["sub_swath"] = "IW3"
-if not "coherence_window_rg" in input_dict or not "coherence_window_az" in input_dict:
-    print("Setting default coherence window size")
-    input_dict["coherence_window_rg"] = 10
-    input_dict["coherence_window_az"] = 2
+default_dict = {
+    "polarization": "vv",
+    "sub_swath": "IW3",
+    "coherence_window_rg": 10,
+    "coherence_window_az": 2,
+}
+input_dict = {k: v for k, v in input_dict.items() if v is not None}
+input_dict = {**default_dict, **input_dict}  # merge with defaults
 print(input_dict)
+if isinstance(input_dict["InSAR_pairs"][0], str):
+    print("Single pair detected in InSAR_pairs, converting to list of pairs.")
+    input_dict["InSAR_pairs"] = [input_dict["InSAR_pairs"]]
 start_date = min([min(pair) for pair in input_dict["InSAR_pairs"]])
 end_date = max([max(pair) for pair in input_dict["InSAR_pairs"]])
 
@@ -39,15 +45,9 @@ if primary_dates_duplicates:
         "You can load multiple primary dates over multiple processes if needed."
     )
 
-# __file__ could have exotic values in Docker:
-# __file__ == /src/./OpenEO_insar.py
-# __file__ == //./src/OpenEO_insar.py
-# So we do a lot of normalisation:
-containing_folder = os.path.dirname(os.path.normpath(__file__).replace("//", "/"))
-containing_folder = Path(containing_folder).absolute()
-print("containing_folder: " + str(containing_folder))
+
 result_folder = Path.cwd().absolute()
-# result_folder = containing_folder / "output"
+# result_folder = repo_directory / "output"
 # result_folder.mkdir(exist_ok=True)
 tmp_insar = Path("/tmp/insar")
 tmp_insar.mkdir(parents=True, exist_ok=True)
@@ -78,7 +78,7 @@ for burst in bursts["value"]:
         print(f"Skipping burst {burst['BurstId']} ({begin} - {end})")
         continue
     # Allow for relative imports:
-    os.environ["PATH"] = os.environ["PATH"] + ":" + str(containing_folder / "utilities")
+    os.environ["PATH"] = os.environ["PATH"] + ":" + str(repo_directory / "utilities")
     cmd = [
         "bash",
         "sentinel1_burst_extractor.sh",
@@ -88,7 +88,7 @@ for burst in bursts["value"]:
         "-r", str(input_dict["burst_id"]),
         "-o", str(tmp_insar),
     ]
-    _, output = exec_proc(cmd, cwd=containing_folder / "utilities")
+    _, output = exec_proc(cmd, cwd=repo_directory / "utilities")
     # get paths from stdout:
     needle = "out_path: "
     bursts_from_output = sorted(
@@ -119,7 +119,7 @@ for pair in input_dict["InSAR_pairs"]:
         gpt_cmd = [
             "gpt",
             "-J-Xmx14G",
-            str(containing_folder / "notebooks/graphs/coh_2images_GeoTiff.xml"),
+            str(repo_directory / "notebooks/graphs/coh_2images_GeoTiff.xml"),
             f"-Pmst_filename={mst_filename}",
             f"-Pslv_filename={slv_filename}",
             f"-PcohWinRg={input_dict['coherence_window_rg']}",
@@ -138,6 +138,7 @@ for pair in input_dict["InSAR_pairs"]:
 simple_stac_builder.generate_catalog(
     result_folder,
     files=asset_paths,
+    collection_filename="collection.json",
 )
 
 print("seconds since start: " + str((datetime.now() - start_time).seconds))

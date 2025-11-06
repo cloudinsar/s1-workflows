@@ -10,7 +10,7 @@ from PIL import Image
 
 sys.path.append(".")
 sys.path.append("..")
-from workflow_utils import *
+from sar.utils.workflow_utils import *
 
 repository_root = Path(__file__).parent.parent
 
@@ -52,7 +52,7 @@ def assert_xarray_equals(
 
 def slugify(title):
     title = title.lower().replace(" ", "_").replace(",", "_")
-    windows_characters = ["<", ">", ":", '"', "\\", "|", "?", "*", "[", "]"]
+    windows_characters = ["<", ">", ":", '"', "\\", "/", "|", "?", "*", "[", "]"]
     for char in windows_characters:
         title = title.replace(char, "_")
     title = title.strip("_").replace("__", "_")

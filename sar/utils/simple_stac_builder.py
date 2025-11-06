@@ -3,7 +3,7 @@ import logging
 import os
 from typing import List, Union
 
-from workflow_utils import *
+from .workflow_utils import *
 
 
 def generate_catalog(

@@ -8,9 +8,9 @@ import urllib.parse
 import urllib.request
 from typing import Any, Dict, Optional
 
-import simple_stac_builder
-import tiff_to_gtiff
-from workflow_utils import *
+from utils import simple_stac_builder
+from utils import tiff_to_gtiff
+from utils.workflow_utils import *
 
 start_time = datetime.now()
 
@@ -36,15 +36,8 @@ if not input_dict.get("sub_swath"):
 assert len(input_dict["temporal_extent"]) == 2, "temporal_extent should be a list with two dates"
 print(input_dict)
 
-# __file__ could have exotic values in Docker:
-# __file__ == /src/./OpenEO_insar.py
-# __file__ == //./src/OpenEO_insar.py
-# So we do a lot of normalisation:
-containing_folder = os.path.dirname(os.path.normpath(__file__).replace("//", "/"))
-containing_folder = Path(containing_folder).absolute()
-print("containing_folder: " + str(containing_folder))
 result_folder = Path.cwd().absolute()
-# result_folder = containing_folder / "output"
+# result_folder = repo_directory / "output"
 # result_folder.mkdir(exist_ok=True)
 tmp_insar = Path("/tmp/insar")
 tmp_insar.mkdir(parents=True, exist_ok=True)
@@ -78,7 +71,7 @@ for pol in input_dict["polarization"]:
     burst_paths = []
     for burst in bursts["value"]:
         # Allow for relative imports:
-        os.environ["PATH"] = os.environ["PATH"] + ":" + str(containing_folder / "utilities")
+        os.environ["PATH"] = os.environ["PATH"] + ":" + str(repo_directory / "utilities")
 
         cmd = [
             "bash",
@@ -89,7 +82,7 @@ for pol in input_dict["polarization"]:
             "-r", str(input_dict["burst_id"]),
             "-o", str(tmp_insar),
         ]
-        _, output = exec_proc(cmd, cwd=containing_folder / "utilities")
+        _, output = exec_proc(cmd, cwd=repo_directory / "utilities")
         # get paths from stdout:
         needle = "out_path: "
         bursts_from_output = sorted(
@@ -142,7 +135,7 @@ for pol in input_dict["polarization"]:
             "gpt",
             "-J-Xmx14G",
             str(
-                containing_folder
+                repo_directory
                 / "notebooks/graphs/pre-processing_2images_SaveMst_GeoTiff.xml"
             ),
             f"-Pmst_filename={mst_filename}",
@@ -183,7 +176,7 @@ for pol in input_dict["polarization"]:
                 "gpt",
                 "-J-Xmx14G",
                 str(
-                    containing_folder
+                    repo_directory
                     / "notebooks/graphs/pre-processing_2images_SaveOnlySlv_GeoTiff.xml"
                 ),
                 f"-Pmst_filename={mst_filename}",
