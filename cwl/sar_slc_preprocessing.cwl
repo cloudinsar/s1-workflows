@@ -4,7 +4,7 @@ class: CommandLineTool
 baseCommand: /src/ser/sar_slc_preprocessing.py
 requirements:
   DockerRequirement:
-    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.44
+    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.50
 inputs:
   input_base64_json:
     type: string
