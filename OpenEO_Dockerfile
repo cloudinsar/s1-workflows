@@ -89,6 +89,12 @@ RUN wget https://step.esa.int/thirdparties/snaphu/2.0.4/snaphu-v2.0.4_linux.zip 
     rm snaphu-v2.0.4_linux.zip
 ENV PATH="$PATH:/opt/snaphu-v2.0.4_linux/bin"
 
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash && \
+    export NVM_DIR="$HOME/.nvm" && \
+    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && \
+    nvm install 24 && \
+    node --version
+
 # COPY . /src
 COPY ./utilities /src/utilities/
 COPY ./notebooks/ /src/notebooks/

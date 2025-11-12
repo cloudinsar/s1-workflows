@@ -16,4 +16,4 @@ def test_cwl_validate():
     assert cwl_files
     for cwl_file in cwl_files:
         print(f"Checking {cwl_file}")
-        exec_proc(["cwltool", "--validate", str(cwl_file)])
+        exec_proc(["cwltool", "--disable-color", "--validate", str(cwl_file)])
