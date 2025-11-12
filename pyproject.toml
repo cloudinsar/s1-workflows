@@ -29,6 +29,7 @@ dev = [
     "xarray",
     "rasterio",
     "rio-cogeo",
+    "cwltool",
 ]
 
 [tool.setuptools.packages.find]

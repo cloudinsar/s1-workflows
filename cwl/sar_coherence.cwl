@@ -27,10 +27,6 @@ $graph:
         type: int?
       coherence_window_rg:
         type: int?
-      n_az_looks:
-        type: int?
-      n_rg_looks:
-        type: int?
       polarization:
         type: string
       sub_swath:
@@ -60,10 +56,6 @@ $graph:
         type: int?
       coherence_window_rg:
         type: int?
-      n_az_looks:
-        type: int?
-      n_rg_looks:
-        type: int?
       polarization:
         type: string
       sub_swath:
@@ -81,8 +73,6 @@ $graph:
           burst_id: burst_id
           coherence_window_az: coherence_window_az
           coherence_window_rg: coherence_window_rg
-          n_az_looks: n_az_looks
-          n_rg_looks: n_rg_looks
           polarization: polarization
           sub_swath: sub_swath
 
@@ -143,8 +133,6 @@ $graph:
           burst_id: main/burst_id
           coherence_window_az: main/coherence_window_az
           coherence_window_rg: main/coherence_window_rg
-          n_az_looks: main/n_az_looks
-          n_rg_looks: main/n_rg_looks
           polarization: main/polarization
           sub_swath: main/sub_swath
         out: [ scatter_node_out ]
