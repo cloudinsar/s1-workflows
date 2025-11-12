@@ -1,7 +1,7 @@
 #!/usr/bin/env cwl-runner
 cwlVersion: v1.2
 class: CommandLineTool
-baseCommand: /src/ser/sar_slc_preprocessing.py
+baseCommand: /src/sar/sar_slc_preprocessing.py
 requirements:
   DockerRequirement:
     dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.50
