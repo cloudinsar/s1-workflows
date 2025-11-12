@@ -128,10 +128,6 @@ $graph:
         type: int?
       coherence_window_rg:
         type: int?
-      n_az_looks:
-        type: int?
-      n_rg_looks:
-        type: int?
       polarization:
         type: string
       sub_swath:
