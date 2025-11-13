@@ -97,6 +97,8 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | b
     ln -s /root/.nvm/versions/node/v24.11.1/bin/node /root/.nvm/versions/node/v24.11.1/bin/nodejs && \
     nodejs --version
 
+ENV PATH="${PATH}:/root/.nvm/versions/node/v24.11.1/bin"
+
 # COPY . /src
 COPY ./utilities /src/utilities/
 COPY ./notebooks/ /src/notebooks/
