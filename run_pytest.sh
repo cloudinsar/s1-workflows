@@ -4,6 +4,13 @@ set -euxo pipefail
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+nvm install 24
+node --version
+export PATH="${PATH}:/root/.nvm/versions/node/v24.11.1/bin"
+
 # shellcheck source=/dev/null
 . /opt/venv/bin/activate
 #workflodocker
