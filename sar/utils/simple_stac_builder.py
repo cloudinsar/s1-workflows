@@ -283,7 +283,7 @@ if __name__ == "__main__":
         #     date_regex=re.compile(r".*_(?P<date1>\d{8}(T\d{6})?).*\.tif$"),
         # )
         generate_catalog(stac_root=Path(
-            '/home/emile/openeo/s1-workflows/tests/tmp_test_insar.py_test_insar_preprocessing_input_dict0'), files=[
+            '/home/emile/openeo/s1-workflows/tests/tmp_test_insar.py_test_sar_preprocessing_input_dict0'), files=[
             ['S1_2images_mst_20180128T062713_i_VH.tif',
              'S1_2images_mst_20180128T062713_q_VH.tif',
              'S1_2images_mst_20180128T062713_grid_lat.tif',

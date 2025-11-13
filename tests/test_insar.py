@@ -118,7 +118,7 @@ def test_insar(script, input_dict, auto_title):
         input_dict_2024_vv_preprocessing,
     ],
 )
-def test_insar_preprocessing(input_dict, auto_title):
+def test_sar_preprocessing(input_dict, auto_title):
     script = "sar/sar_slc_preprocessing.py"
 
     input_base64_json = base64.b64encode(json.dumps(input_dict).encode("utf8")).decode("ascii")

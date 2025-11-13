@@ -31,8 +31,8 @@ def get_connection():
 @pytest.mark.parametrize(
     "process_id",
     [
-        "insar_coherence",
-        "insar_interferogram_snaphu",
+        "sar_coherence",
+        "sar_interferogram",
     ],
 )
 @pytest.mark.parametrize(
@@ -43,7 +43,7 @@ def get_connection():
         # input_dict_belgium_vv,
     ],
 )
-def test_georeferenced_insar_against_openeo_backend(process_id, input_dict, auto_title):
+def test_georeferenced_sar_against_openeo_backend(process_id, input_dict, auto_title):
     now = datetime.now()
     tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests/", "tests/tmp_")).absolute()
     tmp_dir.mkdir(exist_ok=True)
@@ -54,6 +54,14 @@ def test_georeferenced_insar_against_openeo_backend(process_id, input_dict, auto
         datacube.download(tmp_dir / "result.nc")
     else:
         datacube = datacube.save_result(format="GTiff", options={"overviews": "OFF"})
+        # datacube = datacube.process(
+        #     "export_workspace",
+        #     arguments={
+        #         "data": datacube,
+        #         "workspace": "insar-results-workspace",
+        #         "merge": f"{auto_title}_{datetime.now().strftime('%Y-%m-%d_%H%M%S')}",
+        #     },
+        # )
         job = datacube.create_job(title=auto_title)
         job.start_and_wait()
         job.get_results().download_files(tmp_dir)
@@ -72,11 +80,11 @@ def test_georeferenced_insar_against_openeo_backend(process_id, input_dict, auto
         # input_dict_2024_vv_preprocessing,
     ],
 )
-def test_insar_preprocessing_against_openeo_backend(input_dict, auto_title):
+def test_sar_preprocessing_against_openeo_backend(input_dict, auto_title):
     now = datetime.now()
     tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests/", "tests/tmp_")).absolute()
     tmp_dir.mkdir(exist_ok=True)
-    datacube = get_connection().datacube_from_process(process_id="insar_preprocessing", **input_dict)
+    datacube = get_connection().datacube_from_process(process_id="sar_slc_preprocessing", **input_dict)
 
     if local_openEO:
         datacube = datacube.save_result(format="NetCDF")
@@ -101,11 +109,11 @@ def test_insar_preprocessing_against_openeo_backend(input_dict, auto_title):
 def test_compare_raw_with_result():
     expect_result = Path(
         repository_root
-        / "tests/tmp_test_insar.py_test_insar_preprocessing_input_dict0/S1_2images_slv_20180203T062631.tif"
+        / "tests/tmp_test_insar.py_test_sar_preprocessing_input_dict0/S1_2images_slv_20180203T062631.tif"
     )
     actual_result = Path(
         repository_root
-        / "tests/tmp_test_insar.py_test_insar_preprocessing_input_dict0/openeo_result_S1_2images_collection_slaves/openEO_2018-02-03Z.tif"
+        / "tests/tmp_test_insar.py_test_sar_preprocessing_input_dict0/openeo_result_S1_2images_collection_slaves/openEO_2018-02-03Z.tif"
     )
     assert actual_result.exists()
     result = rioxarray.open_rasterio(actual_result)
