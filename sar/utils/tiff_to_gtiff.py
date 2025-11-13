@@ -124,11 +124,11 @@ def tiff_to_gtiff(input_path, output_path, tiff_per_band=False):
 if __name__ == "__main__":
     from tests.testutils import assert_tif_file_is_healthy
 
-    # assert_tif_file_is_healthy("tmp_mst_20180128T062713.tif")
+    # assert_tif_file_is_healthy("tmp_prm_20180128T062713.tif")
     tiff_to_gtiff(
         # "S1_coh_2images_20240821T170739_20240902T170739.tif",
         # "S1_coh_2images_20240821T170739_20240902T170739.test.tif",
-        "tmp_slv_20240821T055907.tif",
-        "tmp_slv_20240821T055907_<band_name>.tif",
+        "tmp_sec_20240821T055907.tif",
+        "tmp_sec_20240821T055907_<band_name>.tif",
     )
-    # assert_tif_file_is_healthy("tmp_mst_20180128T062713.test.tif")
+    # assert_tif_file_is_healthy("tmp_prm_20180128T062713.test.tif")

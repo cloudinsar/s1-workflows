@@ -5,7 +5,7 @@
     <sources/>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <useAdvancedOptions>false</useAdvancedOptions>
-      <file>${mst_filename}</file>
+      <file>${prm_filename}</file>
       <copyMetadata>true</copyMetadata>
       <bandNames/>
       <pixelRegion></pixelRegion>
@@ -17,7 +17,7 @@
     <sources/>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <useAdvancedOptions>false</useAdvancedOptions>
-      <file>${slv_filename}</file>
+      <file>${sec_filename}</file>
       <copyMetadata>true</copyMetadata>
       <bandNames/>
       <pixelRegion></pixelRegion>
@@ -71,7 +71,7 @@
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <selectedPolarisations>${polarisation}</selectedPolarisations>
-      <sourceBands>${i_q_mst_bandnames}</sourceBands>
+      <sourceBands>${i_q_prm_bandnames}</sourceBands>
       <bandNamePattern/>
     </parameters>
   </node>
@@ -82,7 +82,7 @@
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <selectedPolarisations>${polarisation}</selectedPolarisations>
-      <sourceBands>${i_q_slv_bandnames}</sourceBands>
+      <sourceBands>${i_q_sec_bandnames}</sourceBands>
       <bandNamePattern/>
     </parameters>
   </node>
@@ -104,7 +104,7 @@
       <sourceProduct refid="Convert-Datatype(2)"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>${output_slv_filename}</file>
+      <file>${output_sec_filename}</file>
       <formatName>GeoTIFF</formatName>
     </parameters>
   </node>
@@ -114,7 +114,7 @@
       <sourceProduct refid="BandSelect"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <sourceBands>${i_q_mst_bandnames}</sourceBands>
+      <sourceBands>${i_q_prm_bandnames}</sourceBands>
       <demName>SRTM 1Sec HGT</demName>
       <demResamplingMethod>BICUBIC_INTERPOLATION</demResamplingMethod>
       <externalDEMFile/>
@@ -140,7 +140,7 @@
       <sourceProduct refid="Convert-Datatype"/>
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
-      <file>${output_mst_filename}</file>
+      <file>${output_prm_filename}</file>
       <formatName>GeoTIFF</formatName>
     </parameters>
   </node>

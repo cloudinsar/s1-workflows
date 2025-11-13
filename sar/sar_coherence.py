@@ -110,18 +110,18 @@ if subprocess.run(["which", "gpt"]).returncode != 0 and os.path.exists("/usr/loc
 asset_paths = []
 
 for pair in input_dict["InSAR_pairs"]:
-    mst_filename = next(filter(lambda x: pair[0].replace("-", "") in str(x), burst_paths))
-    slv_filename = next(filter(lambda x: pair[1].replace("-", "") in str(x), burst_paths))
+    prm_filename = next(filter(lambda x: pair[0].replace("-", "") in str(x), burst_paths))
+    sec_filename = next(filter(lambda x: pair[1].replace("-", "") in str(x), burst_paths))
 
-    output_filename_tmp = f"{result_folder}/tmp_S1_coh_2images_{date_from_burst(mst_filename)}_{date_from_burst(slv_filename)}.tif"
+    output_filename_tmp = f"{result_folder}/tmp_S1_coh_2images_{date_from_burst(prm_filename)}_{date_from_burst(sec_filename)}.tif"
 
     if not os.path.exists(output_filename_tmp):
         gpt_cmd = [
             "gpt",
             "-J-Xmx14G",
             str(repo_directory / "notebooks/graphs/coh_2images_GeoTiff.xml"),
-            f"-Pmst_filename={mst_filename}",
-            f"-Pslv_filename={slv_filename}",
+            f"-Pprm_filename={prm_filename}",
+            f"-Psec_filename={sec_filename}",
             f"-PcohWinRg={input_dict['coherence_window_rg']}",
             f"-PcohWinAz={input_dict['coherence_window_az']}",
             f"-Ppolarisation={input_dict['polarization'].upper()}",
@@ -129,7 +129,7 @@ for pair in input_dict["InSAR_pairs"]:
         ] + snap_extra_arguments
         exec_proc(gpt_cmd, write_output=False)
 
-    output_filename = f"{result_folder}/S1_coh_2images_{date_from_burst(mst_filename)}_{date_from_burst(slv_filename)}.tif"
+    output_filename = f"{result_folder}/S1_coh_2images_{date_from_burst(prm_filename)}_{date_from_burst(sec_filename)}.tif"
     asset_paths.append(output_filename)
     if not os.path.exists(output_filename):
         tiff_to_gtiff.tiff_to_gtiff(output_filename_tmp, output_filename)

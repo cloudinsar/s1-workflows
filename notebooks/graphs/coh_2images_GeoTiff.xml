@@ -5,7 +5,7 @@
     <sources/>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <useAdvancedOptions>false</useAdvancedOptions>
-      <file>${mst_filename}</file>
+      <file>${prm_filename}</file>
       <copyMetadata>true</copyMetadata>
       <bandNames/>
       <pixelRegion></pixelRegion>
@@ -17,7 +17,7 @@
     <sources/>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <useAdvancedOptions>false</useAdvancedOptions>
-      <file>${slv_filename}</file>
+      <file>${sec_filename}</file>
       <copyMetadata>true</copyMetadata>
       <bandNames/>
       <pixelRegion></pixelRegion>

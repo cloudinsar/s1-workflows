@@ -127,7 +127,7 @@ def generate_catalog(
                 # In preprocessing, lat lon bands get added with a different date that can be ignored
                 stac["properties"]["datetime"] = date1
             if date2 is not None:
-                stac["properties"]["sar:datetime_slave"] = date2
+                stac["properties"]["sar:datetime_secondary"] = date2
 
             gdal_version = subprocess.check_output(["gdalinfo", "--version"], timeout=60, text=True).strip()
             # gdal_version = "GDAL 3.8.4, released 2024/02/08"  # example
@@ -263,36 +263,5 @@ if __name__ == "__main__":
         generate_catalog(Path(sys.argv[1]))
     else:
         print("Using debug arguments!")
-        # generate_catalog(Path("./output"))
-        # generate_catalog(
-        #     stac_root=Path("."),
-        #     files=[
-        #         "S1_coh_2images_20240809T170739_20240821T170739.tif",
-        #         "S1_coh_2images_20240809T170739_20240902T170739.tif",
-        #     ],
-        #     collection_filename="S1_2images_collection.json",
-        #     date_regex=re.compile(
-        #         "S1_coh_2images_(?P<date1>\\d{8}T\\d{6})_(?P<date2>\\d{8}T\\d{6}).tif$"
-        #     ),
-        # )
-
-        # generate_catalog(
-        #     Path("."),
-        #     files=["tmp_mst_20180128T062713.test.tif"],
-        #     collection_filename="tmp_mst_20180128T062713.test.tif.collection.json",
-        #     date_regex=re.compile(r".*_(?P<date1>\d{8}(T\d{6})?).*\.tif$"),
-        # )
-        generate_catalog(stac_root=Path(
-            '/home/emile/openeo/s1-workflows/tests/tmp_test_insar.py_test_sar_preprocessing_input_dict0'), files=[
-            ['S1_2images_mst_20180128T062713_i_VH.tif',
-             'S1_2images_mst_20180128T062713_q_VH.tif',
-             'S1_2images_mst_20180128T062713_grid_lat.tif',
-             'S1_2images_mst_20180128T062713_grid_lon.tif'],
-            ['S1_2images_slv_20180203T062631_i_VH.tif',
-             'S1_2images_slv_20180203T062631_q_VH.tif',
-             'S1_2images_mst_20180128T062713_grid_lat.tif',
-             'S1_2images_mst_20180128T062713_grid_lon.tif']],
-                         collection_filename='S1_2images_collection.json',
-                         date_regex=re.compile('(?P<feature_id>.*_(?P<date1>\\d{8}(T\\d{6})?))(_\\w+)?\\.tif$'), )
-        # generate_catalog(Path("."), date_regex=re.compile(r".*_(?P<date1>\d{8}T\d{6}).nc$"))
+        generate_catalog(Path("."), date_regex=re.compile(r".*_(?P<date1>\d{8}T\d{6}).nc$"))
     print("done")

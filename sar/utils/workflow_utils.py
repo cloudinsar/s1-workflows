@@ -69,7 +69,7 @@ input_dict_belgium_vv = {
 }
 input_dict_2018_vh_preprocessing = {
     "temporal_extent": ["2018-01-28", "2018-02-03"],
-    "master_date": "2018-01-28",
+    "primary_date": "2018-01-28",
     "burst_id": 329488,
     "polarization": "vh",
     "sub_swath": "IW2",
@@ -77,7 +77,7 @@ input_dict_2018_vh_preprocessing = {
 
 input_dict_belgium_vv_preprocessing = {
     "burst_id": 234893,
-    "master_date": "2024-08-09",
+    "primary_date": "2024-08-09",
     "polarization": "vv",
     "sub_swath": "IW1",
     "temporal_extent": ["2024-08-09", "2024-08-21"],
@@ -85,7 +85,7 @@ input_dict_belgium_vv_preprocessing = {
 
 input_dict_belgium_vv_vh_preprocessing = {
     "burst_id": 234893,
-    "master_date": "2024-08-09",
+    "primary_date": "2024-08-09",
     "polarization": ["vv", "vh"],
     "sub_swath": "IW1",
     "temporal_extent": ["2024-08-09", "2024-09-02"],
@@ -94,7 +94,7 @@ input_dict_belgium_vv_vh_preprocessing = {
 # Parameters that gave empty bands on staging:
 input_dict_2024_vv_preprocessing = {
         "burst_id": 249435,
-        "master_date": "2024-08-09",
+        "primary_date": "2024-08-09",
         "polarization": "vv",
         "sub_swath": "IW2",
         "temporal_extent": [
