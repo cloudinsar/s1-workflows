@@ -12,6 +12,7 @@ def test_cwl_syntax():
 
 
 def test_cwl_validate():
+    exec_proc(["node", "--version"])
     cwl_files = list((repository_root / "cwl").glob("*.cwl"))
     assert cwl_files
     for cwl_file in cwl_files:
