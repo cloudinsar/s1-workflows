@@ -238,6 +238,9 @@ def exec_proc(command, cwd=None, write_output=True, env=None):
         )
 
         with process:
+            if process.stdout is None:
+                # Just to satisfy the static type checker:
+                raise Exception("Process returned with no stdout")
             for line in process.stdout:
                 if write_output:
                     sys.stdout.write(line)
