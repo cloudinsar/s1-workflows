@@ -5,6 +5,8 @@ baseCommand: /src/sar/sar_interferogram.py
 requirements:
   DockerRequirement:
     dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.50
+  NetworkAccess:
+    networkAccess: true
 inputs:
   InSAR_pairs:
     type:

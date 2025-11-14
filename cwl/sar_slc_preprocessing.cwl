@@ -5,6 +5,8 @@ baseCommand: /src/sar/sar_slc_preprocessing.py
 requirements:
   DockerRequirement:
     dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.50
+  NetworkAccess:
+    networkAccess: true
 inputs:
   temporal_extent:
     type: string[]
