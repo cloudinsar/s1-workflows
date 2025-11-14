@@ -4,7 +4,7 @@ class: CommandLineTool
 baseCommand: /src/sar/sar_slc_preprocessing.py
 requirements:
   DockerRequirement:
-    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.50
+    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.51
   NetworkAccess:
     networkAccess: true
 inputs:
@@ -12,7 +12,7 @@ inputs:
     type: string[]
   burst_id:
     type: int
-  master_date:
+  primary_date:
     type: string
   polarization:
     type: string[]

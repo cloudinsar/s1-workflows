@@ -43,7 +43,7 @@ connection = openeo.connect(url).authenticate_oidc()
 
 datacube = connection.datacube_from_process(
     process_id="sar_slc_preprocessing",
-    master_date= "2024-08-09",
+    primary_date= "2024-08-09",
     temporal_extent= [
       "2024-08-09",
       "2024-09-02"
