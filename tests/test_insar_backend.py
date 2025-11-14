@@ -45,7 +45,7 @@ def get_connection():
 )
 def test_georeferenced_sar_against_openeo_backend(process_id, input_dict, auto_title):
     now = datetime.now()
-    tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests/", "tests/tmp_")).absolute()
+    tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests_", "tests/tmp_")).absolute()
     tmp_dir.mkdir(exist_ok=True)
     datacube = get_connection().datacube_from_process(process_id=process_id, **input_dict)
 
