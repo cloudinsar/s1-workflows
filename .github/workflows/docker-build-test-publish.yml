@@ -60,6 +60,11 @@ jobs:
     env:
       TIME_TAG: ${{ needs.build-and-publish-job.outputs.TIME_TAG }}
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          
       - name: Log in to registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
