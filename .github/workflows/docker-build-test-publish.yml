@@ -58,6 +58,7 @@ jobs:
 
       - name: Push image
         run: |
+          set -euxo pipefail
           IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
 
