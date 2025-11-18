@@ -39,6 +39,7 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Push image
+        id: time-tag-step
         # Assume that this job takes more than a minute to run. Then concurrency will ensure a unique TIME_TAG.
         # The docker build takes 3 minutes, so this should be safe.
         run: |
