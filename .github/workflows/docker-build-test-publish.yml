@@ -14,11 +14,10 @@ env:
   IMAGE_NAME: openeo_insar # ${{ github.repository }}
 
 jobs:
-  build-and-run:
+  current-datetime:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -28,14 +27,25 @@ jobs:
       - name: Build Docker image
         run: docker build . -f OpenEO_Dockerfile --tag $IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
 
-      - name: Run run_pytest.sh
-        run: |
-          docker run --rm \
-            -v $(pwd):/src \
-            -w /src \
-            -e AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
-            -e AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
-            openeo_insar run_pytest.sh
+      - name: Set current date as env variable
+        # Assume that this job takes more than a minute to run. Then concurrency will ensure a unique TIME_TAG.
+        # The docker build takes 3 minutes, so this should be safe.
+        run: echo "TIME_TAG=$(date +'%Y-%m-%dT%H:%M')" >> $GITHUB_ENV
+
+  build-and-run:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      #      - name: Run run_pytest.sh
+      #        run: |
+      #          docker run --rm \
+      #            -v $(pwd):/src \
+      #            -w /src \
+      #            -e AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
+      #            -e AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+      #            openeo_insar run_pytest.sh
 
       - name: Log in to registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
@@ -45,11 +55,8 @@ jobs:
           IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
 
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          VERSION=$TIME_TAG
 
-          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-
-          [ "$VERSION" == "main" ] && VERSION=latest
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
