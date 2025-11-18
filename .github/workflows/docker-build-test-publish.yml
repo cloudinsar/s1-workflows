@@ -18,6 +18,8 @@ jobs:
     runs-on: ubuntu-latest
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
+    outputs:
+      TIME_TAG: ${{ steps.time-tag-step.outputs.TIME_TAG }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -28,17 +30,19 @@ jobs:
         run: docker build . -f OpenEO_Dockerfile --tag $IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
 
       - name: Set current date as env variable
+        id: time-tag-step
         # Assume that this job takes more than a minute to run. Then concurrency will ensure a unique TIME_TAG.
         # The docker build takes 3 minutes, so this should be safe.
         run: echo "TIME_TAG=$(date +'%Y-%m-%dT%H:%M')" >> $GITHUB_OUTPUT
 
   test-publish-job:
     runs-on: ubuntu-latest
+    needs: build-job
     permissions:
       contents: read
       packages: write
     env:
-      TIME_TAG: ${{ steps.build-job.outputs.TIME_TAG }}
+      TIME_TAG: ${{ needs.build-job.outputs.TIME_TAG }}
     steps:
 #      - name: Run run_pytest.sh
 #        run: |
