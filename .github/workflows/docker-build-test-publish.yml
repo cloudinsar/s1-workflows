@@ -78,4 +78,4 @@ jobs:
             -w /src \
             -e AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
             -e AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
-            $IMAGE_ID:$TIME_TAG run_pytest.sh
+            $IMAGE_ID:$TIME_TAG bash /src/run_pytest.sh
