@@ -33,9 +33,9 @@ jobs:
         id: time-tag-step
         # Assume that this job takes more than a minute to run. Then concurrency will ensure a unique TIME_TAG.
         # The docker build takes 3 minutes, so this should be safe.
-        run: echo "TIME_TAG=$(date +'%Y-%m-%dT%H:%M')" >> $GITHUB_OUTPUT
+        run: echo "TIME_TAG=$(date +'%Y%m%dT%H%M')" >> $GITHUB_OUTPUT
 
-  test-publish-job:
+  test-and-publish-job:
     runs-on: ubuntu-latest
     needs: build-job
     permissions:
