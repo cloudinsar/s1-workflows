@@ -18,6 +18,9 @@ jobs:
     runs-on: ubuntu-latest
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
+    permissions:
+      contents: read
+      packages: write
     outputs:
       TIME_TAG: ${{ steps.time-tag-step.outputs.TIME_TAG }}
     steps:
