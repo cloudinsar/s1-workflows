@@ -1,3 +1,7 @@
+# CLOUDInSAR
+
+The main aim of the CLOUDInSAR project is to develop an open-source, cloud-based solution for processing and analyzing Sentinel-1 InSAR data.
+
 ## Prerequisites:
 - docker
 - 10-20 GB of disk space
