@@ -32,20 +32,18 @@ jobs:
           set -euxo pipefail
           docker build . -f OpenEO_Dockerfile --tag $IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
 
-      - name: Set current date as env variable
-        id: time-tag-step
-        # Assume that this job takes more than a minute to run. Then concurrency will ensure a unique TIME_TAG.
-        # The docker build takes 3 minutes, so this should be safe.
-        run: echo "TIME_TAG=$(date +'%Y%m%dT%H%M')" >> $GITHUB_OUTPUT
-
       - name: Log in to registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Push image
+        # Assume that this job takes more than a minute to run. Then concurrency will ensure a unique TIME_TAG.
+        # The docker build takes 3 minutes, so this should be safe.
         run: |
           set -euxo pipefail
           IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+          TIME_TAG=$(date +'%Y%m%dT%H%M')
+          echo "TIME_TAG=$TIME_TAG" >> $GITHUB_OUTPUT
           docker tag $IMAGE_NAME $IMAGE_ID:$TIME_TAG
           docker push $IMAGE_ID:$TIME_TAG
 
