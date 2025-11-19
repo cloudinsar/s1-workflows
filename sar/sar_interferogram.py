@@ -191,7 +191,7 @@ for pair in input_dict["InSAR_pairs"]:
                 "-J-Xmx14G",
                 str(
                     repo_directory
-                    / "notebooks/graphs/geocode_snaphuInterferogram.xml"
+                    / "notebooks/graphs/geocode_snaphuInterferogram_WGS84.xml"
                 ),
                 f'-Pinterferogram_filename={output_filename_tmp}.dim',
                 f'-Punw_interferogram_filename={unw_phase_filename}',
