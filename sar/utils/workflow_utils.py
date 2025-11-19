@@ -104,11 +104,12 @@ input_dict_2024_vv_preprocessing = {
 }
 
 snap_extra_arguments = [
-    "-J-Dsnap.dataio.bigtiff.tiling.height=256",
-    "-J-Dsnap.dataio.bigtiff.tiling.width=256",
+    "-J-Dsnap.dataio.bigtiff.compression.type=LZW",
+    "-J-Dsnap.dataio.bigtiff.compression.quality=1.0",
+    "-J-Dsnap.dataio.bigtiff.tiling.width=512",
+    "-J-Dsnap.dataio.bigtiff.tiling.height=512",
     "-J-Dsnap.gpf.useFileTileCache=true",
     "-J-Dsnap.parallelism=2",
-    "-J-Dsnap.dataio.gdal.creationoptions=COMPRESS=DEFLATE;TILED=TRUE",
     "-J-Dsnap.jai.defaultTileSize=128",
     "-J-Dsnap.jai.tileCacheSize=512",
 ]
