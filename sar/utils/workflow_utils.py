@@ -111,6 +111,7 @@ snap_extra_arguments = [
     "-J-Dsnap.dataio.gdal.creationoptions=COMPRESS=DEFLATE;TILED=TRUE",
     "-J-Dsnap.jai.defaultTileSize=128",
     "-J-Dsnap.jai.tileCacheSize=512",
+    # "-J-Xmx6G",  # Works without
 ]
 
 origGetAddrInfo = socket.getaddrinfo
