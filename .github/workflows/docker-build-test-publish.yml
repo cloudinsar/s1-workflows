@@ -1,13 +1,6 @@
 name: Docker Build Test Publish
 
-on:
-  push:
-    branches:
-      - main
-      - seed
-    tags:
-      - v*
-  pull_request:
+on: [push, pull_request]
 
 env:
   REGISTRY: ghcr.io
