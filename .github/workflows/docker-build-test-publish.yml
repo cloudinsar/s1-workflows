@@ -10,7 +10,7 @@ jobs:
   build-and-publish-job:
     runs-on: ubuntu-latest
     concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
+      group: ${{ github.workflow }}
     permissions:
       contents: read
       packages: write
