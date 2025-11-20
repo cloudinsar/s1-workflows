@@ -40,6 +40,9 @@ jobs:
           IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
           TIME_TAG=$(date +'%Y%m%dT%H%M')
+          if [[ "${GITHUB_REF##*/}" != "main" && "${GITHUB_REF##*/}" != "master" ]]; then
+            TIME_TAG="${TIME_TAG}-${GITHUB_REF##*/}"
+          fi
           echo "TIME_TAG=$TIME_TAG" >> $GITHUB_OUTPUT
           docker tag $IMAGE_NAME $IMAGE_ID:$TIME_TAG
           docker push $IMAGE_ID:$TIME_TAG
