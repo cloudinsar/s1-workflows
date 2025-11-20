@@ -137,7 +137,6 @@ for pol in input_dict["polarization"]:
     ):
         gpt_cmd = [
             "gpt",
-            "-J-Xmx14G",
             str(
                 repo_directory
                 / "notebooks/graphs/pre-processing_2images_SavePrm_GeoTiff.xml"
@@ -178,7 +177,6 @@ for pol in input_dict["polarization"]:
         if not os.path.exists(output_sec_filename_tmp):
             gpt_cmd = [
                 "gpt",
-                "-J-Xmx14G",
                 str(
                     repo_directory
                     / "notebooks/graphs/pre-processing_2images_SaveOnlySec_GeoTiff.xml"
