@@ -138,7 +138,6 @@ for pair in input_dict["InSAR_pairs"]:
 
         gpt_cmd = [
             "gpt",
-            "-J-Xmx14G",
             str(
                 repo_directory
                 / "notebooks/graphs/interferogram_sarGeometry.xml"
@@ -156,7 +155,6 @@ for pair in input_dict["InSAR_pairs"]:
         # Prepare the snaphu export for unwrapping
         gpt_cmd = [
             "gpt",
-            "-J-Xmx14G",
             str(
                 repo_directory
                 / "notebooks/graphs/snaphu_export.xml"
