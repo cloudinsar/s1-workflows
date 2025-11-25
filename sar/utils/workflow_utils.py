@@ -78,7 +78,7 @@ input_dict_2018_vh_preprocessing = {
 input_dict_belgium_vv_preprocessing = {
     "burst_id": 234893,
     "primary_date": "2024-08-09",
-    "polarization": "vv",
+    "polarization": ["vv"],
     "sub_swath": "IW1",
     "temporal_extent": ["2024-08-09", "2024-08-21"],
 }
@@ -95,7 +95,7 @@ input_dict_belgium_vv_vh_preprocessing = {
 input_dict_2024_vv_preprocessing = {
         "burst_id": 249435,
         "primary_date": "2024-08-09",
-        "polarization": "vv",
+        "polarization": ["vv"],
         "sub_swath": "IW2",
         "temporal_extent": [
           "2024-08-08",

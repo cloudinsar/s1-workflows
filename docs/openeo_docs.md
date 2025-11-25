@@ -50,7 +50,7 @@ datacube = connection.datacube_from_process(
     ],
     burst_id=249435,
     sub_swath="IW2",
-    polarization="vv"
+    polarization=["vv"],
 )
 
 job = datacube.create_job(job_options={
