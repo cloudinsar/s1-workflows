@@ -30,6 +30,7 @@ dev = [
     "rasterio",
     "rio-cogeo",
     "cwltool",
+    "mypy",
 ]
 
 [tool.setuptools.packages.find]

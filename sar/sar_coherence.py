@@ -128,7 +128,7 @@ for pair in input_dict["InSAR_pairs"]:
         ] + snap_extra_arguments
         exec_proc(gpt_cmd, write_output=False)
 
-    output_filename = f"{result_folder}/S1_coh_2images_{date_from_burst(prm_filename)}_{date_from_burst(sec_filename)}.tif"
+    output_filename = Path(f"{result_folder}/S1_coh_2images_{date_from_burst(prm_filename)}_{date_from_burst(sec_filename)}.tif")
     asset_paths.append(output_filename)
     if not os.path.exists(output_filename):
         tiff_to_gtiff.tiff_to_gtiff(output_filename_tmp, output_filename)

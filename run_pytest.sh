@@ -41,3 +41,5 @@ cd "$SCRIPT_DIR"
 # General dependencies are probably already installed. Now download test dependencies:
 python -m pip install -q -e ".[dev]"
 python -m pytest
+
+mypy --ignore-missing-imports --no-strict-optional --allow-untyped-globals --allow-redefinition --no-warn-unreachable sar_coherence.py

@@ -14,14 +14,13 @@ from typing import Any, Dict
 # __file__ == /src/./OpenEO_insar.py
 # __file__ == //./src/OpenEO_insar.py
 # So we do a lot of normalization:
-repo_directory = os.path.dirname(os.path.normpath(__file__).replace("//", "/"))
-repo_directory = Path(repo_directory).parent.parent.absolute()
+repo_directory = Path(os.path.dirname(os.path.normpath(__file__).replace("//", "/"))).parent.parent.absolute()
 print("repo_directory: " + str(repo_directory))
 
 if "AWS_ACCESS_KEY_ID" not in os.environ and os.path.exists(repo_directory / "notebooks/CDSE_SECRET"):
     # same credentials as in the notebooks
-    with open(repo_directory / "notebooks/CDSE_SECRET", "r") as file:
-        lines = file.readlines()
+    with open(repo_directory / "notebooks/CDSE_SECRET", "r") as cdse_secret_file:
+        lines = cdse_secret_file.readlines()
     os.environ["AWS_ACCESS_KEY_ID"] = lines[0].split(":")[1].strip()
     os.environ["AWS_SECRET_ACCESS_KEY"] = lines[1].split(":")[1].strip()
 if not "AWS_ENDPOINT_URL_S3" in os.environ:
@@ -194,7 +193,7 @@ def default_serializer(obj):
     raise TypeError("Type %s not serializable" % type(obj))
 
 
-def merge_two_dicts(x, y):
+def merge_two_dicts(x: dict, y: dict) -> dict:
     z = x.copy()  # start with keys and values of x
     z.update(y)  # modifies z with keys and values of y
     return z
@@ -219,7 +218,7 @@ def exec_proc(command, cwd=None, write_output=True, env=None):
     keys_values = env.items()
     # convert all values to strings:
     env = {str(key): str(value) for key, value in keys_values}
-    new_env = merge_two_dicts(os.environ, env)
+    new_env = merge_two_dicts(dict(os.environ), env)
 
     # print commands that can be pasted in the console
     print(f'> cd "{cwd}"')

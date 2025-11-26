@@ -56,7 +56,7 @@ def generate_catalog(
     native_x_extent = [float("inf"), -float("inf")]
     native_y_extent = [float("inf"), -float("inf")]
     for file_element in tiff_files:
-        stac = {
+        stac: Any = {
             "type": "Feature",
             "stac_version": "1.0.0",
             "id": None,

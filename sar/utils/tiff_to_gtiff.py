@@ -26,7 +26,7 @@ gdal.UseExceptions()
 #     json.dump(geojson, f)
 
 
-def tiff_to_gtiff(input_path, output_path, tiff_per_band=False):
+def tiff_to_gtiff(input_path, output_path, tiff_per_band=False) -> list:
     input_path = Path(input_path)
     print(f"tiff_to_gtiff({input_path=})")
     if not os.path.exists(input_path):
