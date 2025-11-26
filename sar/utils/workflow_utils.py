@@ -17,19 +17,29 @@ from typing import Any, Dict
 repo_directory = Path(os.path.dirname(os.path.normpath(__file__).replace("//", "/"))).parent.parent.absolute()
 print("repo_directory: " + str(repo_directory))
 
-if "AWS_ACCESS_KEY_ID" not in os.environ and os.path.exists(repo_directory / "notebooks/CDSE_SECRET"):
-    # same credentials as in the notebooks
-    with open(repo_directory / "notebooks/CDSE_SECRET", "r") as cdse_secret_file:
-        lines = cdse_secret_file.readlines()
-    os.environ["AWS_ACCESS_KEY_ID"] = lines[0].split(":")[1].strip()
-    os.environ["AWS_SECRET_ACCESS_KEY"] = lines[1].split(":")[1].strip()
-if not "AWS_ENDPOINT_URL_S3" in os.environ:
-    os.environ["AWS_ENDPOINT_URL_S3"] = "https://eodata.dataspace.copernicus.eu"
 
-print("S3_ENDPOINT_URL= " + str(os.environ.get("S3_ENDPOINT_URL", None)))
-print("AWS_ACCESS_KEY_ID= " + str(os.environ.get("AWS_ACCESS_KEY_ID", None)))
-if "AWS_ACCESS_KEY_ID" not in os.environ:
-    raise Exception("AWS_ACCESS_KEY_ID should be set in environment")
+def setup_environment():
+    if "AWS_ACCESS_KEY_ID" not in os.environ and os.path.exists(repo_directory / "notebooks/CDSE_SECRET"):
+        # same credentials as in the notebooks
+        with open(repo_directory / "notebooks/CDSE_SECRET", "r") as cdse_secret_file:
+            lines = cdse_secret_file.readlines()
+        os.environ["AWS_ACCESS_KEY_ID"] = lines[0].split(":")[1].strip()
+        os.environ["AWS_SECRET_ACCESS_KEY"] = lines[1].split(":")[1].strip()
+    if not "AWS_ENDPOINT_URL_S3" in os.environ:
+        os.environ["AWS_ENDPOINT_URL_S3"] = "https://eodata.dataspace.copernicus.eu"
+
+    print("S3_ENDPOINT_URL= " + str(os.environ.get("S3_ENDPOINT_URL", None)))
+    print("AWS_ACCESS_KEY_ID= " + str(os.environ.get("AWS_ACCESS_KEY_ID", None)))
+    if "AWS_ACCESS_KEY_ID" not in os.environ:
+        raise Exception("AWS_ACCESS_KEY_ID should be set in environment")
+
+    # GPT means "Graph Processing Toolkit" in this context
+    if subprocess.run(["which", "gpt"]).returncode != 0 and os.path.exists("/usr/local/esa-snap/bin/gpt"):
+        print("adding SNAP to PATH")  # needed when running outside of docker
+        os.environ["PATH"] = os.environ["PATH"] + ":/usr/local/esa-snap/bin"
+
+
+setup_environment()
 
 input_dict_2024_vv = {
     "InSAR_pairs": [

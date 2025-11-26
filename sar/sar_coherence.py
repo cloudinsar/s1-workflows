@@ -5,6 +5,7 @@ import subprocess
 import sys
 import urllib.parse
 import urllib.request
+from datetime import timedelta
 
 from utils import simple_stac_builder
 from utils import tiff_to_gtiff
@@ -20,31 +21,35 @@ if len(sys.argv) > 1:
         input_dict = json.loads(base64.b64decode(arg.encode("utf8")).decode("utf8"))
 else:
     print("Using debug arguments!")
-    input_dict = input_dict_2018_vh
-
+    # input_dict = {
+    #     "temporal_extent": ["2024-08-09", "2024-08-21"],
+    #     "temporal_baseline": 12,
+    #     "burst_id": 234893,
+    #     "polarization": "vv",
+    #     "sub_swath": "IW1",
+    # }
+    input_dict = {
+        "temporal_extent": ["2024-08-09", "2024-09-14"],
+        "temporal_baseline": 12,
+        "burst_id": 249435,
+        # Coherence window size:
+        "coherence_window_az": 2,
+        "coherence_window_rg": 10,
+        # Multillok parameters:
+        "n_az_looks": 1,
+        "n_rg_looks": 4,
+        "polarization": "vv",
+        "sub_swath": "IW2",
+    }
 default_dict = {
-    "polarization": "vv",
-    "sub_swath": "IW3",
     "coherence_window_rg": 10,
     "coherence_window_az": 2,
 }
 input_dict = {k: v for k, v in input_dict.items() if v is not None}
 input_dict = {**default_dict, **input_dict}  # merge with defaults
 print(input_dict)
-if isinstance(input_dict["InSAR_pairs"][0], str):
-    print("Single pair detected in InSAR_pairs, converting to list of pairs.")
-    input_dict["InSAR_pairs"] = [input_dict["InSAR_pairs"]]
-start_date = min([min(pair) for pair in input_dict["InSAR_pairs"]])
-end_date = max([max(pair) for pair in input_dict["InSAR_pairs"]])
-
-primary_dates = [pair[0] for pair in input_dict["InSAR_pairs"]]
-primary_dates_duplicates = set([d for d in primary_dates if primary_dates.count(d) > 1])
-if primary_dates_duplicates:
-    raise ValueError(
-        f"Duplicate primary date(s) found in InSAR_pairs: {primary_dates_duplicates}. "
-        "You can load multiple primary dates over multiple processes if needed."
-    )
-
+start_date = input_dict["temporal_extent"][0]
+end_date = input_dict["temporal_extent"][1]
 
 result_folder = Path.cwd().absolute()
 # result_folder = repo_directory / "output"
@@ -66,19 +71,10 @@ print(https_request)
 with urllib.request.urlopen(https_request) as response:
     bursts = json.loads(response.read().decode())
 
-flattened_pairs = set()
-for pair in input_dict["InSAR_pairs"]:
-    for date in pair:
-        flattened_pairs.add(parse_date(date).date())
 burst_paths = []
 for burst in bursts["value"]:
     begin = parse_date(burst["BeginningDateTime"]).date()
     end = parse_date(burst["EndingDateTime"]).date()
-    if begin not in flattened_pairs and end not in flattened_pairs:
-        print(f"Skipping burst {burst['BurstId']} ({begin} - {end})")
-        continue
-    # Allow for relative imports:
-    os.environ["PATH"] = os.environ["PATH"] + ":" + str(repo_directory / "utilities")
     cmd = [
         "bash",
         "sentinel1_burst_extractor.sh",
@@ -88,7 +84,7 @@ for burst in bursts["value"]:
         "-r", str(input_dict["burst_id"]),
         "-o", str(tmp_insar),
     ]
-    _, output = exec_proc(cmd, cwd=repo_directory / "utilities")
+    _, output = exec_proc(cmd, cwd=repo_directory / "utilities", write_output=False)
     # get paths from stdout:
     needle = "out_path: "
     bursts_from_output = sorted(
@@ -102,36 +98,39 @@ for burst in bursts["value"]:
 
 print(f"{burst_paths=!r}")
 
-# GPT means "Graph Processing Toolkit" in this context
-if subprocess.run(["which", "gpt"]).returncode != 0 and os.path.exists("/usr/local/esa-snap/bin/gpt"):
-    print("adding SNAP to PATH")  # needed when running outside of docker
-    os.environ["PATH"] = os.environ["PATH"] + ":/usr/local/esa-snap/bin"
+date_to_path = {}
+for f in burst_paths:
+    # date = parse_date(date_from_burst(f)).date() # same
+    date = datetime.strptime(os.path.basename(os.path.dirname(f)).split('_')[2][:8], "%Y%m%d")
+    date_to_path[date] = f
 
 asset_paths = []
 
-for pair in input_dict["InSAR_pairs"]:
-    prm_filename = next(filter(lambda x: pair[0].replace("-", "") in str(x), burst_paths))
-    sec_filename = next(filter(lambda x: pair[1].replace("-", "") in str(x), burst_paths))
+for prm_date, prm_filename in date_to_path.items():
+    sec_date = prm_date + timedelta(days=input_dict["temporal_baseline"])
+    sec_filename = date_to_path.get(sec_date)
+    if sec_date in date_to_path:
+        # coh_filename = os.path.join(output_folder, f'coh_{prm_date.strftime("%Y%m%d")}_{sec_date.strftime("%Y%m%d")}.tif')
+        output_filename_tmp = f"{result_folder}/tmp_S1_coh_2images_{date_from_burst(prm_filename)}_{date_from_burst(sec_filename)}.tif"
 
-    output_filename_tmp = f"{result_folder}/tmp_S1_coh_2images_{date_from_burst(prm_filename)}_{date_from_burst(sec_filename)}.tif"
+        if not os.path.exists(output_filename_tmp):
+            gpt_cmd = [
+                          "gpt",
+                          str(repo_directory / "notebooks/graphs/coh_2images_GeoTiff.xml"),
+                          f"-Pprm_filename={prm_filename}",
+                          f"-Psec_filename={sec_filename}",
+                          f"-PcohWinRg={input_dict['coherence_window_rg']}",
+                          f"-PcohWinAz={input_dict['coherence_window_az']}",
+                          f"-Ppolarisation={input_dict['polarization'].upper()}",
+                          f"-Poutput_filename={output_filename_tmp}",
+                      ] + snap_extra_arguments
+            exec_proc(gpt_cmd, write_output=False)
 
-    if not os.path.exists(output_filename_tmp):
-        gpt_cmd = [
-            "gpt",
-            str(repo_directory / "notebooks/graphs/coh_2images_GeoTiff.xml"),
-            f"-Pprm_filename={prm_filename}",
-            f"-Psec_filename={sec_filename}",
-            f"-PcohWinRg={input_dict['coherence_window_rg']}",
-            f"-PcohWinAz={input_dict['coherence_window_az']}",
-            f"-Ppolarisation={input_dict['polarization'].upper()}",
-            f"-Poutput_filename={output_filename_tmp}",
-        ] + snap_extra_arguments
-        exec_proc(gpt_cmd, write_output=False)
-
-    output_filename = Path(f"{result_folder}/S1_coh_2images_{date_from_burst(prm_filename)}_{date_from_burst(sec_filename)}.tif")
-    asset_paths.append(output_filename)
-    if not os.path.exists(output_filename):
-        tiff_to_gtiff.tiff_to_gtiff(output_filename_tmp, output_filename)
+        output_filename = Path(
+            f"{result_folder}/S1_coh_2images_{date_from_burst(prm_filename)}_{date_from_burst(sec_filename)}.tif")
+        asset_paths.append(output_filename)
+        if not os.path.exists(output_filename):
+            tiff_to_gtiff.tiff_to_gtiff(output_filename_tmp, output_filename)
 
 # slow when running outside Docker, because the whole home directory is scanned.
 simple_stac_builder.generate_catalog(
