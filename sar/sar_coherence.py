@@ -1,15 +1,12 @@
 #!/usr/bin/env python3
 import base64
-import os
-import subprocess
-import sys
 import urllib.parse
 import urllib.request
 from datetime import timedelta
 
-from utils import simple_stac_builder
-from utils import tiff_to_gtiff
-from utils.workflow_utils import *
+from sar.utils import simple_stac_builder
+from sar.utils import tiff_to_gtiff
+from sar.utils.workflow_utils import *
 
 setup_insar_environment()
 
@@ -102,8 +99,7 @@ print(f"{burst_paths=!r}")
 
 date_to_path = {}
 for f in burst_paths:
-    # date = parse_date(date_from_burst(f)).date() # same
-    date = datetime.strptime(os.path.basename(os.path.dirname(f)).split('_')[2][:8], "%Y%m%d")
+    date = datetime.strptime(os.path.basename(os.path.dirname(f)).split("_")[2][:8], "%Y%m%d")
     date_to_path[date] = f
 
 asset_paths = []
@@ -112,24 +108,26 @@ for prm_date, prm_filename in date_to_path.items():
     sec_date = prm_date + timedelta(days=input_dict["temporal_baseline"])
     sec_filename = date_to_path.get(sec_date)
     if sec_date in date_to_path:
-        # coh_filename = os.path.join(output_folder, f'coh_{prm_date.strftime("%Y%m%d")}_{sec_date.strftime("%Y%m%d")}.tif')
-        output_filename_tmp = f"{result_folder}/tmp_S1_coh_2images_{date_from_burst(prm_filename)}_{date_from_burst(sec_filename)}.tif"
+        output_filename_tmp = (
+            f"{result_folder}/tmp_S1_coh_2images_{date_from_burst(prm_filename)}_{date_from_burst(sec_filename)}.tif"
+        )
 
         if not os.path.exists(output_filename_tmp):
             gpt_cmd = [
-                          "gpt",
-                          str(repo_directory / "notebooks/graphs/coh_2images_GeoTiff.xml"),
-                          f"-Pprm_filename={prm_filename}",
-                          f"-Psec_filename={sec_filename}",
-                          f"-PcohWinRg={input_dict['coherence_window_rg']}",
-                          f"-PcohWinAz={input_dict['coherence_window_az']}",
-                          f"-Ppolarisation={input_dict['polarization'].upper()}",
-                          f"-Poutput_filename={output_filename_tmp}",
-                      ] + snap_extra_arguments
+                "gpt",
+                str(repo_directory / "notebooks/graphs/coh_2images_GeoTiff.xml"),
+                f"-Pprm_filename={prm_filename}",
+                f"-Psec_filename={sec_filename}",
+                f"-PcohWinRg={input_dict['coherence_window_rg']}",
+                f"-PcohWinAz={input_dict['coherence_window_az']}",
+                f"-Ppolarisation={input_dict['polarization'].upper()}",
+                f"-Poutput_filename={output_filename_tmp}",
+            ] + snap_extra_arguments
             exec_proc(gpt_cmd, write_output=False)
 
         output_filename = Path(
-            f"{result_folder}/S1_coh_2images_{date_from_burst(prm_filename)}_{date_from_burst(sec_filename)}.tif")
+            f"{result_folder}/S1_coh_2images_{date_from_burst(prm_filename)}_{date_from_burst(sec_filename)}.tif"
+        )
         asset_paths.append(output_filename)
         if not os.path.exists(output_filename):
             tiff_to_gtiff.tiff_to_gtiff(output_filename_tmp, output_filename)
