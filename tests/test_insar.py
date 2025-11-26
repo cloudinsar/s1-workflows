@@ -76,7 +76,7 @@ def run_stac_catalog_and_verify(catalog_path: Path, tmp_dir: Path):
 @pytest.mark.parametrize(
     "script",
     [
-        "sar_coherence.py",
+        "sar_coherence_easy_to_parallelize.py",
         "sar_interferogram.py",
     ],
 )
