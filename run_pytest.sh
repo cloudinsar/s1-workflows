@@ -42,4 +42,4 @@ cd "$SCRIPT_DIR"
 python -m pip install -q -e ".[dev]"
 python -m pytest
 
-mypy --ignore-missing-imports --no-strict-optional --allow-untyped-globals --allow-redefinition --no-warn-unreachable sar_coherence.py
+mypy --ignore-missing-imports --no-strict-optional --allow-untyped-globals --allow-redefinition --no-warn-unreachable sar/sar_coherence.py

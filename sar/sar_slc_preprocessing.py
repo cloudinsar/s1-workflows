@@ -12,6 +12,8 @@ from utils import simple_stac_builder
 from utils import tiff_to_gtiff
 from utils.workflow_utils import *
 
+setup_insar_environment()
+
 start_time = datetime.now()
 
 if len(sys.argv) > 1:
@@ -74,9 +76,6 @@ for pol in input_dict["polarization"]:
 
     burst_paths = []
     for burst in bursts["value"]:
-        # Allow for relative imports:
-        os.environ["PATH"] = os.environ["PATH"] + ":" + str(repo_directory / "utilities")
-
         cmd = [
             "bash",
             "sentinel1_burst_extractor.sh",
@@ -104,11 +103,6 @@ for pol in input_dict["polarization"]:
 
     burst_paths = sorted(burst_paths)
     print(f"{burst_paths=!r}")
-
-    # GPT means "Graph Processing Toolkit" in this context
-    if subprocess.run(["which", "gpt"]).returncode != 0 and os.path.exists("/usr/local/esa-snap/bin/gpt"):
-        print("adding SNAP to PATH")  # needed when running outside of docker
-        os.environ["PATH"] = os.environ["PATH"] + ":/usr/local/esa-snap/bin"
 
     input_prm_date = parse_date(input_dict["primary_date"])
     prm_filename = next(filter(lambda x: input_prm_date.strftime("%Y%m%d") in str(x), burst_paths), None)

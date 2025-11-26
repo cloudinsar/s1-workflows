@@ -10,6 +10,8 @@ from utils import simple_stac_builder
 from utils import tiff_to_gtiff
 from utils.workflow_utils import *
 
+setup_insar_environment()
+
 start_time = datetime.now()
 
 if len(sys.argv) > 1:
@@ -77,8 +79,6 @@ for burst in bursts["value"]:
     if begin not in flattened_pairs and end not in flattened_pairs:
         print(f"Skipping burst {burst['BurstId']} ({begin} - {end})")
         continue
-    # Allow for relative imports:
-    os.environ["PATH"] = os.environ["PATH"] + ":" + str(repo_directory / "utilities")
     cmd = [
         "bash",
         "sentinel1_burst_extractor.sh",
@@ -101,11 +101,6 @@ for burst in bursts["value"]:
         raise Exception("No files found in command output: " + str(output))
 
 print(f"{burst_paths=!r}")
-
-# GPT means "Graph Processing Toolkit" in this context
-if subprocess.run(["which", "gpt"]).returncode != 0 and os.path.exists("/usr/local/esa-snap/bin/gpt"):
-    print("adding SNAP to PATH")  # needed when running outside of docker
-    os.environ["PATH"] = os.environ["PATH"] + ":/usr/local/esa-snap/bin"
 
 asset_paths = []
 

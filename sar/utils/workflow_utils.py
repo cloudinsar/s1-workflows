@@ -18,7 +18,7 @@ repo_directory = Path(os.path.dirname(os.path.normpath(__file__).replace("//", "
 print("repo_directory: " + str(repo_directory))
 
 
-def setup_environment():
+def setup_insar_environment():
     if "AWS_ACCESS_KEY_ID" not in os.environ and os.path.exists(repo_directory / "notebooks/CDSE_SECRET"):
         # same credentials as in the notebooks
         with open(repo_directory / "notebooks/CDSE_SECRET", "r") as cdse_secret_file:
@@ -38,8 +38,6 @@ def setup_environment():
         print("adding SNAP to PATH")  # needed when running outside of docker
         os.environ["PATH"] = os.environ["PATH"] + ":/usr/local/esa-snap/bin"
 
-
-setup_environment()
 
 input_dict_2024_vv = {
     "InSAR_pairs": [

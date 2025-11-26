@@ -11,6 +11,8 @@ from utils import simple_stac_builder
 from utils import tiff_to_gtiff
 from utils.workflow_utils import *
 
+setup_insar_environment()
+
 start_time = datetime.now()
 
 if len(sys.argv) > 1:
