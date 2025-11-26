@@ -89,7 +89,7 @@ def generate_catalog(
             "assets": {},
         }
 
-        if isinstance(file_element, str):
+        if not isinstance(file_element, list):
             file_element = [file_element]
 
         for file in file_element:
