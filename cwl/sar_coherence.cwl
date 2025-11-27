@@ -1,18 +1,19 @@
 #!/usr/bin/env cwl-runner
-# Example on how to run locally: cwltool --tmpdir-prefix=$HOME/tmp/ --force-docker-pull --leave-container --leave-tmpdir --parallel cwl/sar_coherence.cwl sar/example_inputs/input_dict_2024_vv_new.json
 cwlVersion: v1.2
 class: CommandLineTool
 baseCommand: /src/sar/sar_coherence.py
 requirements:
   DockerRequirement:
-    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.55
+    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.50
   NetworkAccess:
     networkAccess: true
 inputs:
-  temporal_extent:
-    type: string[]
-  temporal_baseline:
-    type: int
+  InSAR_pairs:
+    type:
+      type: array
+      items:
+        type: array
+        items: string
   burst_id:
     type: int
   coherence_window_az:
