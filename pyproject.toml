@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "sar"
 authors = []
@@ -34,7 +38,7 @@ dev = [
 ]
 
 [tool.setuptools.packages.find]
-where = ["sar"]
+where = ["."]
 
 [tool.black]
 line-length = 120
