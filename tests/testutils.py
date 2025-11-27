@@ -8,8 +8,6 @@ import rioxarray
 import xarray
 from PIL import Image
 
-sys.path.append(".")
-sys.path.append("..")
 from sar.utils.workflow_utils import *
 
 repository_root = Path(__file__).parent.parent
