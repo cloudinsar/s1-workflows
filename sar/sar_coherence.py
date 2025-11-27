@@ -20,26 +20,8 @@ if len(sys.argv) > 1:
         input_dict = json.loads(base64.b64decode(arg.encode("utf8")).decode("utf8"))
 else:
     print("Using debug arguments!")
-    # input_dict = {
-    #     "temporal_extent": ["2024-08-09", "2024-08-21"],
-    #     "temporal_baseline": 12,
-    #     "burst_id": 234893,
-    #     "polarization": "vv",
-    #     "sub_swath": "IW1",
-    # }
-    input_dict = {
-        "temporal_extent": ["2024-08-09", "2024-09-14"],
-        "temporal_baseline": 12,
-        "burst_id": 249435,
-        # Coherence window size:
-        "coherence_window_az": 2,
-        "coherence_window_rg": 10,
-        # Multillok parameters:
-        "n_az_looks": 1,
-        "n_rg_looks": 4,
-        "polarization": "vv",
-        "sub_swath": "IW2",
-    }
+    input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_2024_vv_new.json").read_text())
+
 default_dict = {
     "coherence_window_rg": 10,
     "coherence_window_az": 2,
