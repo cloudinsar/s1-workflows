@@ -5,7 +5,7 @@ class: CommandLineTool
 baseCommand: /src/sar/sar_coherence.py
 requirements:
   DockerRequirement:
-    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.53
+    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.55
   NetworkAccess:
     networkAccess: true
 inputs:
