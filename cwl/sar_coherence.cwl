@@ -4,16 +4,14 @@ class: CommandLineTool
 baseCommand: /src/sar/sar_coherence.py
 requirements:
   DockerRequirement:
-    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.50
+    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.53
   NetworkAccess:
     networkAccess: true
 inputs:
-  InSAR_pairs:
-    type:
-      type: array
-      items:
-        type: array
-        items: string
+  temporal_extent:
+    type: string[]
+  temporal_baseline:
+    type: int
   burst_id:
     type: int
   coherence_window_az:
@@ -23,7 +21,7 @@ inputs:
   polarization:
     type: string
   sub_swath:
-    type: string?
+    type: string
 outputs:
   output_file:
     type: File[]
