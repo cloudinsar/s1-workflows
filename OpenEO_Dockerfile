@@ -72,7 +72,7 @@ RUN python3.11 -m venv /opt/venv && \
     cd /src && \
     mkdir sar && \
     pip config set global.disable-pip-version-check true && \
-    python3 -m pip install -q . && \
+    python3 -m pip install -q -e . && \
     python3 -m pip install -q --config-settings="--build-option=build_ext" --config-settings="--build-option=-I/usr/include/gdal" GDAL==`gdal-config --version`
 
 ENV PATH="${PATH}:/src/"
