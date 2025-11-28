@@ -3,7 +3,7 @@
     "2018-01-28",
     "2018-02-03"
   ],
-  "temporal_baseline": 12,
+  "temporal_baseline": 6,
   "burst_id": 329488,
   "coherence_window_az": 2,
   "coherence_window_rg": 10,
