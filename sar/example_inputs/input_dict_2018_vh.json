@@ -1,0 +1,15 @@
+{
+  "InSAR_pairs": [
+    [
+      "2018-01-28",
+      "2018-02-03"
+    ]
+  ],
+  "burst_id": 329488,
+  "coherence_window_az": 2,
+  "coherence_window_rg": 10,
+  "n_az_looks": 1,
+  "n_rg_looks": 4,
+  "polarization": "vh",
+  "sub_swath": "IW2"
+}

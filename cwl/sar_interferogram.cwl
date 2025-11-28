@@ -1,4 +1,5 @@
 #!/usr/bin/env cwl-runner
+# Example on how to run locally: cwltool --tmpdir-prefix=$HOME/tmp/ --force-docker-pull --leave-container --leave-tmpdir --parallel cwl/sar_interferogram.cwl sar/example_inputs/input_dict_2018_vh.json
 cwlVersion: v1.2
 class: CommandLineTool
 baseCommand: /src/sar/sar_interferogram.py
@@ -7,6 +8,12 @@ requirements:
     dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.51
   NetworkAccess:
     networkAccess: true
+  InitialWorkDirRequirement:
+    listing:
+      - entryname: "arguments.json"
+        entry: $(inputs)
+arguments:
+  - arguments.json
 inputs:
   InSAR_pairs:
     type:

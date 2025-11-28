@@ -7,6 +7,12 @@ requirements:
     dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.51
   NetworkAccess:
     networkAccess: true
+  InitialWorkDirRequirement:
+    listing:
+      - entryname: "arguments.json"
+        entry: $(inputs)
+arguments:
+  - arguments.json
 inputs:
   temporal_extent:
     type: string[]
