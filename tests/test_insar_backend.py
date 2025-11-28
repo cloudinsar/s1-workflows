@@ -32,6 +32,45 @@ def get_connection():
     "process_id",
     [
         "sar_coherence",
+    ],
+)
+@pytest.mark.parametrize(
+    "input_dict",
+    [
+        json.loads((repo_directory / "sar/example_inputs/input_dict_2024_vv_new.json").read_text()),
+        json.loads((repo_directory / "sar/example_inputs/input_dict_2018_vh_new.json").read_text()),
+    ],
+)
+def test_georeferenced_sar_against_openeo_backend(process_id, input_dict, auto_title):
+    now = datetime.now()
+    tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests_", "tests/tmp_")).absolute()
+    tmp_dir.mkdir(exist_ok=True)
+
+    datacube = get_connection().datacube_from_process(process_id=process_id, **input_dict)
+
+    if local_openEO:
+        datacube = datacube.save_result(format="NetCDF")
+        datacube.download(tmp_dir / "result.nc")
+    else:
+        datacube = datacube.save_result(format="GTiff", options={"overviews": "OFF"})
+        # datacube = datacube.export_workspace(
+        #     workspace="insar-results-workspace",
+        #     merge=f"{auto_title}_{datetime.now().strftime('%Y-%m-%d_%H%M%S')}",
+        # )
+        job = datacube.create_job(title=auto_title)
+        job.start_and_wait()
+        job.get_results().download_files(tmp_dir)
+
+        tif_paths = list(tmp_dir.glob("*.tif"))
+        for tif_path in tif_paths:
+            assert_tif_file_is_healthy(tif_path)
+
+
+@pytest.mark.skip(reason="TODO: Log into openEO backend")
+@pytest.mark.parametrize(
+    "process_id",
+    [
+        # "sar_coherence_parallel",
         "sar_interferogram",
     ],
 )
@@ -54,13 +93,9 @@ def test_georeferenced_sar_against_openeo_backend(process_id, input_dict, auto_t
         datacube.download(tmp_dir / "result.nc")
     else:
         datacube = datacube.save_result(format="GTiff", options={"overviews": "OFF"})
-        # datacube = datacube.process(
-        #     "export_workspace",
-        #     arguments={
-        #         "data": datacube,
-        #         "workspace": "insar-results-workspace",
-        #         "merge": f"{auto_title}_{datetime.now().strftime('%Y-%m-%d_%H%M%S')}",
-        #     },
+        # datacube = datacube.export_workspace(
+        #     workspace="insar-results-workspace",
+        #     merge=f"{auto_title}_{datetime.now().strftime('%Y-%m-%d_%H%M%S')}",
         # )
         job = datacube.create_job(title=auto_title)
         job.start_and_wait()
