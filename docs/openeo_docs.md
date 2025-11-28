@@ -35,53 +35,5 @@ Follow the instructions here to make an account: https://documentation.dataspace
 
 ### Run preprocessing in OpenEO:
 
-```python
-import openeo
-
-url = "https://openeo.dataspace.copernicus.eu"
-connection = openeo.connect(url).authenticate_oidc()
-
-datacube = connection.datacube_from_process(
-    process_id="sar_slc_preprocessing",
-    primary_date= "2024-08-09",
-    temporal_extent= [
-      "2024-08-09",
-      "2024-09-02"
-    ],
-    burst_id=249435,
-    sub_swath="IW2",
-    polarization=["vv"],
-)
-
-job = datacube.create_job(job_options={
-    "python-memory": "4200m",
-})
-job.start_and_wait()
-job.get_results().download_files()
-```
-
-### Run interferogram + coherence in OpenEO:
-
-```python
-import openeo
-
-url = "https://openeo.dataspace.copernicus.eu"
-connection = openeo.connect(url).authenticate_oidc()
-
-datacube = connection.datacube_from_process(
-    # process_id="sar_coherence",
-    process_id="sar_interferogram",
-    InSAR_pairs=[["2024-08-09", "2024-09-02"], ["2024-08-21", "2024-09-02"]],
-    burst_id=249435,
-    coherence_window_az=2,
-    coherence_window_rg=10,
-    n_az_looks=1,
-    n_rg_looks=4,
-    polarization="vv",
-    sub_swath="IW2",
-)
-
-job = datacube.create_job()
-job.start_and_wait()
-job.get_results().download_files()
-```
+Please consult the integration tests to see examples on how to run the processes in openEO:
+https://github.com/cloudinsar/s1-workflows/blob/main/tests/test_insar_backend.py

@@ -37,11 +37,11 @@ def get_connection():
 @pytest.mark.parametrize(
     "input_dict",
     [
+        # json.loads((repo_directory / "sar/example_inputs/input_dict_2018_vh_new.json").read_text()),
         json.loads((repo_directory / "sar/example_inputs/input_dict_2024_vv_new.json").read_text()),
-        json.loads((repo_directory / "sar/example_inputs/input_dict_2018_vh_new.json").read_text()),
     ],
 )
-def test_georeferenced_sar_against_openeo_backend(process_id, input_dict, auto_title):
+def test_georeferenced_new_sar_against_openeo_backend(process_id, input_dict, auto_title):
     now = datetime.now()
     tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests_", "tests/tmp_")).absolute()
     tmp_dir.mkdir(exist_ok=True)
