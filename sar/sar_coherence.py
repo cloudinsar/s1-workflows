@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import base64
+import shutil
 import urllib.parse
 import urllib.request
 from datetime import timedelta
@@ -112,7 +113,8 @@ for prm_date, prm_filename in date_to_path.items():
         )
         asset_paths.append(output_filename)
         if not os.path.exists(output_filename):
-            tiff_to_gtiff.tiff_to_gtiff(output_filename_tmp, output_filename)
+            # tiff_to_gtiff.tiff_to_gtiff(output_filename_tmp, output_filename)
+            shutil.move(output_filename_tmp, output_filename)
 
 # slow when running outside Docker, because the whole home directory is scanned.
 simple_stac_builder.generate_catalog(
