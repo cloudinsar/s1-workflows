@@ -198,7 +198,8 @@ for pair in input_dict["InSAR_pairs"]:
 
     asset_paths.append(output_filename)
     if not os.path.exists(output_filename):
-        tiff_to_gtiff.tiff_to_gtiff(result_path, output_filename)
+        # tiff_to_gtiff.tiff_to_gtiff(result_path, output_filename)
+        shutil.copy(result_path, output_filename)
 
 print("seconds since start: " + str((datetime.now() - start_time).seconds))
 

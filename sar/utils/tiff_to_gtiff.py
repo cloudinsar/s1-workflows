@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os.path
 import re
+import shutil
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -31,6 +32,10 @@ def tiff_to_gtiff(input_path, output_path, tiff_per_band=False) -> list:
     print(f"tiff_to_gtiff({input_path=})")
     if not os.path.exists(input_path):
         raise FileNotFoundError(f"Input file {input_path} does not exist.")
+
+    if not tiff_per_band:
+        shutil.copy(input_path, output_path)
+        return [output_path]
 
     with input_path.open("rb") as f:
         tags = exifread.process_file(f)
