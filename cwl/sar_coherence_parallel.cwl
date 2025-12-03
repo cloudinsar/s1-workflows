@@ -1,17 +1,17 @@
 #!/usr/bin/env cwl-runner
-# Example on how to run locally: cwltool --tmpdir-prefix=$HOME/tmp/ --force-docker-pull --leave-container --leave-tmpdir --parallel sar_coherence.cwl /home/emile/openeo/s1-workflows/sar/example_inputs/input_dict_2024_vv.json
+# Example on how to run locally: cwltool --tmpdir-prefix=$HOME/tmp/ --force-docker-pull --leave-container --leave-tmpdir --parallel cwl/sar_coherence_parallel.cwl sar/example_inputs/input_dict_2024_vv.json
 cwlVersion: v1.2
 $graph:
   - id: sub_collection_maker
     class: CommandLineTool
-    baseCommand: /src/sar/sar_coherence.py
+    baseCommand: /src/sar/sar_coherence_easy_to_parallelize.py
     requirements:
       - class: InitialWorkDirRequirement
         listing:
           - entryname: "arguments.json"
             entry: $(inputs)
       - class: DockerRequirement
-        dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.51
+        dockerPull: ghcr.io/cloudinsar/openeo_insar:20251128T1038
       - class: NetworkAccess
         networkAccess: true
 
@@ -142,22 +142,7 @@ $graph:
           simple_stac_merge_in1: gatherer_node_step1/scatter_node_out
         out: [ simple_stac_merge_out ]
         run: "#simple_stac_merge"
-      directory_to_file_list:
-        run:
-          class: ExpressionTool
-          requirements:
-            InlineJavascriptRequirement: { }
-            LoadListingRequirement:
-              loadListing: shallow_listing
-          inputs:
-            directory_to_file_list_in: Directory
-          expression: '${return {"directory_to_file_list_out": inputs.directory_to_file_list_in.listing};}'
-          outputs:
-            directory_to_file_list_out: File[]
-        in:
-          directory_to_file_list_in: gatherer_node_step2/simple_stac_merge_out
-        out: [ directory_to_file_list_out ]
     outputs:
       - id: gatherer_node_out
-        outputSource: directory_to_file_list/directory_to_file_list_out
-        type: File[]
+        outputSource: gatherer_node_step2/simple_stac_merge_out
+        type: Directory
