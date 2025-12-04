@@ -47,6 +47,12 @@ def test_georeferenced_new_sar_against_openeo_backend(process_id, input_dict, au
     tmp_dir.mkdir(exist_ok=True)
 
     datacube = get_connection().datacube_from_process(process_id=process_id, **input_dict)
+    # datacube = get_connection().datacube_from_process(
+    #     process_id="run_cwl_to_stac",
+    #     # cwl_url needs to be whitelisted
+    #     cwl_url="https://raw.githubusercontent.com/cloudinsar/s1-workflows/refs/heads/main/cwl/sar_coherence.cwl",
+    #     context=input_dict,
+    # )
 
     if local_openEO:
         datacube = datacube.save_result(format="NetCDF")
@@ -80,6 +86,7 @@ def test_georeferenced_new_sar_against_openeo_backend(process_id, input_dict, au
         input_dict_2024_vv,
         # input_dict_2018_vh,
         # input_dict_belgium_vv,
+        # json.loads((repo_directory / "sar/example_inputs/input_dict_whole_2023.json").read_text()),
     ],
 )
 def test_georeferenced_sar_against_openeo_backend(process_id, input_dict, auto_title):
