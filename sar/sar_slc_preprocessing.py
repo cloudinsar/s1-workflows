@@ -7,6 +7,7 @@ import sys
 import urllib.parse
 import urllib.request
 from typing import Any, Dict, Optional
+from datetime import datetime
 
 from utils import simple_stac_builder
 from utils import tiff_to_gtiff
@@ -27,7 +28,7 @@ else:
     # input_dict = input_dict_2018_vh_preprocessing
     input_dict = {
         "burst_id": 234893,
-        "primary_date": "2024-08-09",
+        "primary_date": "2024-09-02",
         "polarization": ["vv", "vh"],
         "sub_swath": "IW1",
         "temporal_extent": ["2024-08-09", "2024-08-21"],
@@ -59,20 +60,29 @@ def add_to_date_dict(date: datetime, paths: list):
 
 prm_date: Optional[datetime] = None
 for pol in input_dict["polarization"]:
-    https_request = (
-            f"https://catalogue.dataspace.copernicus.eu/odata/v1/Bursts?$filter="
-            + urllib.parse.quote(
-        f"ContentDate/Start ge {input_dict['temporal_extent'][0]}T00:00:00.000Z and ContentDate/Start le {input_dict['temporal_extent'][1]}T23:59:59.000Z and "
-        f"PolarisationChannels eq '{pol.upper()}' and "
-        f"BurstId eq {input_dict['burst_id']} and "
-        # f"(OData.CSC.Intersects(Footprint=geography'SRID=4326;POINT ({lon} {lat})')) and "
-        f"SwathIdentifier eq '{input_dict['sub_swath'].upper()}'"
-    )
-            + "&$top=1000"
-    )
-    print(https_request)
-    with urllib.request.urlopen(https_request) as response:
-        bursts = json.loads(response.read().decode())
+
+    primary_date = parse_date(input_dict["primary_date"])
+    start_date = parse_date(input_dict['temporal_extent'][0])
+    end_date = parse_date(input_dict['temporal_extent'][1])
+
+    # Moved the function in workflow_utils.py
+    bursts = retrieve_bursts_with_id_and_iw(input_dict['temporal_extent'][0],
+                                            input_dict['temporal_extent'][1],
+                                            pol,
+                                            input_dict['burst_id'],
+                                            input_dict['sub_swath'])
+
+    # Check if primary date is within the provided temporal extent.
+    # If not, we need do a second query to retrieve it separately.
+    if (primary_date < start_date) or (primary_date > end_date):
+        burst_primary = retrieve_bursts_with_id_and_iw(input_dict["primary_date"],
+                                                input_dict["primary_date"],
+                                                pol,
+                                                input_dict['burst_id'],
+                                                input_dict['sub_swath'])
+        if len(burst_primary["value"]) == 0:
+            raise Exception(f"No bursts found for primary_date: {input_dict['primary_date']}, burst_id: {input_dict['burst_id']}, subswath: {input_dict['sub_swath']}")
+        bursts["value"].append(burst_primary["value"][0])
 
     burst_paths = []
     for burst in bursts["value"]:
