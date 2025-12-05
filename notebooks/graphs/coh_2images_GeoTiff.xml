@@ -128,7 +128,7 @@
   UNIT[&quot;m&quot;, 1.0], &#xd;
   AXIS[&quot;Easting&quot;, EAST], &#xd;
   AXIS[&quot;Northing&quot;, NORTH]]</mapProjection>
-      <alignToStandardGrid>false</alignToStandardGrid>
+      <alignToStandardGrid>true</alignToStandardGrid>
       <standardGridOriginX>0.0</standardGridOriginX>
       <standardGridOriginY>0.0</standardGridOriginY>
       <nodataValueAtSea>true</nodataValueAtSea>
