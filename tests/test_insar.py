@@ -149,6 +149,7 @@ def test_insar(script, input_dict, auto_title):
     [
         # input_dict_2018_vh_preprocessing,
         input_dict_belgium_vv_vh_preprocessing,
+        input_dict_belgium_vv_master_outside_preprocessing,
         input_dict_2024_vv_preprocessing,
     ],
 )

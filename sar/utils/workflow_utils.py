@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any, Dict
 
 import urllib
+import urllib.parse
 
 # __file__ could have exotic values in Docker:
 # __file__ == /src/./OpenEO_insar.py
@@ -87,6 +88,14 @@ input_dict_2018_vh_preprocessing = {
 input_dict_belgium_vv_preprocessing = {
     "burst_id": 234893,
     "primary_date": "2024-08-09",
+    "polarization": ["vv"],
+    "sub_swath": "IW1",
+    "temporal_extent": ["2024-08-09", "2024-08-21"],
+}
+
+input_dict_belgium_vv_master_outside_preprocessing = {
+    "burst_id": 234893,
+    "primary_date": "2024-09-02",
     "polarization": ["vv"],
     "sub_swath": "IW1",
     "temporal_extent": ["2024-08-09", "2024-08-21"],

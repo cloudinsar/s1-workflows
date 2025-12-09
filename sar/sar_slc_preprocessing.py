@@ -4,7 +4,6 @@ import glob
 import os
 import subprocess
 import sys
-import urllib.parse
 import urllib.request
 from typing import Any, Dict, Optional
 from datetime import datetime
