@@ -35,6 +35,7 @@ dev = [
     "rio-cogeo",
     "cwltool",
     "mypy",
+    "openeo",
 ]
 
 [tool.setuptools.packages.find]
