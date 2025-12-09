@@ -87,6 +87,7 @@ def test_georeferenced_new_sar_against_openeo_backend(process_id, input_dict, au
         # input_dict_2018_vh,
         # input_dict_belgium_vv,
         # json.loads((repo_directory / "sar/example_inputs/input_dict_whole_2023.json").read_text()),
+        json.loads((repo_directory / "sar/example_inputs/input_dict_2023.json").read_text()),
     ],
 )
 def test_georeferenced_sar_against_openeo_backend(process_id, input_dict, auto_title):
