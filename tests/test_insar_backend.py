@@ -1,6 +1,9 @@
 import logging
 
 import rioxarray
+from openeo.rest.stac_resource import StacResource
+from openeo.internal.graph_building import PGNode
+
 from testutils import *
 
 #
@@ -127,16 +130,32 @@ def test_sar_preprocessing_against_openeo_backend(input_dict, auto_title):
     now = datetime.now()
     tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests/", "tests/tmp_")).absolute()
     tmp_dir.mkdir(exist_ok=True)
-    datacube = get_connection().datacube_from_process(process_id="sar_slc_preprocessing", **input_dict)
+    # datacube = get_connection().datacube_from_process(process_id="sar_slc_preprocessing", **input_dict)
+    stac_resource = StacResource(
+        graph=PGNode(
+            process_id="run_cwl_to_stac",
+            arguments={
+                "cwl_url": "https://raw.githubusercontent.com/cloudinsar/s1-workflows/refs/heads/main/cwl/sar_slc_preprocessing.cwl",
+                "context": input_dict,
+            },
+        ),
+        connection=get_connection(),
+    )
+
+    stac_resource = stac_resource.export_workspace(
+        "insar-results-workspace",
+        merge="/" + os.path.basename(__file__) + "_" + now.strftime("%Y-%m-%d_%H_%M_%S"),
+    )
 
     if local_openEO:
-        datacube = datacube.save_result(format="NetCDF")
+        datacube = stac_resource.save_result(format="NetCDF")
         datacube.download(tmp_dir / "result.nc")
     else:
-        datacube = datacube.save_result(format="GTiff", options={"overviews": "OFF"})
-        job = datacube.create_job(
+        # stac_resource = datacube.save_result(format="GTiff", options={"overviews": "OFF"})
+        job = stac_resource.create_job(
             title=auto_title,
             job_options={
+                # "image-name": "python38-dev",
                 "python-memory": "4000m",  # did also work with 3G
             },
         )
