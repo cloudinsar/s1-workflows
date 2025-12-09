@@ -10,6 +10,9 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict
 
+import urllib
+import urllib.parse
+
 # __file__ could have exotic values in Docker:
 # __file__ == /src/./OpenEO_insar.py
 # __file__ == //./src/OpenEO_insar.py
@@ -90,6 +93,14 @@ input_dict_belgium_vv_preprocessing = {
     "temporal_extent": ["2024-08-09", "2024-08-21"],
 }
 
+input_dict_belgium_vv_master_outside_preprocessing = {
+    "burst_id": 234893,
+    "primary_date": "2024-09-02",
+    "polarization": ["vv"],
+    "sub_swath": "IW1",
+    "temporal_extent": ["2024-08-09", "2024-08-21"],
+}
+
 input_dict_belgium_vv_vh_preprocessing = {
     "burst_id": 234893,
     "primary_date": "2024-08-09",
@@ -137,9 +148,9 @@ def date_from_burst(burst_path):
 
 
 def parse_date(date_str: str) -> datetime:
-    if re.match(r"^\d{4}-\d{2}-\d{2}$", date_str):
+    if re.match(r"^\d{4}-\d{2}-\d{2}$", date_str) or re.match(r"^\d{4}-\d{1}-\d{1}$", date_str):
         return datetime.strptime(date_str, "%Y-%m-%d")
-    if re.match(r"^\d{4}\d{2}\d{2}$", date_str):
+    if re.match(r"^\d{4}\d{2}\d{2}$", date_str) or re.match(r"^\d{4}\d{1}\d{1}$", date_str):
         return datetime.strptime(date_str, "%Y%m%d")
     try:
         return datetime.strptime(date_str, "%Y%m%dT%H%M%S")
@@ -267,3 +278,16 @@ def exec_proc(command, cwd=None, write_output=True, env=None):
             print(output)
         raise Exception("Process returned error status code: " + str(ret))
     return ret, output
+
+
+def retrieve_bursts_with_id_and_iw(start_date, end_date, pol, burst_id, sbswath):
+    https_request = "https://catalogue.dataspace.copernicus.eu/odata/v1/Bursts?$filter=" + urllib.parse.quote(
+                f"ContentDate/Start ge {start_date}T00:00:00.000Z and ContentDate/Start le {end_date}T23:59:59.000Z and "
+                f"PolarisationChannels eq '{pol.upper()}' and "
+                f"BurstId eq {burst_id} and "
+                f"SwathIdentifier eq '{sbswath.upper()}'") + "&$top=1000"
+
+    with urllib.request.urlopen(https_request) as response:
+        content = response.read().decode()
+
+    return json.loads(content)
