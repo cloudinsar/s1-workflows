@@ -19,7 +19,7 @@ dependencies = [
     "jsonschema==4.23.0",
     "numpy",
     "exifread",
-    "openeo_driver>=0.138.0a5.dev",
+    # "openeo_driver>=0.138.0a5.dev",
     #  "GDAL",  # Installed depending on version in os
     # "python-json-logger~=2.0",
 ]
