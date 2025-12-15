@@ -39,7 +39,7 @@ LOGGING_CONFIG = {
 
 # Apply the configuration
 logging.config.dictConfig(LOGGING_CONFIG)
-print = logging.info  # redirect print to logging
+print = lambda *args, **kwargs: logging.getLogger().info(" ".join(map(str, args)))
 
 # __file__ could have exotic values in Docker:
 # __file__ == /src/./OpenEO_insar.py
