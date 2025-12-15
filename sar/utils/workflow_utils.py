@@ -9,7 +9,9 @@ import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict
+import logging.config
 
+from pythonjsonlogger import jsonlogger
 import urllib
 import urllib.parse
 
@@ -20,6 +22,31 @@ import urllib.parse
 repo_directory = Path(os.path.dirname(os.path.normpath(__file__).replace("//", "/"))).parent.parent.absolute()
 print("repo_directory: " + str(repo_directory))
 
+
+# Define the logging configuration
+LOGGING_CONFIG = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "json": {
+            "()": jsonlogger.JsonFormatter,
+            "fmt": "%(asctime)s %(levelname)s %(name)s %(message)s",
+        }
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "json",
+        }
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
+}
+
+# Apply the configuration
+logging.config.dictConfig(LOGGING_CONFIG)
 
 def setup_insar_environment():
     if "AWS_ACCESS_KEY_ID" not in os.environ and os.path.exists(repo_directory / "notebooks/CDSE_SECRET"):
