@@ -15,14 +15,6 @@ from pythonjsonlogger import jsonlogger
 import urllib
 import urllib.parse
 
-# __file__ could have exotic values in Docker:
-# __file__ == /src/./OpenEO_insar.py
-# __file__ == //./src/OpenEO_insar.py
-# So we do a lot of normalization:
-repo_directory = Path(os.path.dirname(os.path.normpath(__file__).replace("//", "/"))).parent.parent.absolute()
-print("repo_directory: " + str(repo_directory))
-
-
 # Define the logging configuration
 LOGGING_CONFIG = {
     "version": 1,
@@ -47,6 +39,14 @@ LOGGING_CONFIG = {
 
 # Apply the configuration
 logging.config.dictConfig(LOGGING_CONFIG)
+print = logging.info  # redirect print to logging
+
+# __file__ could have exotic values in Docker:
+# __file__ == /src/./OpenEO_insar.py
+# __file__ == //./src/OpenEO_insar.py
+# So we do a lot of normalization:
+repo_directory = Path(os.path.dirname(os.path.normpath(__file__).replace("//", "/"))).parent.parent.absolute()
+print("repo_directory: " + str(repo_directory))
 
 def setup_insar_environment():
     if "AWS_ACCESS_KEY_ID" not in os.environ and os.path.exists(repo_directory / "notebooks/CDSE_SECRET"):
@@ -318,3 +318,7 @@ def retrieve_bursts_with_id_and_iw(start_date, end_date, pol, burst_id, sbswath)
         content = response.read().decode()
 
     return json.loads(content)
+
+if __name__ == "__main__":
+    # for testing
+    setup_insar_environment()
