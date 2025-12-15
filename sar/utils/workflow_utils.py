@@ -11,88 +11,45 @@ from pathlib import Path
 from typing import Any, Dict
 import logging.config
 
-from pythonjsonlogger import jsonlogger
 import urllib
 import urllib.parse
 
-from workflow_runtime import get_job_id
+from openeo_driver.util.logging import (
+    LOG_HANDLER_STDERR_JSON,
+    LOGGING_CONTEXT_BATCH_JOB,
+    GlobalExtraLoggingFilter,
+    get_logging_config,
+    setup_logging,
+)
 
-ENV_VAR_OPENEO_BATCH_JOB_ID = "OPENEO_BATCH_JOB_ID"
-
-
-class GlobalExtraLoggingFilter(logging.Filter):
-    """
-    Python logging plugin to inject extra logging data in a global way,
-    covering all logging that happens in the current process.
-
-    With great power comes great responsibility:
-    only use this for data that is truly global and immutable in the context of the whole process
-    (e.g. the batch job id in a batch job script context, or a run correlation id for a background script).
-
-    Do not use it for data that hasn't a global character or may change during the process.
-    See `ExtraLoggingFilter` for a more context-oriented approach.
-    """
-
-    # Global (class level) storage for extra data
-    _data = {}
-
-    @classmethod
-    def set(cls, field: str, value: str):
-        # TODO: guard immutability once a field is set?
-        cls._data[field] = value
-
-    @classmethod
-    def reset(cls):
-        # This reset is only here for testing purposes, can we eliminate it?
-        cls._data = {}
-
-    def filter(self, record: logging.LogRecord) -> bool:
-        """Filter a log record (logging.Filter API)."""
-        for field, value in self._data.items():
-            setattr(record, field, value)
-        return True
-
-
-# Define the logging configuration
-GlobalExtraLoggingFilter.set("job_id", get_job_id(default="unknown-job"))
-
-LOGGING_CONFIG = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "json": {
-            "()": jsonlogger.JsonFormatter,
-            "fmt": "%(asctime)s %(levelname)s %(name)s %(message)s",
-        }
-    },
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "json",
-            "filters": ["GlobalExtraLoggingFilter"],
-        }
-    },
-    "filters": {
-        "GlobalExtraLoggingFilter": {"()": GlobalExtraLoggingFilter},
-    },
-    "root": {
-        "handlers": ["console"],
-        "level": "INFO",
-    },
-}
-
-# Apply the configuration
-logging.config.dictConfig(LOGGING_CONFIG)
-print = lambda *args, **kwargs: logging.getLogger().info(" ".join(map(str, args)))
+from utils.workflow_runtime import get_job_id
 
 # __file__ could have exotic values in Docker:
 # __file__ == /src/./OpenEO_insar.py
 # __file__ == //./src/OpenEO_insar.py
 # So we do a lot of normalization:
 repo_directory = Path(os.path.dirname(os.path.normpath(__file__).replace("//", "/"))).parent.parent.absolute()
-print("repo_directory: " + str(repo_directory))
+logging.info("repo_directory: " + str(repo_directory))
+
 
 def setup_insar_environment():
+    # Remove any existing handlers configured by default
+    logger = logging.getLogger()
+    while logger.hasHandlers():
+        logger.removeHandler(logger.handlers[0])
+
+    setup_logging(
+        get_logging_config(
+            root_handlers=[LOG_HANDLER_STDERR_JSON],
+            context=LOGGING_CONTEXT_BATCH_JOB,
+            root_level=os.environ.get("OPENEO_LOGGING_THRESHOLD", "INFO"),
+        ),
+        capture_unhandled_exceptions=False,  # not needed anymore, as we have a try catch around everything
+    )
+
+    GlobalExtraLoggingFilter.set("job_id", get_job_id(default="unknown-job"))
+    # print = lambda *args, **kwargs: logging.getLogger().info(" ".join(map(str, args)))  # too invasive
+
     if "AWS_ACCESS_KEY_ID" not in os.environ and os.path.exists(repo_directory / "notebooks/CDSE_SECRET"):
         # same credentials as in the notebooks
         with open(repo_directory / "notebooks/CDSE_SECRET", "r") as cdse_secret_file:
@@ -102,14 +59,14 @@ def setup_insar_environment():
     if not "AWS_ENDPOINT_URL_S3" in os.environ:
         os.environ["AWS_ENDPOINT_URL_S3"] = "https://eodata.dataspace.copernicus.eu"
 
-    print("S3_ENDPOINT_URL= " + str(os.environ.get("S3_ENDPOINT_URL", None)))
-    print("AWS_ACCESS_KEY_ID= " + str(os.environ.get("AWS_ACCESS_KEY_ID", None)))
+    logging.info("S3_ENDPOINT_URL= " + str(os.environ.get("S3_ENDPOINT_URL", None)))
+    logging.info("AWS_ACCESS_KEY_ID= " + str(os.environ.get("AWS_ACCESS_KEY_ID", None)))
     if "AWS_ACCESS_KEY_ID" not in os.environ:
         raise Exception("AWS_ACCESS_KEY_ID should be set in environment")
 
     # GPT means "Graph Processing Toolkit" in this context
     if subprocess.run(["which", "gpt"]).returncode != 0 and os.path.exists("/usr/local/esa-snap/bin/gpt"):
-        print("adding SNAP to PATH")  # needed when running outside of docker
+        logging.info("adding SNAP to PATH")  # needed when running outside of docker
         os.environ["PATH"] = os.environ["PATH"] + ":/usr/local/esa-snap/bin"
 
 
@@ -311,10 +268,10 @@ def exec_proc(command, cwd=None, write_output=True, env=None):
     new_env = merge_two_dicts(dict(os.environ), env)
 
     # print commands that can be pasted in the console
-    print(f'> cd "{cwd}"')
+    logging.info(f'> cd "{cwd}"')
     for key in env:
-        print(key + "=" + str(subprocess.list2cmdline([env[key], ""])[:-3]))
-    print("" + command_to_display)
+        logging.info(key + "=" + str(subprocess.list2cmdline([env[key], ""])[:-3]))
+    logging.info("" + command_to_display)
 
     output = ""
     try:
@@ -346,7 +303,7 @@ def exec_proc(command, cwd=None, write_output=True, env=None):
 
     if ret != 0:
         if not write_output:
-            print(output)
+            logging.info(output)
         raise Exception("Process returned error status code: " + str(ret))
     return ret, output
 
