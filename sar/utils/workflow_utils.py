@@ -15,7 +15,47 @@ from pythonjsonlogger import jsonlogger
 import urllib
 import urllib.parse
 
+from workflow_runtime import get_job_id
+
+ENV_VAR_OPENEO_BATCH_JOB_ID = "OPENEO_BATCH_JOB_ID"
+
+
+class GlobalExtraLoggingFilter(logging.Filter):
+    """
+    Python logging plugin to inject extra logging data in a global way,
+    covering all logging that happens in the current process.
+
+    With great power comes great responsibility:
+    only use this for data that is truly global and immutable in the context of the whole process
+    (e.g. the batch job id in a batch job script context, or a run correlation id for a background script).
+
+    Do not use it for data that hasn't a global character or may change during the process.
+    See `ExtraLoggingFilter` for a more context-oriented approach.
+    """
+
+    # Global (class level) storage for extra data
+    _data = {}
+
+    @classmethod
+    def set(cls, field: str, value: str):
+        # TODO: guard immutability once a field is set?
+        cls._data[field] = value
+
+    @classmethod
+    def reset(cls):
+        # This reset is only here for testing purposes, can we eliminate it?
+        cls._data = {}
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        """Filter a log record (logging.Filter API)."""
+        for field, value in self._data.items():
+            setattr(record, field, value)
+        return True
+
+
 # Define the logging configuration
+GlobalExtraLoggingFilter.set("job_id", get_job_id(default="unknown-job"))
+
 LOGGING_CONFIG = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -29,7 +69,11 @@ LOGGING_CONFIG = {
         "console": {
             "class": "logging.StreamHandler",
             "formatter": "json",
+            "filters": ["GlobalExtraLoggingFilter"],
         }
+    },
+    "filters": {
+        "GlobalExtraLoggingFilter": {"()": GlobalExtraLoggingFilter},
     },
     "root": {
         "handlers": ["console"],
