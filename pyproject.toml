@@ -36,6 +36,7 @@ dev = [
     "cwltool",
     "mypy",
     "openeo",
+    "python-json-logger~=2.0",
 ]
 
 [tool.setuptools.packages.find]
