@@ -8,9 +8,9 @@ import sys
 import urllib.parse
 import urllib.request
 
-from utils import simple_stac_builder
-from utils import tiff_to_gtiff
-from utils.workflow_utils import *
+from sar.utils import simple_stac_builder
+from sar.utils import tiff_to_gtiff
+from sar.utils.workflow_utils import *
 
 setup_insar_environment()
 
@@ -114,7 +114,7 @@ for burst in bursts["value"]:
 
 print(f"{burst_paths=!r}")
 
-asset_paths = []
+asset_paths: list[Path] = []
 
 for pair in input_dict["InSAR_pairs"]:
     prm_filename = next(filter(lambda x: pair[0].replace("-", "") in str(x), burst_paths))
@@ -162,8 +162,8 @@ for pair in input_dict["InSAR_pairs"]:
 
         # Unwrapping with snaphu
         snaphu_conf_filename = glob.glob(f"{output_filename_tmp}/snaphu.conf")[0]
-        with open(snaphu_conf_filename, "r") as file:
-            for line in file:
+        with open(snaphu_conf_filename, "r") as snaphu_conf_file:
+            for line in snaphu_conf_file:
                 if line.startswith("#"):
                     line = line[1:].lstrip()  # Remove the '#' symbol and whitespaces at the beginning
                     if line.startswith("snaphu"):
@@ -194,7 +194,7 @@ for pair in input_dict["InSAR_pairs"]:
             ] + snap_extra_arguments
         exec_proc(gpt_cmd)
 
-    output_filename = f"{result_folder}/phase_coh_{date_from_burst(prm_filename)}_{date_from_burst(sec_filename)}.tif"
+    output_filename = Path(f"{result_folder}/phase_coh_{date_from_burst(prm_filename)}_{date_from_burst(sec_filename)}.tif")
 
     asset_paths.append(output_filename)
     if not os.path.exists(output_filename):

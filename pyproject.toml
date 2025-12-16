@@ -13,12 +13,14 @@ classifiers = [
     "Programming Language :: Python :: 3",
 ]
 dependencies = [
-    "pystac>=1.14.0",
+    "pystac~=1.8.0",
+#    "pystac>=1.14.0",
     "urllib3>=2.5.0",
     "jsonschema==4.23.0",
     "numpy",
     "exifread",
     #  "GDAL",  # Installed depending on version in os
+    # "python-json-logger~=2.0",
 ]
 
 [project.optional-dependencies]

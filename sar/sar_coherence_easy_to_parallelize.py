@@ -6,9 +6,9 @@ import sys
 import urllib.parse
 import urllib.request
 
-from utils import simple_stac_builder
-from utils import tiff_to_gtiff
-from utils.workflow_utils import *
+from sar.utils import simple_stac_builder
+from sar.utils import tiff_to_gtiff
+from sar.utils.workflow_utils import *
 
 setup_insar_environment()
 

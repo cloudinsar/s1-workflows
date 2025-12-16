@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import logging
 import os.path
 import re
 import xml.etree.ElementTree as ET
@@ -28,7 +29,7 @@ gdal.UseExceptions()
 
 def tiff_to_gtiff(input_path, output_path, tiff_per_band=False) -> list:
     input_path = Path(input_path)
-    print(f"tiff_to_gtiff({input_path=})")
+    logging.info(f"tiff_to_gtiff({input_path=})")
     if not os.path.exists(input_path):
         raise FileNotFoundError(f"Input file {input_path} does not exist.")
 
@@ -58,7 +59,7 @@ def tiff_to_gtiff(input_path, output_path, tiff_per_band=False) -> list:
     ds_in = gdal.Open(str(input_path), gdalconst.GA_ReadOnly)
 
     transform_in = list(ds_in.GetGeoTransform())
-    print(f"{transform_in=}")  # [0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+    logging.info(f"{transform_in=}")  # [0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
     # TODO: Avoid: "The offset of the first block of the image should be after its IFD"
     driver_tiff = gdal.GetDriverByName("GTiff")  # COG GTiff
 
