@@ -108,7 +108,7 @@
     </sources>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <file>${output_filename}</file>
-      <formatName>GeoTIFF</formatName>
+      <formatName>GeoTIFF-BigTIFF</formatName>
     </parameters>
   </node>
   <applicationData id="Presentation">

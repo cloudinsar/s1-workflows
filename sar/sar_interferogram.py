@@ -180,14 +180,16 @@ for pair in input_dict["InSAR_pairs"]:
         unw_phase_filename = glob.glob(
             os.path.join(output_filename_tmp, "UnwPhase*.hdr")
         )[0]
+        saveDEM = False  # Just like in geocode_snaphuInterferogram.xml
         gpt_cmd = [
                 "gpt",
                 "-J-Xmx14G",
                 str(
                     repo_directory
-                    / "notebooks/graphs/geocode_snaphuInterferogram.xml"
+                    / "notebooks/graphs/geocode_snaphuInterferogram_WGS84.xml"
                 ),
                 f'-Pinterferogram_filename={output_filename_tmp}.dim',
+                f'-PsaveDEM="{str(saveDEM).lower()}"',
                 f'-Punw_interferogram_filename={unw_phase_filename}',
                 f'-Pphase_coh_bandnames={phase_bandname},{unw_phase_bandname},{coh_bandname}',
                 f'-Poutput_filename={result_path}'
