@@ -79,12 +79,12 @@ for pol in input_dict["polarization"]:
                                                 pol,
                                                 input_dict['burst_id'],
                                                 input_dict['sub_swath'])
-        if len(burst_primary["value"]) == 0:
+        if len(burst_primary) == 0:
             raise Exception(f"No bursts found for primary_date: {input_dict['primary_date']}, burst_id: {input_dict['burst_id']}, subswath: {input_dict['sub_swath']}")
-        bursts["value"].append(burst_primary["value"][0])
+        bursts.append(burst_primary[0])
 
     burst_paths = []
-    for burst in bursts["value"]:
+    for burst in bursts:
         cmd = [
             "bash",
             "sentinel1_burst_extractor.sh",

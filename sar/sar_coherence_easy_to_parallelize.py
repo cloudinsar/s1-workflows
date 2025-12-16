@@ -3,8 +3,6 @@ import base64
 import os
 import subprocess
 import sys
-import urllib.parse
-import urllib.request
 
 from sar.utils import simple_stac_builder
 from sar.utils import tiff_to_gtiff
@@ -54,26 +52,20 @@ result_folder = Path.cwd().absolute()
 tmp_insar = Path("/tmp/insar")
 tmp_insar.mkdir(parents=True, exist_ok=True)
 
-https_request = (
-        f"https://catalogue.dataspace.copernicus.eu/odata/v1/Bursts?$filter="
-        + urllib.parse.quote(
-    f"ContentDate/Start ge {start_date}T00:00:00.000Z and ContentDate/Start le {end_date}T23:59:59.000Z and "
-    f"PolarisationChannels eq '{input_dict['polarization'].upper()}' and "
-    f"BurstId eq {input_dict['burst_id']} and "
-    f"SwathIdentifier eq '{input_dict['sub_swath'].upper()}'"
+bursts = retrieve_bursts_with_id_and_iw(
+    start_date,
+    end_date,
+    input_dict['polarization'],
+    input_dict['burst_id'],
+    input_dict['sub_swath']
 )
-        + "&$top=1000"
-)
-print(https_request)
-with urllib.request.urlopen(https_request) as response:
-    bursts = json.loads(response.read().decode())
 
 flattened_pairs = set()
 for pair in input_dict["InSAR_pairs"]:
     for date in pair:
         flattened_pairs.add(parse_date(date).date())
 burst_paths = []
-for burst in bursts["value"]:
+for burst in bursts:
     begin = parse_date(burst["BeginningDateTime"]).date()
     end = parse_date(burst["EndingDateTime"]).date()
     if begin not in flattened_pairs and end not in flattened_pairs:

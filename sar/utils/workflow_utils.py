@@ -8,7 +8,7 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, List
 import logging.config
 
 import urllib
@@ -310,7 +310,7 @@ def exec_proc(command, cwd=None, write_output=True, env=None):
     return ret, output
 
 
-def retrieve_bursts_with_id_and_iw(start_date, end_date, pol, burst_id, sbswath):
+def retrieve_bursts_with_id_and_iw(start_date, end_date, pol, burst_id, sbswath) -> List[Dict]:
     https_request = "https://catalogue.dataspace.copernicus.eu/odata/v1/Bursts?$filter=" + urllib.parse.quote(
                 f"ContentDate/Start ge {start_date}T00:00:00.000Z and ContentDate/Start le {end_date}T23:59:59.000Z and "
                 f"PolarisationChannels eq '{pol.upper()}' and "
@@ -320,7 +320,7 @@ def retrieve_bursts_with_id_and_iw(start_date, end_date, pol, burst_id, sbswath)
     with urllib.request.urlopen(https_request) as response:
         content = response.read().decode()
 
-    return json.loads(content)
+    return json.loads(content)["value"]
 
 if __name__ == "__main__":
     # for testing
