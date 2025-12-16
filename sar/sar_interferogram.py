@@ -106,7 +106,7 @@ for burst in bursts:
 
 print(f"{burst_paths=!r}")
 
-asset_paths: list[Path] = []
+asset_paths: List[Path] = []
 
 for pair in input_dict["InSAR_pairs"]:
     prm_filename = next(filter(lambda x: pair[0].replace("-", "") in str(x), burst_paths))
