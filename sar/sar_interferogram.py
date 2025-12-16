@@ -162,8 +162,8 @@ for pair in input_dict["InSAR_pairs"]:
 
         # Unwrapping with snaphu
         snaphu_conf_filename = glob.glob(f"{output_filename_tmp}/snaphu.conf")[0]
-        with open(snaphu_conf_filename, "r") as file:
-            for line in file:
+        with open(snaphu_conf_filename, "r") as snaphu_conf_file:
+            for line in snaphu_conf_file:
                 if line.startswith("#"):
                     line = line[1:].lstrip()  # Remove the '#' symbol and whitespaces at the beginning
                     if line.startswith("snaphu"):
