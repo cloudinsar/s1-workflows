@@ -72,9 +72,9 @@ RUN python3.11 -m venv /opt/venv && \
     mkdir -p sar && \
     pip config set global.disable-pip-version-check true
 
-RUN cd $HOME && \
+RUN cd /opt && \
     git clone --recursive --shallow-submodules --depth 1 https://github.com/Open-EO/openeo-python-driver.git && \
-    python3 -m pip install -e $HOME/openeo-python-driver
+    python3 -m pip install -e /opt/openeo-python-driver
 
 COPY pyproject.toml /src/pyproject.toml
 RUN cd /src && \
