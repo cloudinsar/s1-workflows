@@ -5,7 +5,7 @@ class: CommandLineTool
 baseCommand: /src/sar/sar_coherence.py
 requirements:
   DockerRequirement:
-    dockerPull: registry.stag.warsaw.openeo.dataspace.copernicus.eu/rand/openeo_insar:1.56
+    dockerPull: ghcr.io/cloudinsar/openeo_insar:20251216T0834-json_logging
   NetworkAccess:
     networkAccess: true
   InitialWorkDirRequirement:
