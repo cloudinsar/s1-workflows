@@ -22,7 +22,7 @@ from openeo_driver.util.logging import (
     setup_logging,
 )
 
-from utils.workflow_runtime import get_job_id
+from sar.utils.workflow_runtime import get_job_id
 
 # __file__ could have exotic values in Docker:
 # __file__ == /src/./OpenEO_insar.py
