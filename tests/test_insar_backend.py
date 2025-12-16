@@ -24,9 +24,9 @@ def get_connection():
         # https://github.com/Open-EO/openeo-geopyspark-driver/blob/master/docs/calrissian-cwl.md#kubernetes-setup
         return openeo.connect("http://127.0.0.1:8080").authenticate_basic("openeo", "openeo")
     else:
-        # url = "https://openeo.dataspace.copernicus.eu"
-        url = "https://openeo.dev.warsaw.openeo.dataspace.copernicus.eu/"  # needs VPN
+        # url = "https://openeo.dev.warsaw.openeo.dataspace.copernicus.eu/"  # needs VPN
         # url = "https://openeo-staging.dataspace.copernicus.eu/"
+        url = "https://openeo.dataspace.copernicus.eu"
         return openeo.connect(url).authenticate_oidc()
 
 
@@ -59,7 +59,11 @@ def test_georeferenced_new_sar_against_openeo_backend(process_id, input_dict, au
 
     if local_openEO:
         datacube = datacube.save_result(format="NetCDF")
-        datacube.download(tmp_dir / "result.nc")
+        # datacube.download(tmp_dir / "result.nc")
+        from openeogeotrellis.deploy.run_graph_locally import run_graph_locally
+        datacube.print_json(file=tmp_dir / "process_graph.json", indent=2)
+
+        run_graph_locally(tmp_dir / "process_graph.json", tmp_dir)
     else:
         datacube = datacube.save_result(format="GTiff", options={"overviews": "OFF"})
         # datacube = datacube.export_workspace(
@@ -79,18 +83,18 @@ def test_georeferenced_new_sar_against_openeo_backend(process_id, input_dict, au
 @pytest.mark.parametrize(
     "process_id",
     [
-        # "sar_coherence_parallel",
+        "sar_coherence_parallel",
         "sar_interferogram",
     ],
 )
 @pytest.mark.parametrize(
     "input_dict",
     [
-        input_dict_2024_vv,
         # input_dict_2018_vh,
         # input_dict_belgium_vv,
         # json.loads((repo_directory / "sar/example_inputs/input_dict_whole_2023.json").read_text()),
-        json.loads((repo_directory / "sar/example_inputs/input_dict_2023.json").read_text()),
+        json.loads((repo_directory / "sar/example_inputs/input_dict_2024_vv.json").read_text()),
+        # json.loads((repo_directory / "sar/example_inputs/input_dict_2023.json").read_text()),
     ],
 )
 def test_georeferenced_sar_against_openeo_backend(process_id, input_dict, auto_title):
@@ -122,7 +126,8 @@ def test_georeferenced_sar_against_openeo_backend(process_id, input_dict, auto_t
     "input_dict",
     [
         # input_dict_2018_vh_preprocessing,
-        input_dict_belgium_vv_vh_preprocessing,
+        # input_dict_belgium_vv_vh_preprocessing,
+        input_dict_belgium_vv_preprocessing,
         # input_dict_2024_vv_preprocessing,
     ],
 )
@@ -144,12 +149,18 @@ def test_sar_preprocessing_against_openeo_backend(input_dict, auto_title):
 
     stac_resource = stac_resource.export_workspace(
         "insar-results-workspace",
+        # "tmp_workspace",
         merge="/" + os.path.basename(__file__) + "_" + now.strftime("%Y-%m-%d_%H_%M_%S"),
     )
 
     if local_openEO:
-        datacube = stac_resource.save_result(format="NetCDF")
-        datacube.download(tmp_dir / "result.nc")
+        # datacube = stac_resource.save_result(format="NetCDF")
+        # datacube.download(tmp_dir / "result.nc")
+        # Run in the same process, so that we can check the output directly:
+        from openeogeotrellis.deploy.run_graph_locally import run_graph_locally
+        stac_resource.print_json(file=tmp_dir / "process_graph.json", indent=2)
+
+        run_graph_locally(tmp_dir / "process_graph.json", tmp_dir)
     else:
         # stac_resource = datacube.save_result(format="GTiff", options={"overviews": "OFF"})
         job = stac_resource.create_job(
