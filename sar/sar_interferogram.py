@@ -195,7 +195,7 @@ for pair in input_dict["InSAR_pairs"]:
                     / "notebooks/graphs/geocode_snaphuInterferogram_WGS84.xml"
                 ),
                 f'-Pinterferogram_filename={output_filename_tmp}.dim',
-                f'-PsaveDEM="{str(saveDEM).lower()}" '
+                f'-PsaveDEM="{str(saveDEM).lower()}"',
                 f'-Punw_interferogram_filename={unw_phase_filename}',
                 f'-Pphase_coh_bandnames={phase_bandname},{unw_phase_bandname},{coh_bandname}',
                 f'-Poutput_filename={result_path}'
