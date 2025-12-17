@@ -81,14 +81,7 @@ for burst in bursts:
         "-r", str(input_dict["burst_id"]),
         "-o", str(tmp_insar),
     ]
-    _, output = exec_proc(
-        cmd,
-        cwd=repo_directory / "utilities",
-        env={
-            # Allow for relative imports:
-            "PATH": os.environ["PATH"] + ":" + str(repo_directory / "utilities")
-        },
-    )
+    _, output = exec_proc(cmd, cwd=repo_directory / "utilities", write_output=False)
     # get paths from stdout:
     needle = "out_path: "
     bursts_from_output = sorted(
@@ -138,7 +131,7 @@ for pair in input_dict["InSAR_pairs"]:
             f"-PnAzLooks={input_dict['n_az_looks']}",
             f"-Poutput_filename={output_filename_tmp}",
         ] + snap_extra_arguments
-        exec_proc(gpt_cmd)
+        exec_proc(gpt_cmd, write_output=False)
 
         # Prepare the snaphu export for unwrapping
         gpt_cmd = [
@@ -150,7 +143,7 @@ for pair in input_dict["InSAR_pairs"]:
             f"-Pphase_filename={output_filename_tmp}.dim",
             f"-Poutput_folder_snaphu={tmp_insar}",
         ] + snap_extra_arguments
-        exec_proc(gpt_cmd)
+        exec_proc(gpt_cmd, write_output=False)
 
         # Unwrapping with snaphu
         snaphu_conf_filename = glob.glob(f"{output_filename_tmp}/snaphu.conf")[0]
@@ -186,7 +179,7 @@ for pair in input_dict["InSAR_pairs"]:
                 f'-Pphase_coh_bandnames={phase_bandname},{unw_phase_bandname},{coh_bandname}',
                 f'-Poutput_filename={result_path}'
             ] + snap_extra_arguments
-        exec_proc(gpt_cmd)
+        exec_proc(gpt_cmd, write_output=False)
 
     output_filename = Path(f"{result_folder}/phase_coh_{date_from_burst(prm_filename)}_{date_from_burst(sec_filename)}.tif")
 

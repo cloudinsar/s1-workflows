@@ -50,15 +50,10 @@ def test_georeferenced_new_sar_against_openeo_backend(cwl_url, input_dict, auto_
     tmp_dir.mkdir(exist_ok=True)
 
     # datacube = get_connection().datacube_from_process(process_id=process_id, **input_dict)
-    stac_resource = StacResource(
-        graph=PGNode(
-            process_id="run_cwl_to_stac",
-            arguments={
-                "cwl_url": cwl_url,
-                "context": input_dict,
-            },
-        ),
-        connection=get_connection(),
+    datacube = get_connection().datacube_from_process(
+        process_id="run_cwl",
+        cwl_url=cwl_url,
+        context=input_dict,
     )
 
     if local_openEO:
@@ -69,7 +64,7 @@ def test_georeferenced_new_sar_against_openeo_backend(cwl_url, input_dict, auto_
 
         run_graph_locally(tmp_dir / "process_graph.json", tmp_dir)
     else:
-        # stac_resource = datacube.save_result(format="GTiff", options={"overviews": "OFF"})
+        stac_resource = datacube.save_result(format="GTiff", options={"overviews": "OFF"})
         # stac_resource = stac_resource.export_workspace(
         #     workspace="insar-results-workspace",
         #     merge=f"{auto_title}_{datetime.now().strftime('%Y-%m-%d_%H%M%S')}",
@@ -106,22 +101,17 @@ def test_georeferenced_sar_against_openeo_backend(cwl_url, input_dict, auto_titl
     tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests_", "tests/tmp_")).absolute()
     tmp_dir.mkdir(exist_ok=True)
     # datacube = get_connection().datacube_from_process(process_id=process_id, **input_dict)
-    stac_resource = StacResource(
-        graph=PGNode(
-            process_id="run_cwl_to_stac",
-            arguments={
-                "cwl_url": cwl_url,
-                "context": input_dict,
-            },
-        ),
-        connection=get_connection(),
+    datacube = get_connection().datacube_from_process(
+        process_id="run_cwl",
+        cwl_url=cwl_url,
+        context=input_dict,
     )
 
     if local_openEO:
         datacube = datacube.save_result(format="NetCDF")
         datacube.download(tmp_dir / "result.nc")
     else:
-        # stac_resource = datacube.save_result(format="GTiff", options={"overviews": "OFF"})
+        stac_resource = datacube.save_result(format="GTiff", options={"overviews": "OFF"})
         # stac_resource = stac_resource.export_workspace(
         #     workspace="insar-results-workspace",
         #     merge=f"{auto_title}_{datetime.now().strftime('%Y-%m-%d_%H%M%S')}",
@@ -147,24 +137,14 @@ def test_georeferenced_sar_against_openeo_backend(cwl_url, input_dict, auto_titl
 )
 def test_sar_preprocessing_against_openeo_backend(input_dict, auto_title):
     now = datetime.now()
-    tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests/", "tests/tmp_")).absolute()
+    tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests_", "tests/tmp_")).absolute()
     tmp_dir.mkdir(exist_ok=True)
+    cwl_url = "https://raw.githubusercontent.com/cloudinsar/s1-workflows/refs/heads/main/cwl/sar_slc_preprocessing.cwl"
     # datacube = get_connection().datacube_from_process(process_id="sar_slc_preprocessing", **input_dict)
-    stac_resource = StacResource(
-        graph=PGNode(
-            process_id="run_cwl_to_stac",
-            arguments={
-                "cwl_url": "https://raw.githubusercontent.com/cloudinsar/s1-workflows/refs/heads/main/cwl/sar_slc_preprocessing.cwl",
-                "context": input_dict,
-            },
-        ),
-        connection=get_connection(),
-    )
-
-    stac_resource = stac_resource.export_workspace(
-        "insar-results-workspace",
-        # "tmp_workspace",
-        merge="/" + os.path.basename(__file__) + "_" + now.strftime("%Y-%m-%d_%H_%M_%S"),
+    datacube = get_connection().datacube_from_process(
+        process_id="run_cwl",
+        cwl_url=cwl_url,
+        context=input_dict,
     )
 
     if local_openEO:
@@ -176,7 +156,11 @@ def test_sar_preprocessing_against_openeo_backend(input_dict, auto_title):
 
         run_graph_locally(tmp_dir / "process_graph.json", tmp_dir)
     else:
-        # stac_resource = datacube.save_result(format="GTiff", options={"overviews": "OFF"})
+        stac_resource = datacube.save_result(format="GTiff", options={"overviews": "OFF"})
+        # stac_resource = stac_resource.export_workspace(
+        #     workspace="insar-results-workspace",
+        #     merge=f"{auto_title}_{datetime.now().strftime('%Y-%m-%d_%H%M%S')}",
+        # )
         job = stac_resource.create_job(
             title=auto_title,
             job_options={

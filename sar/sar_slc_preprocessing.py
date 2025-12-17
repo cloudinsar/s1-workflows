@@ -94,7 +94,7 @@ for pol in input_dict["polarization"]:
             "-r", str(input_dict["burst_id"]),
             "-o", str(tmp_insar),
         ]
-        _, output = exec_proc(cmd, cwd=repo_directory / "utilities")
+        _, output = exec_proc(cmd, cwd=repo_directory / "utilities", write_output=False)
         # get paths from stdout:
         needle = "out_path: "
         bursts_from_output = sorted(
@@ -153,7 +153,7 @@ for pol in input_dict["polarization"]:
             f"-Poutput_sec_filename={output_sec_filename_tmp}",
         ] + snap_extra_arguments
         print(gpt_cmd)
-        subprocess.check_call(gpt_cmd, stderr=subprocess.STDOUT)
+        exec_proc(gpt_cmd, write_output=False)
 
     output_prm_filename = f"{result_folder}/S1_2images_prm_{prm_date.strftime('%Y%m%dT%H%M%S')}_{pol.lower()}_<band_name>.tif"
     output_sec_filename = f"{result_folder}/S1_2images_sec_{sec_date.strftime('%Y%m%dT%H%M%S')}_{pol.lower()}_<band_name>.tif"
