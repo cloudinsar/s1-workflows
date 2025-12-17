@@ -32,9 +32,9 @@ def get_connection():
 
 @pytest.mark.skip(reason="TODO: Log into openEO backend")
 @pytest.mark.parametrize(
-    "process_id",
+    "cwl_url",
     [
-        "sar_coherence",
+        "https://raw.githubusercontent.com/cloudinsar/s1-workflows/refs/heads/main/cwl/sar_coherence.cwl",
     ],
 )
 @pytest.mark.parametrize(
@@ -44,18 +44,22 @@ def get_connection():
         json.loads((repo_directory / "sar/example_inputs/input_dict_2024_vv_new.json").read_text()),
     ],
 )
-def test_georeferenced_new_sar_against_openeo_backend(process_id, input_dict, auto_title):
+def test_georeferenced_new_sar_against_openeo_backend(cwl_url, input_dict, auto_title):
     now = datetime.now()
     tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests_", "tests/tmp_")).absolute()
     tmp_dir.mkdir(exist_ok=True)
 
-    datacube = get_connection().datacube_from_process(process_id=process_id, **input_dict)
-    # datacube = get_connection().datacube_from_process(
-    #     process_id="run_cwl_to_stac",
-    #     # cwl_url needs to be whitelisted
-    #     cwl_url="https://raw.githubusercontent.com/cloudinsar/s1-workflows/refs/heads/main/cwl/sar_coherence.cwl",
-    #     context=input_dict,
-    # )
+    # datacube = get_connection().datacube_from_process(process_id=process_id, **input_dict)
+    stac_resource = StacResource(
+        graph=PGNode(
+            process_id="run_cwl_to_stac",
+            arguments={
+                "cwl_url": cwl_url,
+                "context": input_dict,
+            },
+        ),
+        connection=get_connection(),
+    )
 
     if local_openEO:
         datacube = datacube.save_result(format="NetCDF")
@@ -65,12 +69,12 @@ def test_georeferenced_new_sar_against_openeo_backend(process_id, input_dict, au
 
         run_graph_locally(tmp_dir / "process_graph.json", tmp_dir)
     else:
-        datacube = datacube.save_result(format="GTiff", options={"overviews": "OFF"})
-        # datacube = datacube.export_workspace(
+        # stac_resource = datacube.save_result(format="GTiff", options={"overviews": "OFF"})
+        # stac_resource = stac_resource.export_workspace(
         #     workspace="insar-results-workspace",
         #     merge=f"{auto_title}_{datetime.now().strftime('%Y-%m-%d_%H%M%S')}",
         # )
-        job = datacube.create_job(title=auto_title)
+        job = stac_resource.create_job(title=auto_title)
         job.start_and_wait()
         job.get_results().download_files(tmp_dir)
 
@@ -79,12 +83,12 @@ def test_georeferenced_new_sar_against_openeo_backend(process_id, input_dict, au
             assert_tif_file_is_healthy(tif_path)
 
 
-@pytest.mark.skip(reason="TODO: Log into openEO backend")
+# @pytest.mark.skip(reason="TODO: Log into openEO backend")
 @pytest.mark.parametrize(
-    "process_id",
+    "cwl_url",
     [
-        "sar_coherence_parallel",
-        "sar_interferogram",
+        "https://raw.githubusercontent.com/cloudinsar/s1-workflows/refs/heads/main/cwl/sar_coherence_parallel.cwl",
+        # "https://raw.githubusercontent.com/cloudinsar/s1-workflows/refs/heads/main/cwl/sar_interferogram.cwl",
     ],
 )
 @pytest.mark.parametrize(
@@ -97,22 +101,32 @@ def test_georeferenced_new_sar_against_openeo_backend(process_id, input_dict, au
         # json.loads((repo_directory / "sar/example_inputs/input_dict_2023.json").read_text()),
     ],
 )
-def test_georeferenced_sar_against_openeo_backend(process_id, input_dict, auto_title):
+def test_georeferenced_sar_against_openeo_backend(cwl_url, input_dict, auto_title):
     now = datetime.now()
     tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests_", "tests/tmp_")).absolute()
     tmp_dir.mkdir(exist_ok=True)
-    datacube = get_connection().datacube_from_process(process_id=process_id, **input_dict)
+    # datacube = get_connection().datacube_from_process(process_id=process_id, **input_dict)
+    stac_resource = StacResource(
+        graph=PGNode(
+            process_id="run_cwl_to_stac",
+            arguments={
+                "cwl_url": cwl_url,
+                "context": input_dict,
+            },
+        ),
+        connection=get_connection(),
+    )
 
     if local_openEO:
         datacube = datacube.save_result(format="NetCDF")
         datacube.download(tmp_dir / "result.nc")
     else:
-        datacube = datacube.save_result(format="GTiff", options={"overviews": "OFF"})
-        # datacube = datacube.export_workspace(
+        # stac_resource = datacube.save_result(format="GTiff", options={"overviews": "OFF"})
+        # stac_resource = stac_resource.export_workspace(
         #     workspace="insar-results-workspace",
         #     merge=f"{auto_title}_{datetime.now().strftime('%Y-%m-%d_%H%M%S')}",
         # )
-        job = datacube.create_job(title=auto_title)
+        job = stac_resource.create_job(title=auto_title)
         job.start_and_wait()
         job.get_results().download_files(tmp_dir)
 
@@ -121,7 +135,7 @@ def test_georeferenced_sar_against_openeo_backend(process_id, input_dict, auto_t
             assert_tif_file_is_healthy(tif_path)
 
 
-@pytest.mark.skip(reason="TODO: Log into openEO backend")
+# @pytest.mark.skip(reason="TODO: Log into openEO backend")
 @pytest.mark.parametrize(
     "input_dict",
     [
