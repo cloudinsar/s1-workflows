@@ -83,12 +83,12 @@ def test_georeferenced_new_sar_against_openeo_backend(cwl_url, input_dict, auto_
             assert_tif_file_is_healthy(tif_path)
 
 
-# @pytest.mark.skip(reason="TODO: Log into openEO backend")
+@pytest.mark.skip(reason="TODO: Log into openEO backend")
 @pytest.mark.parametrize(
     "cwl_url",
     [
         "https://raw.githubusercontent.com/cloudinsar/s1-workflows/refs/heads/main/cwl/sar_coherence_parallel.cwl",
-        # "https://raw.githubusercontent.com/cloudinsar/s1-workflows/refs/heads/main/cwl/sar_interferogram.cwl",
+        "https://raw.githubusercontent.com/cloudinsar/s1-workflows/refs/heads/main/cwl/sar_interferogram.cwl",
     ],
 )
 @pytest.mark.parametrize(
@@ -135,7 +135,7 @@ def test_georeferenced_sar_against_openeo_backend(cwl_url, input_dict, auto_titl
             assert_tif_file_is_healthy(tif_path)
 
 
-# @pytest.mark.skip(reason="TODO: Log into openEO backend")
+@pytest.mark.skip(reason="TODO: Log into openEO backend")
 @pytest.mark.parametrize(
     "input_dict",
     [
