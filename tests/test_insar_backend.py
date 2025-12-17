@@ -148,8 +148,8 @@ def test_sar_preprocessing_against_openeo_backend(input_dict, auto_title):
     )
 
     if local_openEO:
-        # datacube = stac_resource.save_result(format="NetCDF")
-        # datacube.download(tmp_dir / "result.nc")
+        stac_resource = datacube.save_result(format="NetCDF")
+        # stac_resource.download(tmp_dir / "result.nc")
         # Run in the same process, so that we can check the output directly:
         from openeogeotrellis.deploy.run_graph_locally import run_graph_locally
         stac_resource.print_json(file=tmp_dir / "process_graph.json", indent=2)
