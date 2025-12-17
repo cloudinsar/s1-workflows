@@ -13,6 +13,7 @@ import logging.config
 
 import urllib
 import urllib.parse
+import urllib.request
 
 from openeo_driver.util.logging import (
     LOG_HANDLER_STDERR_JSON,
