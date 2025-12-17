@@ -155,7 +155,7 @@ for pair in input_dict["InSAR_pairs"]:
                         cmd_unwrapping = line.rstrip()
                         break
 
-        exec_proc(cmd_unwrapping, cwd=output_filename_tmp)
+        exec_proc(cmd_unwrapping, cwd=output_filename_tmp, write_output=False)
 
         # Geocode the result (interferogram, unwrapped interferogram, coherence)
         sub_swath = input_dict["sub_swath"].upper()
