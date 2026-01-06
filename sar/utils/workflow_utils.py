@@ -48,9 +48,6 @@ def setup_insar_environment():
         capture_unhandled_exceptions=False,  # not needed anymore, as we have a try catch around everything
     )
 
-    GlobalExtraLoggingFilter.set("job_id", get_job_id(default="unknown-job"))
-    # print = lambda *args, **kwargs: logging.getLogger().info(" ".join(map(str, args)))  # too invasive
-
     if "AWS_ACCESS_KEY_ID" not in os.environ and os.path.exists(repo_directory / "notebooks/CDSE_SECRET"):
         # same credentials as in the notebooks
         with open(repo_directory / "notebooks/CDSE_SECRET", "r") as cdse_secret_file:
