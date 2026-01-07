@@ -45,15 +45,28 @@ def get_connection():
     ],
 )
 def test_georeferenced_new_sar_against_openeo_backend(cwl_url, input_dict, auto_title):
+    import openeo
     now = datetime.now()
     tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests_", "tests/tmp_")).absolute()
     tmp_dir.mkdir(exist_ok=True)
 
     # datacube = get_connection().datacube_from_process(process_id=process_id, **input_dict)
-    datacube = get_connection().datacube_from_process(
-        process_id="run_cwl",
-        cwl_url=cwl_url,
-        context=input_dict,
+    # datacube = get_connection().datacube_from_process(
+    #     process_id="run_cwl",
+    #     cwl_url=cwl_url,
+    #     context=input_dict,
+    # )
+
+    datacube = openeo.rest.datacube.DataCube(  # Syntax will be enhanced.
+        openeo.rest.datacube.PGNode(
+            "run_udf",
+            arguments={
+                "udf": cwl_url,
+                "runtime": "EOAP-CWL",
+                "context": input_dict,
+            },
+        ),
+        connection=get_connection(),
     )
 
     if local_openEO:
