@@ -72,7 +72,7 @@ def test_georeferenced_new_sar_against_openeo_backend(cwl_url, input_dict, auto_
 
         run_graph_locally(tmp_dir / "process_graph.json", tmp_dir)
     else:
-        stac_resource = datacube.save_result(format="GTiff", options={"overviews": "OFF"})
+        stac_resource = datacube.save_result(format="GTiff")  #, options={"overviews": "OFF"})
         # stac_resource = stac_resource.export_workspace(
         #     workspace="insar-results-workspace",
         #     merge=f"{auto_title}_{datetime.now().strftime('%Y-%m-%d_%H%M%S')}",
@@ -119,7 +119,7 @@ def test_georeferenced_sar_against_openeo_backend(cwl_url, input_dict, auto_titl
         datacube = datacube.save_result(format="NetCDF")
         datacube.download(tmp_dir / "result.nc")
     else:
-        stac_resource = datacube.save_result(format="GTiff", options={"overviews": "OFF"})
+        stac_resource = datacube.save_result(format="GTiff") #, options={"overviews": "OFF"})
         # stac_resource = stac_resource.export_workspace(
         #     workspace="insar-results-workspace",
         #     merge=f"{auto_title}_{datetime.now().strftime('%Y-%m-%d_%H%M%S')}",
@@ -164,7 +164,7 @@ def test_sar_preprocessing_against_openeo_backend(input_dict, auto_title):
 
         run_graph_locally(tmp_dir / "process_graph.json", tmp_dir)
     else:
-        stac_resource = datacube.save_result(format="GTiff", options={"overviews": "OFF"})
+        stac_resource = datacube.save_result(format="GTiff") #, options={"overviews": "OFF"})
         # stac_resource = stac_resource.export_workspace(
         #     workspace="insar-results-workspace",
         #     merge=f"{auto_title}_{datetime.now().strftime('%Y-%m-%d_%H%M%S')}",
