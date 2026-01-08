@@ -57,8 +57,6 @@ def setup_insar_environment():
     if not "AWS_ENDPOINT_URL_S3" in os.environ:
         os.environ["AWS_ENDPOINT_URL_S3"] = "https://eodata.dataspace.copernicus.eu"
 
-    logging.info("S3_ENDPOINT_URL= " + str(os.environ.get("S3_ENDPOINT_URL", None)))
-    logging.info("AWS_ACCESS_KEY_ID= " + str(os.environ.get("AWS_ACCESS_KEY_ID", None)))
     if "AWS_ACCESS_KEY_ID" not in os.environ:
         raise Exception("AWS_ACCESS_KEY_ID should be set in environment")
 
