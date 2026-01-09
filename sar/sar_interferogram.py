@@ -5,6 +5,7 @@ import os
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 from sar.utils import simple_stac_builder
 from sar.utils import tiff_to_gtiff
@@ -22,7 +23,7 @@ if len(sys.argv) > 1:
         input_dict = json.loads(base64.b64decode(arg.encode("utf8")).decode("utf8"))
 else:
     print("Using debug arguments!")
-    input_dict = input_dict_2018_vh
+    input_dict = input_dict_2024_vv
 
 if not input_dict.get("polarization"):
     input_dict["polarization"] = "vv"
@@ -186,6 +187,8 @@ for pair in input_dict["InSAR_pairs"]:
     asset_paths.append(output_filename)
     if not os.path.exists(output_filename):
         tiff_to_gtiff.tiff_to_gtiff(result_path, output_filename)
+    
+    Path(result_path).rename(output_filename)
 
 print("seconds since start: " + str((datetime.now() - start_time).seconds))
 
