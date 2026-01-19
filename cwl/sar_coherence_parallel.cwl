@@ -15,7 +15,7 @@ $graph:
       - class: NetworkAccess
         networkAccess: true
       - class: ResourceRequirement
-        ramMin: 4096
+        ramMin: 7000
         ramMax: 7000
 
     inputs:

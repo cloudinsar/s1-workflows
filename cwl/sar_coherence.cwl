@@ -13,8 +13,8 @@ requirements:
       - entryname: "arguments.json"
         entry: $(inputs)
   ResourceRequirement:
-    ramMin: 4096
-    ramMax: 7168
+    ramMin: 7000
+    ramMax: 7000
 arguments:
   - arguments.json
 inputs:
