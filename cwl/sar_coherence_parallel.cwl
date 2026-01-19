@@ -18,6 +18,7 @@ $graph:
         ramMin: 7000
         ramMax: 7000
         coresMin: 2
+        coresMax: 7
 
     inputs:
       # TODO: Make original array of pairs form?

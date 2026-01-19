@@ -45,18 +45,13 @@ cwl_prefix = "https://raw.githubusercontent.com/cloudinsar/s1-workflows/refs/hea
         json.loads((repo_directory / "sar/example_inputs/input_dict_2024_vv_new.json").read_text()),
     ],
 )
-def test_georeferenced_new_sar_against_openeo_backend(cwl_path, input_dict, auto_title):
+def test_georeferenced_new_sar(cwl_path, input_dict, auto_title):
     import openeo
     now = datetime.now()
     tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests_", "tests/tmp_")).absolute()
     tmp_dir.mkdir(exist_ok=True)
 
     cwl = Path(repository_root / cwl_path).read_text()
-    # datacube = get_connection().datacube_from_process(
-    #     process_id="run_cwl",
-    #     cwl_url=cwl_url,
-    #     context=input_dict,
-    # )
     datacube = get_connection().datacube_from_process(
         "run_udf",
         data=None,
@@ -105,14 +100,16 @@ def test_georeferenced_new_sar_against_openeo_backend(cwl_path, input_dict, auto
         # json.loads((repo_directory / "sar/example_inputs/input_dict_2023.json").read_text()),
     ],
 )
-def test_georeferenced_sar_against_openeo_backend(cwl_path, input_dict, auto_title):
+def test_georeferenced_sar(cwl_path, input_dict, auto_title):
     now = datetime.now()
     tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests_", "tests/tmp_")).absolute()
     tmp_dir.mkdir(exist_ok=True)
     cwl = Path(repository_root / cwl_path).read_text()
     datacube = get_connection().datacube_from_process(
-        process_id="run_cwl",
-        cwl_url=cwl,
+        "run_udf",
+        data=None,
+        udf=cwl,
+        runtime="EOAP-CWL",
         context=input_dict,
     )
 
@@ -144,14 +141,17 @@ def test_georeferenced_sar_against_openeo_backend(cwl_path, input_dict, auto_tit
         # input_dict_2024_vv_preprocessing,
     ],
 )
-def test_sar_preprocessing_against_openeo_backend(input_dict, auto_title):
+def test_sar_preprocessing(input_dict, auto_title):
     now = datetime.now()
     tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests_", "tests/tmp_")).absolute()
     tmp_dir.mkdir(exist_ok=True)
     cwl_path = "cwl/sar_slc_preprocessing.cwl"
+    cwl = Path(repository_root / cwl_path).read_text()
     datacube = get_connection().datacube_from_process(
-        process_id="run_cwl",
-        cwl_url=cwl_path,
+        "run_udf",
+        data=None,
+        udf=cwl,
+        runtime="EOAP-CWL",
         context=input_dict,
     )
 
