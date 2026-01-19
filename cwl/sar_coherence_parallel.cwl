@@ -14,6 +14,11 @@ $graph:
         dockerPull: ghcr.io/cloudinsar/openeo_insar:20260107T1050
       - class: NetworkAccess
         networkAccess: true
+      - class: ResourceRequirement
+        ramMin: 7000
+        ramMax: 7000
+        coresMin: 2
+        coresMax: 7
 
     inputs:
       # TODO: Make original array of pairs form?
