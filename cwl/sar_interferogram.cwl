@@ -15,6 +15,7 @@ requirements:
   ResourceRequirement:
     ramMin: 7000
     ramMax: 7000
+    coresMin: 2
 arguments:
   - arguments.json
 inputs:
