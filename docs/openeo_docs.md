@@ -41,10 +41,10 @@ https://github.com/cloudinsar/s1-workflows/blob/main/tests/test_insar_backend.py
 ### Run locally for debugging:
 
 Most CWL scripts have an example command to run them locally with `cwltool`. For example:
-![sar_coherence](https://github.com/cloudinsar/s1-workflows/blob/main/cwl/sar_coherence.cwl#L2)
+[sar_coherence](https://github.com/cloudinsar/s1-workflows/blob/main/cwl/sar_coherence.cwl#L2)
 
 You will need S3 credentials: https://documentation.dataspace.copernicus.eu/APIs/S3.html
-```
+```bash
 export AWS_ACCESS_KEY_ID="***"
 export AWS_SECRET_ACCESS_KEY="***"
 export AWS_ENDPOINT_URL_S3="https://eodata.dataspace.copernicus.eu"
