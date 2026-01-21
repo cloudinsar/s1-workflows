@@ -10,7 +10,7 @@ $graph:
           - entryname: "arguments.json"
             entry: $(inputs)
       - class: DockerRequirement
-        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260107T1050 #### MODIFY WITH NEW IMAGE
+        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260121T1126-parallel_coherence_cwl #### MODIFY WITH NEW IMAGE
       - class: NetworkAccess
         networkAccess: true
 
@@ -47,7 +47,7 @@ $graph:
           - entryname: "arguments.json"
             entry: $(inputs)
       - class: DockerRequirement
-        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260107T1050 #### MODIFY WITH NEW IMAGE
+        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260121T1126-parallel_coherence_cwl #### MODIFY WITH NEW IMAGE
       - class: NetworkAccess
         networkAccess: true
       - class: ResourceRequirement
