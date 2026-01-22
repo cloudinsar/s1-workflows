@@ -1,0 +1,14 @@
+{
+  "temporal_extent": [
+    "2024-08-09",
+    "2024-09-03"
+  ],
+  "temporal_baseline": 12,
+  "burst_id": 249435,
+  "coherence_window_az": 2,
+  "coherence_window_rg": 10,
+  "n_az_looks": 1,
+  "n_rg_looks": 4,
+  "polarization": "vv",
+  "sub_swath": "IW2"
+}
