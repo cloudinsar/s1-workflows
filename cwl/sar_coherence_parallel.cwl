@@ -97,7 +97,7 @@ $graph:
       - class: NetworkAccess
         networkAccess: true
 
-    baseCommand: ["/data/simple_stac_merge.py", "S1_2images_collection.json"]
+    baseCommand: ["/data/simple_stac_merge.py", "collection.json"]
     inputs:
       simple_stac_merge_in1:
         type: Directory[]
