@@ -8,6 +8,7 @@ def test_parse_date():
 
 def test_logging():
     setup_insar_environment()
+    # print("Test print statement.")
     logging.info("This is an info message.")
     logging.warning("This is a warning message.")
     logging.error("This is an error message.")

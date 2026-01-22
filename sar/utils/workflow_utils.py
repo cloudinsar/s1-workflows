@@ -15,16 +15,6 @@ import urllib
 import urllib.parse
 import urllib.request
 
-from openeo_driver.util.logging import (
-    LOG_HANDLER_STDERR_JSON,
-    LOGGING_CONTEXT_BATCH_JOB,
-    GlobalExtraLoggingFilter,
-    get_logging_config,
-    setup_logging,
-)
-
-from sar.utils.workflow_runtime import get_job_id
-
 # __file__ could have exotic values in Docker:
 # __file__ == /src/./OpenEO_insar.py
 # __file__ == //./src/OpenEO_insar.py
@@ -34,6 +24,13 @@ logging.info("repo_directory: " + str(repo_directory))
 
 
 def setup_insar_environment():
+    from openeo_driver.util.logging import (
+        LOG_HANDLER_STDERR_JSON,
+        LOGGING_CONTEXT_BATCH_JOB,
+        GlobalExtraLoggingFilter,
+        get_logging_config,
+        setup_logging,
+    )
     # Remove any existing handlers configured by default
     logger = logging.getLogger()
     while logger.hasHandlers():
