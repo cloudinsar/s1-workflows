@@ -63,6 +63,22 @@ def setup_insar_environment():
         os.environ["PATH"] = os.environ["PATH"] + ":/usr/local/esa-snap/bin"
 
 
+input_dict_2024_vv_parallel = {
+    "temporal_extent": [
+    "2024-08-09",
+    "2024-09-03"
+  ],
+    "burst_id": 249435,
+    # Coherence window size:
+    "coherence_window_az": 2,
+    "coherence_window_rg": 10,
+    # Multillok parameters:
+    "n_az_looks": 1,
+    "n_rg_looks": 4,
+    "polarization": "vv",
+    "sub_swath": "IW2",
+}
+
 input_dict_2024_vv = {
     "InSAR_pairs": [
         ["2024-08-09", "2024-08-21"],
