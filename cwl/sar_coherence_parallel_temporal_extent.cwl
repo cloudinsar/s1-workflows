@@ -93,7 +93,7 @@ $graph:
       coherence_results:
         type: Directory[]
         outputSource: process_pairs/pair_output
-        doc: "Array of directories, one per InSAR pair with coherence results"
+        doc: "Directory containing STAC Collection of the results and related files"
     
     steps:
       generate_pairs:
@@ -123,6 +123,13 @@ $graph:
           coherence_window_rg: coherence_window_rg
           coherence_window_az: coherence_window_az
         out: [pair_output]
+
+      stac_merge:
+        run: "#simple_stac_merge"
+        in:
+          simple_stac_merge_in: process_pairs/pair_output
+        out: [simple_stac_merge_out]
+          
   
   - class: CommandLineTool
     id: get_insar_pairs
@@ -198,7 +205,30 @@ $graph:
         var data = JSON.parse(inputs.pairs_json_file.contents);
         return {"pairs_array": data.InSAR_pairs};
       }
-  
+
+  - class: CommandLineTool
+    id: simple_stac_merge
+
+    doc: "Merge the coherence results in a single STAC Collection"
+
+    baseCommand: ["/data/simple_stac_merge.py", "S1_2images_collection.json"]
+
+    requirements:
+      - class: DockerRequirement
+        dockerPull: vito-docker.artifactory.vgt.vito.be/openeo-geopyspark-driver-example-stac-catalog:1.7
+      - class: NetworkAccess
+        networkAccess: true
+
+    inputs:
+      simple_stac_merge_in:
+        type: Directory[]
+        inputBinding: { }
+    outputs:
+      simple_stac_merge_out:
+        type: Directory
+        outputBinding:
+          glob: .
+
   - class: CommandLineTool
     id: process_single_pair
     
