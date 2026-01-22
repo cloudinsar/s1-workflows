@@ -19,7 +19,9 @@ def test_cwl_validate():
         print(f"Checking {cwl_file}")
         cmd = ["cwltool", "--disable-color", "--debug", "--validate", str(cwl_file)]
         name = cwl_file.name
-        if str(name).startswith("sar_coherence_parallel") or str(name).startswith("sar_interferogram"):
+        if str(name).startswith("sar_coherence_parallel_temporal_extent"):
+            cmd += [repository_root / "sar/example_inputs/input_dict_test_parallel.json"]
+        elif str(name).startswith("sar_coherence_parallel") or str(name).startswith("sar_interferogram"):
             cmd += [repository_root / "sar/example_inputs/input_dict_belgium_vv.json"]
         elif str(name).startswith("sar_coherence"):
             # cmd += [repository_root / "sar/example_inputs/input_dict_2024_vv_new.json"]
