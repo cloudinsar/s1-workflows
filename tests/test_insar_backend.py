@@ -36,6 +36,7 @@ cwl_prefix = "https://raw.githubusercontent.com/cloudinsar/s1-workflows/refs/hea
     "cwl_path",
     [
         "cwl/sar_coherence.cwl",
+        "cwl/sar_coherence_parallel_temporal_extent.cwl",
     ],
 )
 @pytest.mark.parametrize(
