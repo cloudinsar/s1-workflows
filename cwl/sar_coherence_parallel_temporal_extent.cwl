@@ -23,6 +23,9 @@
 #   3. extract_pairs_array (ExpressionTool) - JavaScript to parse JSON
 #
 #   4. process_single_pair (CommandLineTool) - Runs sar_coherence_parallel.py
+#
+#   5. simple_stac_merge (CommandLineTool) - Runs simple_stac_merge.py
+#
 
 # INPUTS (in JSON file):
 #   - temporal_extent: ["start_date", "end_date"] e.g., ["2024-08-01", "2024-08-30"]
@@ -92,7 +95,7 @@ $graph:
     outputs:
       coherence_results:
         type: Directory[]
-        outputSource: process_pairs/pair_output
+        outputSource: stac_merge/simple_stac_merge_out
         doc: "Directory containing STAC Collection of the results and related files"
     
     steps:
