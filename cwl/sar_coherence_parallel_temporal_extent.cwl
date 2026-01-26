@@ -94,7 +94,7 @@ $graph:
     
     outputs:
       coherence_results:
-        type: Directory[]
+        type: Directory
         outputSource: stac_merge/simple_stac_merge_out
         doc: "Directory containing STAC Collection of the results and related files"
     
