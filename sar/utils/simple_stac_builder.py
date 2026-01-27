@@ -168,6 +168,9 @@ def generate_catalog(
             crs_set.add(gdalinfo_stac["proj:epsg"])
             del gdalinfo_stac["proj:projjson"]  # remove verbose information
             del gdalinfo_stac["proj:wkt2"]  # remove verbose information
+            del gdalinfo_stac["proj:epsg"]  # remove to avoid empty results when dryrun is called with "dummy"
+            del gdalinfo_stac["proj:bbox"]  # remove to avoid empty results when dryrun is called with "dummy"
+            del gdalinfo_stac["proj:transform"]  # remove to avoid empty results when dryrun is called with "dummy"
             # keep "proj:epsg", otherwise UTM is assumed
             # if "proj:transform" in gdalinfo_stac:
             #     # might mess up x/y resolution, so remove
