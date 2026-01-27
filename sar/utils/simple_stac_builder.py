@@ -203,6 +203,9 @@ def generate_catalog(
                 gdalinfo_stac["proj:bbox"] = latlon_bbox
             else:
                 gdalinfo_stac["proj:bbox"] = native_bbox
+            del gdalinfo_stac["proj:epsg"]  # remove to avoid empty results when dryrun is called with "dummy"
+            del gdalinfo_stac["proj:bbox"]  # remove to avoid empty results when dryrun is called with "dummy"
+            del gdalinfo_stac["proj:transform"]  # remove to avoid empty results when dryrun is called with "dummy"
 
             stac["bbox"] = latlon_bbox
             collection_stac["extent"]["spatial"]["bbox"][0] = union_aabbox(
