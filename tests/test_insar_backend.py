@@ -17,17 +17,19 @@ local_openEO = False
 
 def get_connection():
     import openeo
-    if local_openEO:
+    # url = "https://openeo.dev.warsaw.openeo.dataspace.copernicus.eu/"  # needs VPN
+    # url = "https://openeo-staging.dataspace.copernicus.eu/"
+    url = "https://openeo.dataspace.copernicus.eu"
+    # url = "http://127.0.0.1:8080"
+    basic_connection = openeo.connect(url)
+    if "//127.0.0.1" in basic_connection.root_url:
         # Start local openEO by running:
         #    minikube start
         #    local.py
         # https://github.com/Open-EO/openeo-geopyspark-driver/blob/master/docs/calrissian-cwl.md#kubernetes-setup
-        return openeo.connect("http://127.0.0.1:8080").authenticate_basic("openeo", "openeo")
+        return basic_connection.authenticate_basic("openeo", "openeo")
     else:
-        # url = "https://openeo.dev.warsaw.openeo.dataspace.copernicus.eu/"  # needs VPN
-        # url = "https://openeo-staging.dataspace.copernicus.eu/"
-        url = "https://openeo.dataspace.copernicus.eu"
-        return openeo.connect(url).authenticate_oidc()
+        return basic_connection.authenticate_oidc()
 
 cwl_prefix = "https://raw.githubusercontent.com/cloudinsar/s1-workflows/refs/heads/main/"
 

@@ -40,7 +40,7 @@
 #           --preserve-environment=AWS_ACCESS_KEY_ID \
 #           --preserve-environment=AWS_SECRET_ACCESS_KEY \
 #           --preserve-environment=AWS_ENDPOINT_URL_S3 \
-#           sar_coherence_parallel_test.cwl inputs.json
+#           sar_coherence_parallel_temporal_extent.cwl inputs.json
 
 cwlVersion: v1.2
 
@@ -159,7 +159,7 @@ $graph:
                 });
               }
       - class: DockerRequirement
-        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260121T1126-parallel_coherence_cwl
+        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260127T1610
       - class: NetworkAccess
         networkAccess: true
       - class: InlineJavascriptRequirement
@@ -258,7 +258,7 @@ $graph:
                 });
               }
       - class: DockerRequirement
-        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260121T1126-parallel_coherence_cwl
+        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260127T1610
       - class: NetworkAccess
         networkAccess: true
       - class: ResourceRequirement
