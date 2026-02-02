@@ -20,20 +20,13 @@ if len(sys.argv) > 1:
     else:
         input_dict = json.loads(base64.b64decode(arg.encode("utf8")).decode("utf8"))
 else:
-    # print("Using debug arguments!")
-    input_dict = input_dict_2024_vv_parallel
+    print("Using debug arguments!")
+    input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_2018_vh_new.json").read_text())
 
-# default_dict = {
-#     "polarization": "vv",
-#     "sub_swath": "IW3",
-#     "coherence_window_rg": 10,
-#     "coherence_window_az": 2,
-# }
 input_dict = {k: v for k, v in input_dict.items() if v is not None}
-# input_dict = {**default_dict, **input_dict}  # merge with defaults
 # print(input_dict)
 
-start_date = input_dict["temporal_extent"][0] #TODO: date must be in the correct format, since later we append T00...
+start_date = input_dict["temporal_extent"][0]  # TODO: date must be in the correct format, since later we append T00...
 end_date = input_dict["temporal_extent"][1]
 
 s1_bursts = retrieve_bursts_with_id_and_iw(
@@ -44,7 +37,7 @@ s1_bursts = retrieve_bursts_with_id_and_iw(
     input_dict["sub_swath"]
 )
 
-dates = [datetime.strptime(b['BeginningDateTime'][:10], "%Y-%m-%d") for b in s1_bursts]
+dates = [datetime.strptime(b["BeginningDateTime"][:10], "%Y-%m-%d") for b in s1_bursts]
 dates.sort()
 InSARpairs = []
 for date_ref in dates:
@@ -62,5 +55,6 @@ result_folder = Path.cwd().absolute()
 tmp_insar = Path("/tmp/insar")
 tmp_insar.mkdir(parents=True, exist_ok=True)
 
-with open(result_folder / "insar_pairs_inputs.json","w") as f:
-    json.dump(input_dict,f)
+with open(result_folder / "insar_pairs_inputs.json", "w") as f:
+    json.dump(input_dict, f, indent=2)
+    print("Written: " + f.name)

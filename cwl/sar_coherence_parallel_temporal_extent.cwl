@@ -35,12 +35,12 @@
 #   - sub_swath: "IW1", "IW2", or "IW3"
 #   - coherence_window_rg/az: Window sizes for coherence estimation
 #
-# USAGE:
-#   cwltool --parallel --tmpdir-prefix=$HOME/tmp/ \
+# LOCAL USAGE:
+#   cwltool --no-read-only --parallel --tmpdir-prefix=$HOME/tmp/ \
 #           --preserve-environment=AWS_ACCESS_KEY_ID \
 #           --preserve-environment=AWS_SECRET_ACCESS_KEY \
 #           --preserve-environment=AWS_ENDPOINT_URL_S3 \
-#           sar_coherence_parallel_temporal_extent.cwl inputs.json
+#           cwl/sar_coherence_parallel_temporal_extent.cwl sar/example_inputs/input_dict_2018_vh_new.json
 
 cwlVersion: v1.2
 
