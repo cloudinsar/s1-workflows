@@ -57,12 +57,13 @@ for burst in bursts:
         "-r", str(input_dict["burst_id"]),
         "-o", str(tmp_insar),
     ]
-    _, output = exec_proc(cmd, cwd=repo_directory / "utilities", write_output=False)
+    _, output = exec_proc(cmd, cwd=repo_directory / "utilities", write_output=True)
     # get paths from stdout:
     needle = "out_path: "
     bursts_from_output = sorted(
         [Path(line[len(needle):]).absolute() for line in output.split("\n") if line.startswith(needle)]
     )
+    logging.info(f"{bursts_from_output=}")
     burst_paths.extend(bursts_from_output)
     print("seconds since start: " + str((datetime.now() - start_time).seconds))
 

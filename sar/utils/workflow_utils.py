@@ -325,7 +325,7 @@ def retrieve_bursts_with_id_and_iw(start_date, end_date, pol, burst_id, sbswath)
                 f"PolarisationChannels eq '{pol.upper()}' and "
                 f"BurstId eq {burst_id} and "
                 f"SwathIdentifier eq '{sbswath.upper()}'") + "&$top=1000"
-
+    print(https_request)
     with urllib.request.urlopen(https_request) as response:
         content = response.read().decode()
 
