@@ -4,14 +4,14 @@ cwlVersion: v1.2
 $graph:
   - id: sub_collection_maker
     class: CommandLineTool
-    baseCommand: /src/sar/sar_coherence_easy_to_parallelize.py
+    baseCommand: /src/sar/sar_coherence_parallel.py
     requirements:
       - class: InitialWorkDirRequirement
         listing:
           - entryname: "arguments.json"
             entry: $(inputs)
       - class: DockerRequirement
-        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260127T1610
+        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260202T1636
       - class: NetworkAccess
         networkAccess: true
       - class: ResourceRequirement
