@@ -15,12 +15,14 @@ import urllib
 import urllib.parse
 import urllib.request
 
+_log = logging.getLogger(__name__)
+
 # __file__ could have exotic values in Docker:
 # __file__ == /src/./OpenEO_insar.py
 # __file__ == //./src/OpenEO_insar.py
 # So we do a lot of normalization:
 repo_directory = Path(os.path.dirname(os.path.normpath(__file__).replace("//", "/"))).parent.parent.absolute()
-logging.info("repo_directory: " + str(repo_directory))
+_log.info("repo_directory: " + str(repo_directory))
 
 
 def setup_insar_environment():
@@ -59,7 +61,7 @@ def setup_insar_environment():
 
     # GPT means "Graph Processing Toolkit" in this context
     if subprocess.run(["which", "gpt"]).returncode != 0 and os.path.exists("/usr/local/esa-snap/bin/gpt"):
-        logging.info("adding SNAP to PATH")  # needed when running outside of docker
+        _log.info("adding SNAP to PATH")  # needed when running outside of docker
         os.environ["PATH"] = os.environ["PATH"] + ":/usr/local/esa-snap/bin"
 
 
@@ -279,10 +281,10 @@ def exec_proc(command, cwd=None, write_output=True, env=None):
     new_env = merge_two_dicts(dict(os.environ), env)
 
     # print commands that can be pasted in the console
-    logging.info(f'> cd "{cwd}"')
+    _log.info(f'> cd "{cwd}"')
     for key in env:
-        logging.info(key + "=" + str(subprocess.list2cmdline([env[key], ""])[:-3]))
-    logging.info("" + command_to_display)
+        _log.info(key + "=" + str(subprocess.list2cmdline([env[key], ""])[:-3]))
+    _log.info("" + command_to_display)
 
     output = ""
     try:
@@ -314,7 +316,7 @@ def exec_proc(command, cwd=None, write_output=True, env=None):
 
     if ret != 0:
         if not write_output:
-            logging.info(output)
+            _log.info(output)
         raise Exception("Process returned error status code: " + str(ret))
     return ret, output
 

@@ -12,6 +12,8 @@ from sar.utils.workflow_utils import *
 
 setup_insar_environment()
 
+_log = logging.getLogger(__name__)
+
 start_time = datetime.now()
 
 if len(sys.argv) > 1:
@@ -21,7 +23,7 @@ if len(sys.argv) > 1:
     else:
         input_dict = json.loads(base64.b64decode(arg.encode("utf8")).decode("utf8"))
 else:
-    print("Using debug arguments!")
+    _log.info("Using debug arguments!")
     input_dict = input_dict_2018_vh
 
 if not input_dict.get("polarization"):
@@ -29,14 +31,14 @@ if not input_dict.get("polarization"):
 if not input_dict.get("sub_swath"):
     input_dict["sub_swath"] = "IW3"
 if not "coherence_window_rg" in input_dict or not "coherence_window_az" in input_dict:
-    print("Setting default coherence window size")
+    _log.info("Setting default coherence window size")
     input_dict["coherence_window_rg"] = 10
     input_dict["coherence_window_az"] = 2
 if not "n_rg_looks" in input_dict or not "n_az_looks" in input_dict:
-    print("Setting default multillok parameters")
+    _log.info("Setting default multillok parameters")
     input_dict["n_rg_looks"] = 4
     input_dict["n_az_looks"] = 1
-print(input_dict)
+_log.info(input_dict)
 start_date = min([min(pair) for pair in input_dict["InSAR_pairs"]])
 end_date = max([max(pair) for pair in input_dict["InSAR_pairs"]])
 
@@ -71,7 +73,7 @@ for burst in bursts:
     begin = parse_date(burst["BeginningDateTime"]).date()
     end = parse_date(burst["EndingDateTime"]).date()
     if begin not in flattened_pairs and end not in flattened_pairs:
-        print(f"Skipping burst {burst['BurstId']} ({begin} - {end})")
+        _log.info(f"Skipping burst {burst['BurstId']} ({begin} - {end})")
         continue
     cmd = [
         "sentinel1_burst_extractor.sh",
@@ -92,12 +94,12 @@ for burst in bursts:
         ]
     )
     burst_paths.extend(bursts_from_output)
-    print("seconds since start: " + str((datetime.now() - start_time).seconds))
+    _log.info("seconds since start: " + str((datetime.now() - start_time).seconds))
 
     if len(bursts_from_output) == 0:
         raise Exception("No files found in command output: " + str(output))
 
-print(f"{burst_paths=!r}")
+_log.info(f"{burst_paths=!r}")
 
 asset_paths: List[Path] = []
 
@@ -187,7 +189,7 @@ for pair in input_dict["InSAR_pairs"]:
     if not os.path.exists(output_filename):
         tiff_to_gtiff.tiff_to_gtiff(result_path, output_filename)
 
-print("seconds since start: " + str((datetime.now() - start_time).seconds))
+_log.info("seconds since start: " + str((datetime.now() - start_time).seconds))
 
 # slow when running outside Docker, because the whole home directory is scanned.
 simple_stac_builder.generate_catalog(
@@ -199,7 +201,7 @@ simple_stac_builder.generate_catalog(
     collection_filename="collection.json",
 )
 
-print("seconds since start: " + str((datetime.now() - start_time).seconds))
+_log.info("seconds since start: " + str((datetime.now() - start_time).seconds))
 
 # # CWL Will find the result files in HOME or CD
 
@@ -208,4 +210,4 @@ for file in files:
     # Docker often runs as root, this makes it easier to work with the files as a standard user:
     subprocess.call(["chmod", "777", str(file)])  # TODO: use 664
 
-print("Files in target dir: " + str(files))
+_log.info("Files in target dir: " + str(files))

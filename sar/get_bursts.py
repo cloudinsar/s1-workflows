@@ -11,6 +11,8 @@ from sar.utils.workflow_utils import *
 
 setup_insar_environment()
 
+_log = logging.getLogger(__name__)
+
 start_time = datetime.now()
 
 if len(sys.argv) > 1:
@@ -20,11 +22,11 @@ if len(sys.argv) > 1:
     else:
         input_dict = json.loads(base64.b64decode(arg.encode("utf8")).decode("utf8"))
 else:
-    print("Using debug arguments!")
+    _log.info("Using debug arguments!")
     input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_2018_vh_new.json").read_text())
 
 input_dict = {k: v for k, v in input_dict.items() if v is not None}
-# print(input_dict)
+# _log.info(input_dict)
 
 start_date = input_dict["temporal_extent"][0]  # TODO: date must be in the correct format, since later we append T00...
 end_date = input_dict["temporal_extent"][1]

@@ -10,6 +10,8 @@ from sar.utils.workflow_utils import *
 
 setup_insar_environment()
 
+_log = logging.getLogger(__name__)
+
 start_time = datetime.now()
 
 if len(sys.argv) > 1:
@@ -19,7 +21,7 @@ if len(sys.argv) > 1:
     else:
         input_dict = json.loads(base64.b64decode(arg.encode("utf8")).decode("utf8"))
 else:
-    logging.info("Using debug arguments!")
+    _log.info("Using debug arguments!")
     input_dict = input_dict_2018_vh
 
 default_dict = {
@@ -30,9 +32,9 @@ default_dict = {
 }
 input_dict = {k: v for k, v in input_dict.items() if v is not None}
 input_dict = {**default_dict, **input_dict}  # merge with defaults
-logging.info(input_dict)
+_log.info(input_dict)
 if isinstance(input_dict["InSAR_pairs"][0], str):
-    logging.info("Single pair detected in InSAR_pairs, converting to list of pairs.")
+    _log.info("Single pair detected in InSAR_pairs, converting to list of pairs.")
     input_dict["InSAR_pairs"] = [input_dict["InSAR_pairs"]]
 start_date = min([min(pair) for pair in input_dict["InSAR_pairs"]])
 end_date = max([max(pair) for pair in input_dict["InSAR_pairs"]])
@@ -69,7 +71,7 @@ for burst in bursts:
     begin = parse_date(burst["BeginningDateTime"]).date()
     end = parse_date(burst["EndingDateTime"]).date()
     if begin not in flattened_pairs and end not in flattened_pairs:
-        logging.info(f"Skipping burst {burst['BurstId']} ({begin} - {end})")
+        _log.info(f"Skipping burst {burst['BurstId']} ({begin} - {end})")
         continue
     cmd = [
         "bash",
@@ -87,12 +89,12 @@ for burst in bursts:
         [Path(line[len(needle):]).absolute() for line in output.split("\n") if line.startswith(needle)]
     )
     burst_paths.extend(bursts_from_output)
-    logging.info("seconds since start: " + str((datetime.now() - start_time).seconds))
+    _log.info("seconds since start: " + str((datetime.now() - start_time).seconds))
 
     if len(bursts_from_output) == 0:
         raise Exception("No files found in command output: " + str(output))
 
-logging.info(f"{burst_paths=!r}")
+_log.info(f"{burst_paths=!r}")
 
 asset_paths = []
 
@@ -127,7 +129,7 @@ simple_stac_builder.generate_catalog(
     collection_filename="collection.json",
 )
 
-logging.info("seconds since start: " + str((datetime.now() - start_time).seconds))
+_log.info("seconds since start: " + str((datetime.now() - start_time).seconds))
 
 # CWL Will find the result files in HOME or CD
 
@@ -136,4 +138,4 @@ for file in files:
     # Docker often runs as root, this makes it easier to work with the files as a standard user:
     subprocess.call(["chmod", "777", str(file)])
 
-logging.info("Files in target dir: " + str(files))
+_log.info("Files in target dir: " + str(files))
