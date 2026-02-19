@@ -23,7 +23,9 @@ if len(sys.argv) > 1:
         input_dict = json.loads(base64.b64decode(arg.encode("utf8")).decode("utf8"))
 else:
     _log.info("Using debug arguments!")
-    input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_2018_vh_new.json").read_text())
+    # input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_whole_2023_new.json").read_text())
+    # input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_2018_vh_new.json").read_text())
+    input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_2024_vv_new.json").read_text())
 
 input_dict = {k: v for k, v in input_dict.items() if v is not None}
 # _log.info(input_dict)
@@ -59,4 +61,4 @@ tmp_insar.mkdir(parents=True, exist_ok=True)
 
 with open(result_folder / "insar_pairs_inputs.json", "w") as f:
     json.dump(input_dict, f, indent=2)
-    print("Written: " + f.name)
+    _log.info("Written: " + f.name)

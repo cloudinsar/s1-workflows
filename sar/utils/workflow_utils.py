@@ -29,7 +29,6 @@ def setup_insar_environment():
     from openeo_driver.util.logging import (
         LOG_HANDLER_STDERR_JSON,
         LOGGING_CONTEXT_BATCH_JOB,
-        GlobalExtraLoggingFilter,
         get_logging_config,
         setup_logging,
     )
@@ -281,7 +280,7 @@ def exec_proc(command, cwd=None, write_output=True, env=None):
     new_env = merge_two_dicts(dict(os.environ), env)
 
     # print commands that can be pasted in the console
-    _log.info(f'> cd "{cwd}"')
+    _log.info(f'> cd {subprocess.list2cmdline([cwd])}')
     for key in env:
         _log.info(key + "=" + str(subprocess.list2cmdline([env[key], ""])[:-3]))
     _log.info("" + command_to_display)
