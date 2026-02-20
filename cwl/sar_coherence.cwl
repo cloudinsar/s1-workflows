@@ -5,7 +5,7 @@ class: CommandLineTool
 baseCommand: ["python3", "/src/sar/sar_coherence.py"]
 requirements:
   DockerRequirement:
-    dockerPull: ghcr.io/cloudinsar/openeo_insar:20260202T1636
+    dockerPull: ghcr.io/cloudinsar/openeo_insar:20260219T1446
   NetworkAccess:
     networkAccess: true
   InitialWorkDirRequirement:
