@@ -52,6 +52,8 @@ burst_paths = []
 for burst in bursts:
     begin = parse_date(burst["BeginningDateTime"]).date()
     end = parse_date(burst["EndingDateTime"]).date()
+    if "burst_id" in input_dict and input_dict["burst_id"]:
+        assert burst["BurstId"] == input_dict["burst_id"]
     cmd = [
         "bash",
         "sentinel1_burst_extractor.sh",
