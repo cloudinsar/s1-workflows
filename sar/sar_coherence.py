@@ -22,7 +22,27 @@ else:
     _log.info("Using debug arguments!")
     # input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_2018_vh_new.json").read_text())
     # input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_whole_2023_new.json").read_text())
-    input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_2024_vv_new.json").read_text())
+    # input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_2024_vv_new.json").read_text())
+    input_dict = {  # based on input_dict_2024_vv_new
+        "temporal_extent": [
+            "2024-08-09",
+            "2024-09-14"
+        ],
+        "spatial_extent": {
+            "east": 10.9,
+            "south": 46.9,
+            "west": 11.1,
+            "north": 47.1,
+        },
+        "temporal_baseline": 12,
+        # "burst_id": 249435,
+        "coherence_window_az": 2,
+        "coherence_window_rg": 10,
+        "n_az_looks": 1,
+        "n_rg_looks": 4,
+        "polarization": "vv",
+        "sub_swath": "IW2"
+    }
 
 default_dict = {
     "coherence_window_rg": 10,
@@ -44,8 +64,9 @@ bursts = retrieve_bursts_with_id_and_iw(
     start_date,
     end_date,
     input_dict['polarization'],
-    input_dict['burst_id'],
-    input_dict['sub_swath']
+    sbswath=input_dict['sub_swath'],
+    burst_id=input_dict['burst_id'] if "burst_id" in input_dict else None,
+    spatial_extent=input_dict['spatial_extent'] if "spatial_extent" in input_dict else None,
 )
 
 burst_paths = []
@@ -60,7 +81,7 @@ for burst in bursts:
         "-n", burst["ParentProductName"],
         "-p", input_dict["polarization"].lower(),
         "-s", str(input_dict["sub_swath"].lower()),
-        "-r", str(input_dict["burst_id"]),
+        "-r", str(burst["BurstId"]),
         "-o", str(tmp_insar),
     ]
     _, output = exec_proc(cmd, cwd=repo_directory / "utilities", write_output=False)
