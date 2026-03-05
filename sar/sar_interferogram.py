@@ -5,6 +5,7 @@ import os
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 from sar.utils import simple_stac_builder
 from sar.utils import tiff_to_gtiff
@@ -188,6 +189,7 @@ for pair in input_dict["InSAR_pairs"]:
     asset_paths.append(output_filename)
     if not os.path.exists(output_filename):
         tiff_to_gtiff.tiff_to_gtiff(result_path, output_filename)
+    Path(result_path).rename(output_filename) # Don't re-writie SNAP outputs, but rename them to match the expected naming convention
 
 _log.info("seconds since start: " + str((datetime.now() - start_time).seconds))
 
