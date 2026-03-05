@@ -8,6 +8,8 @@ from sar.utils.workflow_utils import *
 
 setup_insar_environment()
 
+_log = logging.getLogger(__name__)
+
 start_time = datetime.now()
 
 if len(sys.argv) > 1:
@@ -17,7 +19,9 @@ if len(sys.argv) > 1:
     else:
         input_dict = json.loads(base64.b64decode(arg.encode("utf8")).decode("utf8"))
 else:
-    print("Using debug arguments!")
+    _log.info("Using debug arguments!")
+    # input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_2018_vh_new.json").read_text())
+    # input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_whole_2023_new.json").read_text())
     input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_2024_vv_new.json").read_text())
 
 default_dict = {
@@ -26,7 +30,7 @@ default_dict = {
 }
 input_dict = {k: v for k, v in input_dict.items() if v is not None}
 input_dict = {**default_dict, **input_dict}  # merge with defaults
-print(input_dict)
+_log.info(input_dict)
 start_date = input_dict["temporal_extent"][0]
 end_date = input_dict["temporal_extent"][1]
 
@@ -64,12 +68,12 @@ for burst in bursts:
         [Path(line[len(needle):]).absolute() for line in output.split("\n") if line.startswith(needle)]
     )
     burst_paths.extend(bursts_from_output)
-    print("seconds since start: " + str((datetime.now() - start_time).seconds))
+    _log.info("seconds since start: " + str((datetime.now() - start_time).seconds))
 
     if len(bursts_from_output) == 0:
         raise Exception("No files found in command output: " + str(output))
 
-print(f"{burst_paths=!r}")
+_log.info(f"{burst_paths=!r}")
 
 date_to_path = {}
 for f in burst_paths:
@@ -113,7 +117,7 @@ simple_stac_builder.generate_catalog(
     collection_filename="collection.json",
 )
 
-print("seconds since start: " + str((datetime.now() - start_time).seconds))
+_log.info("seconds since start: " + str((datetime.now() - start_time).seconds))
 
 # CWL Will find the result files in HOME or CD
 
@@ -122,4 +126,4 @@ for file in files:
     # Docker often runs as root, this makes it easier to work with the files as a standard user:
     subprocess.call(["chmod", "777", str(file)])
 
-print("Files in target dir: " + str(files))
+_log.info("Files in target dir: " + str(files))

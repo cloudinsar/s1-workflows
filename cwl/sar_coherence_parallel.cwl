@@ -1,19 +1,24 @@
 #!/usr/bin/env cwl-runner
-# Example on how to run locally: cwltool --tmpdir-prefix=$HOME/tmp/ --force-docker-pull --leave-container --leave-tmpdir --parallel cwl/sar_coherence_parallel.cwl sar/example_inputs/input_dict_2024_vv.json
+# Example on how to run locally: cwltool --tmpdir-prefix=$HOME/tmp/ --force-docker-pull --leave-container --leave-tmpdir --no-read-only --parallel --preserve-environment=AWS_ENDPOINT_URL_S3 --preserve-environment=AWS_ACCESS_KEY_ID --preserve-environment=AWS_SECRET_ACCESS_KEY cwl/sar_coherence_parallel.cwl sar/example_inputs/input_dict_2024_vv.json
 cwlVersion: v1.2
 $graph:
   - id: sub_collection_maker
     class: CommandLineTool
-    baseCommand: /src/sar/sar_coherence_easy_to_parallelize.py
+    baseCommand: /src/sar/sar_coherence_parallel.py
     requirements:
       - class: InitialWorkDirRequirement
         listing:
           - entryname: "arguments.json"
             entry: $(inputs)
       - class: DockerRequirement
-        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260107T1050
+        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260219T1446
       - class: NetworkAccess
         networkAccess: true
+      - class: ResourceRequirement
+        ramMin: 7000
+        ramMax: 7000
+        coresMin: 2
+        coresMax: 7
 
     inputs:
       # TODO: Make original array of pairs form?
@@ -92,7 +97,7 @@ $graph:
       - class: NetworkAccess
         networkAccess: true
 
-    baseCommand: ["/data/simple_stac_merge.py", "S1_2images_collection.json"]
+    baseCommand: ["/data/simple_stac_merge.py", "collection.json"]
     inputs:
       simple_stac_merge_in1:
         type: Directory[]

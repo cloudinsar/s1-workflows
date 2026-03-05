@@ -88,7 +88,7 @@ def run_stac_catalog_and_verify(catalog_path: Path, tmp_dir: Path):
 def test_insar_new(script, input_dict, auto_title):
     input_base64_json = base64.b64encode(json.dumps(input_dict).encode("utf8")).decode("ascii")
 
-    tmp_dir = Path(repository_root / slugify(auto_title).replace("tests/", "tests/tmp_")).absolute()
+    tmp_dir = Path(repository_root / slugify(auto_title).replace("tests_", "tests/tmp_")).absolute()
     if tmp_dir.exists():
         shutil.rmtree(tmp_dir)
     tmp_dir.mkdir(exist_ok=True)
@@ -110,7 +110,7 @@ def test_insar_new(script, input_dict, auto_title):
 @pytest.mark.parametrize(
     "script",
     [
-        "sar_coherence_easy_to_parallelize.py",
+        "sar_coherence_parallel.py",
         "sar_interferogram.py",
     ],
 )
@@ -125,7 +125,7 @@ def test_insar_new(script, input_dict, auto_title):
 def test_insar(script, input_dict, auto_title):
     input_base64_json = base64.b64encode(json.dumps(input_dict).encode("utf8")).decode("ascii")
 
-    tmp_dir = Path(repository_root / slugify(auto_title).replace("tests/", "tests/tmp_")).absolute()
+    tmp_dir = Path(repository_root / slugify(auto_title).replace("tests_", "tests/tmp_")).absolute()
     if tmp_dir.exists():
         shutil.rmtree(tmp_dir)
     tmp_dir.mkdir(exist_ok=True)
@@ -158,7 +158,7 @@ def test_sar_preprocessing(input_dict, auto_title):
 
     input_base64_json = base64.b64encode(json.dumps(input_dict).encode("utf8")).decode("ascii")
 
-    tmp_dir = Path(repository_root / slugify(auto_title).replace("tests/", "tests/tmp_")).absolute()
+    tmp_dir = Path(repository_root / slugify(auto_title).replace("tests_", "tests/tmp_")).absolute()
     print(f"{tmp_dir=}")
     if tmp_dir.exists():
         shutil.rmtree(tmp_dir)

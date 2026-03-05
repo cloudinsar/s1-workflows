@@ -5,6 +5,8 @@ from typing import List, Union
 
 from .workflow_utils import *
 
+_log = logging.getLogger(__name__)
+
 
 def generate_catalog(
     stac_root,
@@ -19,7 +21,7 @@ def generate_catalog(
     for arg in local_args:
         function_call_str += f"{arg}={repr(local_args[arg])}, "
     function_call_str += ")"
-    logging.info(function_call_str)
+    _log.info(function_call_str)
 
     collection_stac: dict = {
         "type": "Collection",
@@ -94,12 +96,12 @@ def generate_catalog(
 
         for file in file_element:
             file = Path(file)
-            logging.info(file)
+            _log.info(file)
             if not file.is_absolute():
                 file = stac_root / file
             res = re.search(date_regex, file.name)
             if res is None:
-                logging.info("Skipping: ", file)
+                _log.info("Skipping: ", file)
                 continue
             if not "_grid_" in file.name:  # TODO: Use better way to select date
                 if "feature_id" in res.groupdict():
@@ -203,6 +205,9 @@ def generate_catalog(
                 gdalinfo_stac["proj:bbox"] = latlon_bbox
             else:
                 gdalinfo_stac["proj:bbox"] = native_bbox
+            del gdalinfo_stac["proj:epsg"]  # remove to avoid empty results when dryrun is called with "dummy"
+            del gdalinfo_stac["proj:bbox"]  # remove to avoid empty results when dryrun is called with "dummy"
+            del gdalinfo_stac["proj:transform"]  # remove to avoid empty results when dryrun is called with "dummy"
 
             stac["bbox"] = latlon_bbox
             collection_stac["extent"]["spatial"]["bbox"][0] = union_aabbox(
@@ -233,7 +238,7 @@ def generate_catalog(
         collection_stac["cube:dimensions"]["x"]["extent"] = native_x_extent
         collection_stac["cube:dimensions"]["y"]["extent"] = native_y_extent
     else:
-        logging.info("multiple crs detected, can't set crs in stac root: " + str(crs_set))
+        _log.info("multiple crs detected, can't set crs in stac root: " + str(crs_set))
 
     collection_stac["cube:dimensions"]["t"]["extent"] = collection_stac["extent"]["temporal"]["interval"][0]
 
@@ -244,24 +249,24 @@ def generate_catalog(
         json.dump(collection_stac, f, indent=2)
 
     try:
-        logging.info("Trying pystac validation...")
+        _log.info("Trying pystac validation...")
         from pystac import Collection, Item
 
         logging.basicConfig(level=logging.DEBUG)
 
         collection = Collection.from_file(stac_root / collection_filename)
         collection.validate_all()
-        logging.info("pystac validation successful")
+        _log.info("pystac validation successful")
     except Exception as e:
-        logging.info("pystac validation failed: " + str(e))
-        logging.info("Reproduce validation error with:")
-        logging.info(function_call_str)
+        _log.info("pystac validation failed: " + str(e))
+        _log.info("Reproduce validation error with:")
+        _log.info(function_call_str)
 
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         generate_catalog(Path(sys.argv[1]))
     else:
-        logging.info("Using debug arguments!")
+        _log.info("Using debug arguments!")
         generate_catalog(Path("."), date_regex=re.compile(r".*_(?P<date1>\d{8}T\d{6}).nc$"))
-    logging.info("done")
+    _log.info("done")

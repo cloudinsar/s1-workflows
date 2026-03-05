@@ -17,24 +17,28 @@ local_openEO = False
 
 def get_connection():
     import openeo
-    if local_openEO:
+    # url = "https://openeo.dev.warsaw.openeo.dataspace.copernicus.eu/"  # needs VPN
+    # url = "https://openeo-staging.dataspace.copernicus.eu/"
+    url = "https://openeo.dataspace.copernicus.eu"
+    # url = "http://127.0.0.1:8080"
+    basic_connection = openeo.connect(url)
+    if "//127.0.0.1" in basic_connection.root_url:
         # Start local openEO by running:
         #    minikube start
         #    local.py
         # https://github.com/Open-EO/openeo-geopyspark-driver/blob/master/docs/calrissian-cwl.md#kubernetes-setup
-        return openeo.connect("http://127.0.0.1:8080").authenticate_basic("openeo", "openeo")
+        return basic_connection.authenticate_basic("openeo", "openeo")
     else:
-        # url = "https://openeo.dev.warsaw.openeo.dataspace.copernicus.eu/"  # needs VPN
-        # url = "https://openeo-staging.dataspace.copernicus.eu/"
-        url = "https://openeo.dataspace.copernicus.eu"
-        return openeo.connect(url).authenticate_oidc()
+        return basic_connection.authenticate_oidc()
 
+cwl_prefix = "https://raw.githubusercontent.com/cloudinsar/s1-workflows/refs/heads/main/"
 
 @pytest.mark.skip(reason="TODO: Log into openEO backend")
 @pytest.mark.parametrize(
-    "cwl_url",
+    "cwl_path",
     [
-        "https://raw.githubusercontent.com/cloudinsar/s1-workflows/refs/heads/main/cwl/sar_coherence.cwl",
+        "cwl/sar_coherence.cwl",
+        "cwl/sar_coherence_parallel_temporal_extent.cwl",
     ],
 )
 @pytest.mark.parametrize(
@@ -44,22 +48,17 @@ def get_connection():
         json.loads((repo_directory / "sar/example_inputs/input_dict_2024_vv_new.json").read_text()),
     ],
 )
-def test_georeferenced_new_sar_against_openeo_backend(cwl_url, input_dict, auto_title):
+def test_georeferenced_new_sar(cwl_path, input_dict, auto_title):
     import openeo
     now = datetime.now()
     tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests_", "tests/tmp_")).absolute()
     tmp_dir.mkdir(exist_ok=True)
 
-    # datacube = get_connection().datacube_from_process(process_id=process_id, **input_dict)
-    # datacube = get_connection().datacube_from_process(
-    #     process_id="run_cwl",
-    #     cwl_url=cwl_url,
-    #     context=input_dict,
-    # )
+    cwl = Path(repository_root / cwl_path).read_text()
     datacube = get_connection().datacube_from_process(
         "run_udf",
         data=None,
-        udf=cwl_url,
+        udf=cwl,
         runtime="EOAP-CWL",
         context=input_dict,
     )
@@ -88,10 +87,10 @@ def test_georeferenced_new_sar_against_openeo_backend(cwl_url, input_dict, auto_
 
 @pytest.mark.skip(reason="TODO: Log into openEO backend")
 @pytest.mark.parametrize(
-    "cwl_url",
+    "cwl_path",
     [
-        "https://raw.githubusercontent.com/cloudinsar/s1-workflows/refs/heads/main/cwl/sar_coherence_parallel.cwl",
-        "https://raw.githubusercontent.com/cloudinsar/s1-workflows/refs/heads/main/cwl/sar_interferogram.cwl",
+        # "cwl/sar_coherence_parallel.cwl",
+        "cwl/sar_interferogram.cwl",
     ],
 )
 @pytest.mark.parametrize(
@@ -104,14 +103,16 @@ def test_georeferenced_new_sar_against_openeo_backend(cwl_url, input_dict, auto_
         # json.loads((repo_directory / "sar/example_inputs/input_dict_2023.json").read_text()),
     ],
 )
-def test_georeferenced_sar_against_openeo_backend(cwl_url, input_dict, auto_title):
+def test_georeferenced_sar(cwl_path, input_dict, auto_title):
     now = datetime.now()
     tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests_", "tests/tmp_")).absolute()
     tmp_dir.mkdir(exist_ok=True)
-    # datacube = get_connection().datacube_from_process(process_id=process_id, **input_dict)
+    cwl = Path(repository_root / cwl_path).read_text()
     datacube = get_connection().datacube_from_process(
-        process_id="run_cwl",
-        cwl_url=cwl_url,
+        "run_udf",
+        data=None,
+        udf=cwl,
+        runtime="EOAP-CWL",
         context=input_dict,
     )
 
@@ -143,15 +144,17 @@ def test_georeferenced_sar_against_openeo_backend(cwl_url, input_dict, auto_titl
         # input_dict_2024_vv_preprocessing,
     ],
 )
-def test_sar_preprocessing_against_openeo_backend(input_dict, auto_title):
+def test_sar_preprocessing(input_dict, auto_title):
     now = datetime.now()
     tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests_", "tests/tmp_")).absolute()
     tmp_dir.mkdir(exist_ok=True)
-    cwl_url = "https://raw.githubusercontent.com/cloudinsar/s1-workflows/refs/heads/main/cwl/sar_slc_preprocessing.cwl"
-    # datacube = get_connection().datacube_from_process(process_id="sar_slc_preprocessing", **input_dict)
+    cwl_path = "cwl/sar_slc_preprocessing.cwl"
+    cwl = Path(repository_root / cwl_path).read_text()
     datacube = get_connection().datacube_from_process(
-        process_id="run_cwl",
-        cwl_url=cwl_url,
+        "run_udf",
+        data=None,
+        udf=cwl,
+        runtime="EOAP-CWL",
         context=input_dict,
     )
 

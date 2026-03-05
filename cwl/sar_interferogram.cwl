@@ -1,17 +1,22 @@
 #!/usr/bin/env cwl-runner
-# Example on how to run locally: cwltool --tmpdir-prefix=$HOME/tmp/ --force-docker-pull --leave-container --leave-tmpdir --parallel cwl/sar_interferogram.cwl sar/example_inputs/input_dict_2018_vh.json
+# Example on how to run locally: cwltool --tmpdir-prefix=$HOME/tmp/ --force-docker-pull --leave-container --leave-tmpdir --no-read-only --parallel --preserve-environment=AWS_ENDPOINT_URL_S3 --preserve-environment=AWS_ACCESS_KEY_ID --preserve-environment=AWS_SECRET_ACCESS_KEY cwl/sar_interferogram.cwl sar/example_inputs/input_dict_2018_vh.json
 cwlVersion: v1.2
 class: CommandLineTool
 baseCommand: /src/sar/sar_interferogram.py
 requirements:
   DockerRequirement:
-    dockerPull: ghcr.io/cloudinsar/openeo_insar:20260109T1419-keep_snap_metadata
+    dockerPull: ghcr.io/cloudinsar/openeo_insar:20260107T1050
   NetworkAccess:
     networkAccess: true
   InitialWorkDirRequirement:
     listing:
       - entryname: "arguments.json"
         entry: $(inputs)
+  ResourceRequirement:
+    ramMin: 7000
+    ramMax: 7000
+    coresMin: 2
+    coresMax: 7
 arguments:
   - arguments.json
 inputs:

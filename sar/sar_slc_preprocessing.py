@@ -14,6 +14,8 @@ from sar.utils.workflow_utils import *
 
 setup_insar_environment()
 
+_log = logging.getLogger(__name__)
+
 start_time = datetime.now()
 
 if len(sys.argv) > 1:
@@ -23,7 +25,7 @@ if len(sys.argv) > 1:
     else:
         input_dict = json.loads(base64.b64decode(arg.encode("utf8")).decode("utf8"))
 else:
-    print("Using debug arguments!")
+    _log.info("Using debug arguments!")
     # input_dict = input_dict_2018_vh_preprocessing
     input_dict = {
         "burst_id": 234893,
@@ -40,7 +42,7 @@ elif isinstance(input_dict.get("polarization"), str):
 if not input_dict.get("sub_swath"):
     input_dict["sub_swath"] = "IW3"
 assert len(input_dict["temporal_extent"]) == 2, "temporal_extent should be a list with two dates"
-print(input_dict)
+_log.info(input_dict)
 
 result_folder = Path.cwd().absolute()
 # result_folder = repo_directory / "output"
@@ -105,13 +107,13 @@ for pol in input_dict["polarization"]:
             ]
         )
         burst_paths.extend(bursts_from_output)
-        print("seconds since start: " + str((datetime.now() - start_time).seconds))
+        _log.info("seconds since start: " + str((datetime.now() - start_time).seconds))
 
         if len(bursts_from_output) == 0:
             raise Exception("No files found in command output: " + str(output))
 
     burst_paths = sorted(burst_paths)
-    print(f"{burst_paths=!r}")
+    _log.info(f"{burst_paths=!r}")
 
     input_prm_date = parse_date(input_dict["primary_date"])
     prm_filename = next(filter(lambda x: input_prm_date.strftime("%Y%m%d") in str(x), burst_paths), None)
@@ -152,7 +154,7 @@ for pol in input_dict["polarization"]:
             f"-Poutput_prm_filename={output_prm_filename_tmp}",
             f"-Poutput_sec_filename={output_sec_filename_tmp}",
         ] + snap_extra_arguments
-        print(gpt_cmd)
+        _log.info(gpt_cmd)
         exec_proc(gpt_cmd, write_output=False)
 
     output_prm_filename = f"{result_folder}/S1_2images_prm_{prm_date.strftime('%Y%m%dT%H%M%S')}_{pol.lower()}_<band_name>.tif"
@@ -190,7 +192,7 @@ for pol in input_dict["polarization"]:
                 f"-Pi_q_sec_bandnames=i_{sec_bandname},q_{sec_bandname}",
                 f"-Poutput_sec_filename={output_sec_filename_tmp}",
             ] + snap_extra_arguments
-            print(gpt_cmd)
+            _log.info(gpt_cmd)
             subprocess.check_call(gpt_cmd, stderr=subprocess.STDOUT)
 
         output_sec_filename = (
@@ -244,7 +246,7 @@ simple_stac_builder.generate_catalog(
     date_regex=re.compile(r"(?P<feature_id>.*_(?P<date1>\d{8}(T\d{6})?))(_\w+)?\.tif$"),
 )
 
-print("seconds since start: " + str((datetime.now() - start_time).seconds))
+_log.info("seconds since start: " + str((datetime.now() - start_time).seconds))
 
 # CWL Will find the result files in HOME or CD
 
@@ -253,4 +255,4 @@ for file in files:
     # Docker often runs as root, this makes it easier to work with the files as a standard user:
     subprocess.call(["chmod", "777", str(file)])
 
-print("Files in target dir: " + str(files))
+_log.info("Files in target dir: " + str(files))

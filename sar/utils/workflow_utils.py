@@ -15,25 +15,23 @@ import urllib
 import urllib.parse
 import urllib.request
 
-from openeo_driver.util.logging import (
-    LOG_HANDLER_STDERR_JSON,
-    LOGGING_CONTEXT_BATCH_JOB,
-    GlobalExtraLoggingFilter,
-    get_logging_config,
-    setup_logging,
-)
-
-from sar.utils.workflow_runtime import get_job_id
+_log = logging.getLogger(__name__)
 
 # __file__ could have exotic values in Docker:
 # __file__ == /src/./OpenEO_insar.py
 # __file__ == //./src/OpenEO_insar.py
 # So we do a lot of normalization:
 repo_directory = Path(os.path.dirname(os.path.normpath(__file__).replace("//", "/"))).parent.parent.absolute()
-logging.info("repo_directory: " + str(repo_directory))
+_log.info("repo_directory: " + str(repo_directory))
 
 
 def setup_insar_environment():
+    from openeo_driver.util.logging import (
+        LOG_HANDLER_STDERR_JSON,
+        LOGGING_CONTEXT_BATCH_JOB,
+        get_logging_config,
+        setup_logging,
+    )
     # Remove any existing handlers configured by default
     logger = logging.getLogger()
     while logger.hasHandlers():
@@ -62,13 +60,29 @@ def setup_insar_environment():
 
     # GPT means "Graph Processing Toolkit" in this context
     if subprocess.run(["which", "gpt"]).returncode != 0 and os.path.exists("/usr/local/esa-snap/bin/gpt"):
-        logging.info("adding SNAP to PATH")  # needed when running outside of docker
+        _log.info("adding SNAP to PATH")  # needed when running outside of docker
         os.environ["PATH"] = os.environ["PATH"] + ":/usr/local/esa-snap/bin"
 
 
+input_dict_2024_vv_parallel = {
+    "temporal_extent": [
+    "2024-08-09",
+    "2024-09-03"
+  ],
+    "burst_id": 249435,
+    # Coherence window size:
+    "coherence_window_az": 2,
+    "coherence_window_rg": 10,
+    # Multillok parameters:
+    "n_az_looks": 1,
+    "n_rg_looks": 4,
+    "polarization": "vv",
+    "sub_swath": "IW2",
+}
+
 input_dict_2024_vv = {
     "InSAR_pairs": [
-        # ["2024-08-09", "2024-08-21"],
+        ["2024-08-09", "2024-08-21"],
         ["2024-08-21", "2024-09-02"],
         # ["2024-08-21", "2024-09-14"],
         # ["2024-09-02", "2024-09-14"],
@@ -266,10 +280,10 @@ def exec_proc(command, cwd=None, write_output=True, env=None):
     new_env = merge_two_dicts(dict(os.environ), env)
 
     # print commands that can be pasted in the console
-    logging.info(f'> cd "{cwd}"')
+    _log.info(f'> cd {subprocess.list2cmdline([cwd])}')
     for key in env:
-        logging.info(key + "=" + str(subprocess.list2cmdline([env[key], ""])[:-3]))
-    logging.info("" + command_to_display)
+        _log.info(key + "=" + str(subprocess.list2cmdline([env[key], ""])[:-3]))
+    _log.info("" + command_to_display)
 
     output = ""
     try:
@@ -301,7 +315,7 @@ def exec_proc(command, cwd=None, write_output=True, env=None):
 
     if ret != 0:
         if not write_output:
-            logging.info(output)
+            _log.info(output)
         raise Exception("Process returned error status code: " + str(ret))
     return ret, output
 
