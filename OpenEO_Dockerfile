@@ -3,6 +3,9 @@
 # docker run -it --memory=15G -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --rm openeo_insar:1.56
 FROM ghcr.io/osgeo/gdal:ubuntu-small-3.10.0
 LABEL description="The main aim of the CLOUDInSAR project is to develop an open-source, cloud-based solution for processing and analyzing Sentinel-1 InSAR data."
+LABEL authors="Michele Claus, Emile Sonneveld"
+LABEL maintainer="michele.claus@eurac.edu, emile.sonneveld@vito.be"
+
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -25,15 +28,6 @@ RUN apt-get -qq update && \
         software-properties-common && \
     rm -rf /var/lib/apt/lists/*
 
-# Download and install jacksum and s5cmd
-RUN curl -sL -O 'https://s3.waw3-2.cloudferro.com/swift/v1/jacksum/jacksum_1.7.0-4.1_all.deb' && \
-    dpkg -i jacksum_1.7.0-4.1_all.deb && rm jacksum_1.7.0-4.1_all.deb && \
-    curl -sL -O 'https://github.com/peak/s5cmd/releases/download/v2.2.2/s5cmd_2.2.2_linux_amd64.deb' && \
-    dpkg -i s5cmd_2.2.2_linux_amd64.deb && rm s5cmd_2.2.2_linux_amd64.deb
-
-#COPY ./utilities /src/utilities/ # Copy at the end of file to avoid slow rebuilds
-ENV PATH="${PATH}:/src/utilities/"
-
 RUN add-apt-repository -y ppa:deadsnakes/ppa
 RUN apt-get -qq update && \
     apt-get -qq install -y \
@@ -44,44 +38,49 @@ RUN apt-get -qq update && \
       autoconf \
       libgfortran5
 
-LABEL authors="Michele Claus, Emile Sonneveld"
-LABEL maintainer="michele.claus@eurac.edu, emile.sonneveld@vito.be"
+# Download and install jacksum and s5cmd
+RUN curl -sL -O 'https://s3.waw3-2.cloudferro.com/swift/v1/jacksum/jacksum_1.7.0-4.1_all.deb' && \
+    dpkg -i jacksum_1.7.0-4.1_all.deb && rm jacksum_1.7.0-4.1_all.deb && \
+    curl -sL -O 'https://github.com/peak/s5cmd/releases/download/v2.2.2/s5cmd_2.2.2_linux_amd64.deb' && \
+    dpkg -i s5cmd_2.2.2_linux_amd64.deb && rm s5cmd_2.2.2_linux_amd64.deb
+
+USER ubuntu
 
 ### Install esa-snap ###
-ENV SNAPVER=11
+ENV SNAPVER=12
 
-RUN mkdir -p /src/esa-snap-docker
-COPY esa-snap-docker/response.varfile /src/esa-snap-docker/response.varfile
+RUN mkdir -p /home/ubuntu/src/esa-snap-docker
+COPY esa-snap-docker/response.varfile /home/ubuntu/src/esa-snap-docker/response.varfile
 
 # install and update snap
-RUN wget -q -O /src/esa-snap-docker/esa-snap_all_unix_${SNAPVER}_0_0.sh "https://step.esa.int/downloads/${SNAPVER}.0/installers/esa-snap_all_linux-${SNAPVER}.0.0.sh" && \
-   sh /src/esa-snap-docker/esa-snap_all_unix_${SNAPVER}_0_0.sh -q -varfile /src/esa-snap-docker/response.varfile && \
-   rm -f /src/esa-snap-docker/esa-snap_all_unix_${SNAPVER}_0_0.sh
+RUN wget -q -O /home/ubuntu/src/esa-snap-docker/esa-snap_all_unix_${SNAPVER}_0_0.sh "https://step.esa.int/downloads/${SNAPVER}.0/installers/esa-snap_all_linux-${SNAPVER}.0.0.sh" && \
+   sh /home/ubuntu/src/esa-snap-docker/esa-snap_all_unix_${SNAPVER}_0_0.sh -q -varfile /home/ubuntu/src/esa-snap-docker/response.varfile -dir /home/ubuntu/src/esa-snap && \
+   rm -f /home/ubuntu/src/esa-snap-docker/esa-snap_all_unix_${SNAPVER}_0_0.sh
 
 # update SNAP
-COPY esa-snap-docker/update_snap.sh /src/esa-snap-docker/update_snap.sh
-RUN bash /src/esa-snap-docker/update_snap.sh
+COPY esa-snap-docker/update_snap.sh /home/ubuntu/src/esa-snap-docker/update_snap.sh
+RUN bash /home/ubuntu/src/esa-snap-docker/update_snap.sh
 
 # add gpt to PATH
-ENV PATH="${PATH}:/usr/local/esa-snap/bin"
+ENV PATH="${PATH}:/home/ubuntu/src/esa-snap/bin"
 
 # . /opt/venv/bin/activate -> has no effect in Docker, here we need the following line:
-ENV PATH="/opt/venv/bin:$PATH"
-RUN python3.11 -m venv /opt/venv && \
-    cd /src && \
+ENV PATH="/home/ubuntu/venv/bin:$PATH"
+RUN python3.11 -m venv /home/ubuntu/venv && \
+    cd /home/ubuntu/src && \
     mkdir -p sar && \
     pip config set global.disable-pip-version-check true
 
-RUN cd /opt && \
+RUN cd /home/ubuntu/ && \
     git clone --recursive --shallow-submodules --depth 1 https://github.com/Open-EO/openeo-python-driver.git && \
-    python3 -m pip install -e /opt/openeo-python-driver
+    python3 -m pip install -e /home/ubuntu/openeo-python-driver
 
-COPY pyproject.toml /src/pyproject.toml
-RUN cd /src && \
+COPY pyproject.toml /home/ubuntu/src/pyproject.toml
+RUN cd /home/ubuntu/src && \
     python3 -m pip install -q -e . && \
     python3 -m pip install -q --config-settings="--build-option=build_ext" --config-settings="--build-option=-I/usr/include/gdal" GDAL==`gdal-config --version`
 
-ENV PATH="${PATH}:/src/"
+ENV PATH="${PATH}:/home/ubuntu/src/"
 
 # simple_stac_builder is good enough
 #RUN cd /opt && \
@@ -89,17 +88,20 @@ ENV PATH="${PATH}:/src/"
 #    cd stac-catalog-builder && \
 #    python3 -m pip install -q -e .
 
-RUN wget https://step.esa.int/thirdparties/snaphu/2.0.4/snaphu-v2.0.4_linux.zip && \
-    unzip -q -d /opt snaphu-v2.0.4_linux.zip && \
-    chmod +x /opt/snaphu-v2.0.4_linux/bin/snaphu && \
-    rm snaphu-v2.0.4_linux.zip
-ENV PATH="$PATH:/opt/snaphu-v2.0.4_linux/bin"
+RUN wget -q -O /home/ubuntu/snaphu-v2.0.4_linux.zip https://step.esa.int/thirdparties/snaphu/2.0.4/snaphu-v2.0.4_linux.zip && \
+    unzip -q -d /home/ubuntu/ /home/ubuntu/snaphu-v2.0.4_linux.zip && \
+    chmod +x /home/ubuntu/snaphu-v2.0.4_linux/bin/snaphu && \
+    rm /home/ubuntu/snaphu-v2.0.4_linux.zip
+ENV PATH="$PATH:/home/ubuntu/snaphu-v2.0.4_linux/bin"
 
-# COPY . /src
-COPY ./utilities /src/utilities/
-COPY ./notebooks/ /src/notebooks/
-COPY ./sar /src/sar/
-COPY *.sh /src/
+COPY ./utilities /home/ubuntu/src/utilities/
+COPY ./notebooks/graphs/ /home/ubuntu/src/notebooks/graphs/
+COPY ./sar /home/ubuntu/src/sar/
+COPY ./tests /home/ubuntu/src/tests/
+COPY *.sh /home/ubuntu/src/
 
+# Set the ESA SNAP auxdata directory to be different from the default .snap, which is not writable:
+RUN sed -i 's|#snap.userdir=|snap.userdir=/home/ubuntu/snap-data|g' /home/ubuntu/src/esa-snap/etc/snap.properties
+RUN mkdir /home/ubuntu/snap-data
 
-WORKDIR /src
+WORKDIR /home/ubuntu/src

@@ -77,6 +77,7 @@ for burst in bursts:
         _log.info(f"Skipping burst {burst['BurstId']} ({begin} - {end})")
         continue
     cmd = [
+        "bash",
         "sentinel1_burst_extractor.sh",
         "-n", burst["ParentProductName"],
         "-p", input_dict["polarization"].lower(),
@@ -188,8 +189,8 @@ for pair in input_dict["InSAR_pairs"]:
 
     asset_paths.append(output_filename)
     if not os.path.exists(output_filename):
-        tiff_to_gtiff.tiff_to_gtiff(result_path, output_filename)
-    Path(result_path).rename(output_filename) # Don't re-writie SNAP outputs, but rename them to match the expected naming convention
+        tiff_to_gtiff.tiff_to_gtiff(result_path)
+        Path(result_path).rename(output_filename) # Don't re-writie SNAP outputs, but rename them to match the expected naming convention
 
 _log.info("seconds since start: " + str((datetime.now() - start_time).seconds))
 
