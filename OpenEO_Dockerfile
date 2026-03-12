@@ -104,4 +104,8 @@ COPY *.sh /home/ubuntu/src/
 RUN sed -i 's|#snap.userdir=|snap.userdir=/home/ubuntu/snap-data|g' /home/ubuntu/src/esa-snap/etc/snap.properties
 RUN mkdir /home/ubuntu/snap-data
 
+USER root
+RUN chown -R ubuntu:ubuntu /home/ubuntu/src
+USER ubuntu
+
 WORKDIR /home/ubuntu/src
