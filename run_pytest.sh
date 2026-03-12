@@ -39,7 +39,7 @@ export PATH="${PATH}:/root/.nvm/versions/node/v24.11.1/bin"
 
 cd "$SCRIPT_DIR"
 # General dependencies are probably already installed. Now download test dependencies:
-python -m pip install -q -e ".[dev]"
+python -m pip install -q ".[dev]"
 python -m pytest
 
 # mypy has error, only on GitHub Actions CI:
