@@ -30,7 +30,7 @@ _log = logging.getLogger(__name__)
 
 def tiff_to_gtiff(input_path, output_path=None, tiff_per_band=False) -> list:
     input_path = Path(input_path)
-    _log.info(f"tiff_to_gtiff({input_path=})")
+    _log.info(f"tiff_to_gtiff({input_path=},{output_path=},{tiff_per_band=})")
     if not os.path.exists(input_path):
         raise FileNotFoundError(f"Input file {input_path} does not exist.")
 
@@ -127,7 +127,7 @@ def tiff_to_gtiff(input_path, output_path=None, tiff_per_band=False) -> list:
 
             ds_single_band.FlushCache()
             ds_single.FlushCache()  # saves to disk
-        return [output_paths]
+        return output_paths
     else: # Coherence or interferogram
         ds_in.SetGeoTransform(transform_in)
         ds_in.FlushCache()  # saves to disk if not in memory
