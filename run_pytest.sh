@@ -12,7 +12,7 @@ node --version
 export PATH="${PATH}:/root/.nvm/versions/node/v24.11.1/bin"
 
 # shellcheck source=/dev/null
-. /opt/venv/bin/activate
+. /home/ubuntu/venv/bin/activate
 #workflodocker
 #cd /opt
 ## TODO: Checkout specific commit
