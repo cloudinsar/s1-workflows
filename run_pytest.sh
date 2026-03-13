@@ -3,6 +3,8 @@ set -euxo pipefail
 # Run inside docker
 
 whoami
+ls -l /home/ubuntu/src/esa-snap/bin
+/home/ubuntu/src/esa-snap/bin/gpt --diag
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
