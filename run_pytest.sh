@@ -3,7 +3,12 @@ set -euxo pipefail
 # Run inside docker
 
 whoami
-ls -l /home/ubuntu/src/esa-snap/bin
+ls -l /
+ls -l /home/
+ls -l /home/ubuntu/
+ls -l /home/ubuntu/src/
+ls -l /home/ubuntu/src/esa-snap/
+
 /home/ubuntu/src/esa-snap/bin/gpt --diag
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
