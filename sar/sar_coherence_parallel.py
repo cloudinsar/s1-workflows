@@ -106,7 +106,7 @@ for pair in input_dict["InSAR_pairs"]:
 
     if not os.path.exists(output_filename_tmp):
         gpt_cmd = [
-            "gpt",
+            "/home/ubuntu/src/esa-snap/bin/gpt",
             str(repo_directory / "notebooks/graphs/coh_2images_GeoTiff.xml"),
             f"-Pprm_filename={prm_filename}",
             f"-Psec_filename={sec_filename}",
@@ -121,6 +121,7 @@ for pair in input_dict["InSAR_pairs"]:
     asset_paths.append(output_filename)
     if not os.path.exists(output_filename):
         tiff_to_gtiff.tiff_to_gtiff(output_filename_tmp, output_filename)
+        Path(output_filename_tmp).rename(output_filename) # Don't re-writie SNAP outputs, but rename them to match the expected naming convention
 
 # slow when running outside Docker, because the whole home directory is scanned.
 simple_stac_builder.generate_catalog(

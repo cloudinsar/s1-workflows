@@ -2,6 +2,14 @@
 set -euxo pipefail
 # Run inside docker
 
+whoami
+ls -l /
+ls -l /home/
+ls -l /home/ubuntu/
+ls -l /home/ubuntu/src/
+ls -l /home/ubuntu/src/esa-snap/
+
+/home/ubuntu/src/esa-snap/bin/gpt --diag
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
@@ -12,7 +20,7 @@ node --version
 export PATH="${PATH}:/root/.nvm/versions/node/v24.11.1/bin"
 
 # shellcheck source=/dev/null
-. /opt/venv/bin/activate
+. /home/ubuntu/venv/bin/activate
 #workflodocker
 #cd /opt
 ## TODO: Checkout specific commit

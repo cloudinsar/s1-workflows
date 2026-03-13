@@ -141,7 +141,7 @@ for pol in input_dict["polarization"]:
             output_sec_filename_tmp
     ):
         gpt_cmd = [
-            "gpt",
+            "/home/ubuntu/src/esa-snap/bin/gpt",
             str(
                 repo_directory
                 / "notebooks/graphs/pre-processing_2images_SavePrm_GeoTiff.xml"

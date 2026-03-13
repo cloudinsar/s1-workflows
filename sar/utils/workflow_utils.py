@@ -59,9 +59,9 @@ def setup_insar_environment():
         raise Exception("AWS_ACCESS_KEY_ID should be set in environment")
 
     # GPT means "Graph Processing Toolkit" in this context
-    if subprocess.run(["which", "gpt"]).returncode != 0 and os.path.exists("/usr/local/esa-snap/bin/gpt"):
+    if subprocess.run(["which", "gpt"]).returncode != 0 and os.path.exists("/home/ubuntu/src/esa-snap/bin/gpt"):
         _log.info("adding SNAP to PATH")  # needed when running outside of docker
-        os.environ["PATH"] = os.environ["PATH"] + ":/usr/local/esa-snap/bin"
+        os.environ["PATH"] = os.environ["PATH"] + ":/home/ubuntu/src/esa-snap/bin"
 
 
 input_dict_2024_vv_parallel = {
