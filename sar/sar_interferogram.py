@@ -122,7 +122,7 @@ for pair in input_dict["InSAR_pairs"]:
         coh_bandname = f'coh_{input_dict["sub_swath"]}_{input_dict["polarization"].upper()}_{prm_date.strftime("%d%b%Y")}_{sec_date.strftime("%d%b%Y")}'
 
         gpt_cmd = [
-            "gpt",
+            "/home/ubuntu/src/esa-snap/bin/gpt",
             str(
                 repo_directory
                 / "notebooks/graphs/interferogram_sarGeometry.xml"
