@@ -44,7 +44,7 @@ RUN curl -sL -O 'https://s3.waw3-2.cloudferro.com/swift/v1/jacksum/jacksum_1.7.0
     curl -sL -O 'https://github.com/peak/s5cmd/releases/download/v2.2.2/s5cmd_2.2.2_linux_amd64.deb' && \
     dpkg -i s5cmd_2.2.2_linux_amd64.deb && rm s5cmd_2.2.2_linux_amd64.deb
 
-USER ubuntu
+#USER ubuntu
 
 ### Install esa-snap ###
 ENV SNAPVER=12
@@ -104,8 +104,8 @@ COPY *.sh /home/ubuntu/src/
 RUN sed -i 's|#snap.userdir=|snap.userdir=/home/ubuntu/snap-data|g' /home/ubuntu/src/esa-snap/etc/snap.properties
 RUN mkdir /home/ubuntu/snap-data
 
-USER root
-RUN chown -R ubuntu:ubuntu /home/ubuntu/src
-USER ubuntu
+#USER root
+#RUN chown -R ubuntu:ubuntu /home/ubuntu/src
+#USER ubuntu
 
 WORKDIR /home/ubuntu/src
