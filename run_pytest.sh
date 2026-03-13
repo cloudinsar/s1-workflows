@@ -40,8 +40,8 @@ export PATH="${PATH}:/root/.nvm/versions/node/v24.11.1/bin"
 
 cd "$SCRIPT_DIR"
 # General dependencies are probably already installed. Now download test dependencies:
-python -m pip install -q -e ".[dev]"
-python -m pytest
+pip install -q -e ".[dev]"
+pytest
 
 # mypy has error, only on GitHub Actions CI:
 # tests/testutils.py:35: error: Value of type variable "_ArrayT" of "append" cannot be "ndarray[Any, Any] | DataArray | ndarray[tuple[Any, ...], dtype[Any]]"  [type-var]
