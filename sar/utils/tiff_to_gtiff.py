@@ -28,9 +28,9 @@ _log = logging.getLogger(__name__)
 #     json.dump(geojson, f)
 
 
-def tiff_to_gtiff(input_path, output_path, tiff_per_band=False) -> list:
+def tiff_to_gtiff(input_path, output_path=None, tiff_per_band=False) -> list:
     input_path = Path(input_path)
-    _log.info(f"tiff_to_gtiff({input_path=})")
+    _log.info(f"tiff_to_gtiff({input_path=},{output_path=},{tiff_per_band=})")
     if not os.path.exists(input_path):
         raise FileNotFoundError(f"Input file {input_path} does not exist.")
 
@@ -57,12 +57,18 @@ def tiff_to_gtiff(input_path, output_path, tiff_per_band=False) -> list:
 
             band_names = list(map(tag_to_band_name, band_tags))
 
-    ds_in = gdal.Open(str(input_path), gdalconst.GA_ReadOnly)
+    if tiff_per_band: # pre-processing
+        ds_in = gdal.Open(str(input_path), gdalconst.GA_ReadOnly)
+    else: # coherence and interferogram
+        ds_in = gdal.Open(str(input_path), gdalconst.GA_Update)
+        for i, name in enumerate(band_names, start=1):
+            band = ds_in.GetRasterBand(i)
+            band.SetDescription(name)
 
     transform_in = list(ds_in.GetGeoTransform())
     _log.info(f"{transform_in=}")  # [0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
     # TODO: Avoid: "The offset of the first block of the image should be after its IFD"
-    driver_tiff = gdal.GetDriverByName("GTiff")  # COG GTiff
+    # driver_tiff = gdal.GetDriverByName("GTiff")  # COG GTiff
 
     output_paths = []
     if tiff_per_band:
@@ -70,31 +76,33 @@ def tiff_to_gtiff(input_path, output_path, tiff_per_band=False) -> list:
         # No need to write the inbetween image to disk
         driver = gdal.GetDriverByName('MEM')
         ds_out = driver.CreateCopy(output_path, ds_in)
-    else:
-        # Compression is slower, but reduces images from 650Mb to 300Mb for example.
-        # Which might save time when transferring to bucket and reading as stac afterward
-        ds_out = driver_tiff.CreateCopy(output_path, ds_in, options=["TILED=YES", "COMPRESS=DEFLATE"])
-        # ds_out.BuildOverviews("NONE", overviewlist=[])  # TODO: remove overviews?
-        output_paths.append(output_path)
+        for i in range(1, ds_out.RasterCount + 1):
+            band = ds_out.GetRasterBand(i)
+            band.SetDescription(band_names[i - 1])
+    # else:
+    #     # Compression is slower, but reduces images from 650Mb to 300Mb for example.
+    #     # Which might save time when transferring to bucket and reading as stac afterward
+    #     ds_out = driver_tiff.CreateCopy(output_path, ds_in, options=["TILED=YES", "COMPRESS=DEFLATE"])
+    #     # ds_out.BuildOverviews("NONE", overviewlist=[])  # TODO: remove overviews?
+    #     output_paths.append(output_path)
 
-    for i in range(1, ds_out.RasterCount + 1):
-        band = ds_out.GetRasterBand(i)
-        band.SetDescription(band_names[i - 1])
+    # for i in range(1, ds_out.RasterCount + 1):
+    #     band = ds_out.GetRasterBand(i)
+    #     band.SetDescription(band_names[i - 1])
 
-    projection_in: str = ds_in.GetProjection()
-    if (
-            '["EPSG","4326"]' in projection_in  # default
-            and transform_in == [0.0, 1.0, 0.0, 0.0, 0.0, 1.0]  # meaning no geotransform
-            and (ds_in.RasterXSize > 360 or ds_in.RasterYSize > 90)
-    ):
-        # set CRS to webmercator, to avoid pixels going out of the CRS bounds:
-        ds_out.SetProjection("EPSG:3857")
-        # TODO: Remove GeoTiePoints
 
-    ds_out.SetGeoTransform(transform_in)
-    ds_out.FlushCache()  # saves to disk if not in memory
-
+    # Pre-processing
     if tiff_per_band:
+        projection_in: str = ds_in.GetProjection()
+        if (
+                '["EPSG","4326"]' in projection_in  # default
+                and transform_in == [0.0, 1.0, 0.0, 0.0, 0.0, 1.0]  # meaning no geotransform
+                and (ds_in.RasterXSize > 360 or ds_in.RasterYSize > 90)
+        ):
+            # set CRS to webmercator, to avoid pixels going out of the CRS bounds:
+            ds_in.SetProjection("EPSG:3857")
+            # TODO: Remove GeoTiePoints
+        driver_tiff = gdal.GetDriverByName("GTiff")
         for i in range(1, ds_out.RasterCount + 1):
             band_name = band_names[i - 1]
             band_tmp = ds_out.GetRasterBand(i)
@@ -118,9 +126,12 @@ def tiff_to_gtiff(input_path, output_path, tiff_per_band=False) -> list:
             ds_single_band.SetDescription(band_tmp.GetDescription())
 
             ds_single_band.FlushCache()
-
             ds_single.FlushCache()  # saves to disk
-    return output_paths
+        return output_paths
+    else: # Coherence or interferogram
+        ds_in.SetGeoTransform(transform_in)
+        ds_in.FlushCache()  # saves to disk if not in memory
+        return [input_path]
 
 
 if __name__ == "__main__":
