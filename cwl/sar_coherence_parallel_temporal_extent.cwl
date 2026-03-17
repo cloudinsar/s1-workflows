@@ -159,7 +159,7 @@ $graph:
                 });
               }
       - class: DockerRequirement
-        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260219T1446
+        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260317T1236
       - class: NetworkAccess
         networkAccess: true
       - class: InlineJavascriptRequirement

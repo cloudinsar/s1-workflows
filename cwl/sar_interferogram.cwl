@@ -5,7 +5,7 @@ class: CommandLineTool
 baseCommand: /src/sar/sar_interferogram.py
 requirements:
   DockerRequirement:
-    dockerPull: ghcr.io/cloudinsar/openeo_insar:20260107T1050
+    dockerPull: ghcr.io/cloudinsar/openeo_insar:20260317T1236
   NetworkAccess:
     networkAccess: true
   InitialWorkDirRequirement:
