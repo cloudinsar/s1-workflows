@@ -59,40 +59,20 @@ def tiff_to_gtiff(input_path, output_path=None, tiff_per_band=False) -> list:
 
     if tiff_per_band: # pre-processing
         ds_in = gdal.Open(str(input_path), gdalconst.GA_ReadOnly)
-    else: # coherence and interferogram
-        ds_in = gdal.Open(str(input_path), gdalconst.GA_Update)
-        for i, name in enumerate(band_names, start=1):
-            band = ds_in.GetRasterBand(i)
-            band.SetDescription(name)
+        transform_in = list(ds_in.GetGeoTransform())
+        _log.info(f"{transform_in=}")  # [0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+        # TODO: Avoid: "The offset of the first block of the image should be after its IFD"
+        output_paths = []
 
-    transform_in = list(ds_in.GetGeoTransform())
-    _log.info(f"{transform_in=}")  # [0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
-    # TODO: Avoid: "The offset of the first block of the image should be after its IFD"
-    # driver_tiff = gdal.GetDriverByName("GTiff")  # COG GTiff
-
-    output_paths = []
-    if tiff_per_band:
         assert "<band_name>" in output_path, "When tiff_per_band is True, output_path should contain '<band_name>'"
+        
         # No need to write the inbetween image to disk
         driver = gdal.GetDriverByName('MEM')
         ds_out = driver.CreateCopy(output_path, ds_in)
         for i in range(1, ds_out.RasterCount + 1):
             band = ds_out.GetRasterBand(i)
             band.SetDescription(band_names[i - 1])
-    # else:
-    #     # Compression is slower, but reduces images from 650Mb to 300Mb for example.
-    #     # Which might save time when transferring to bucket and reading as stac afterward
-    #     ds_out = driver_tiff.CreateCopy(output_path, ds_in, options=["TILED=YES", "COMPRESS=DEFLATE"])
-    #     # ds_out.BuildOverviews("NONE", overviewlist=[])  # TODO: remove overviews?
-    #     output_paths.append(output_path)
 
-    # for i in range(1, ds_out.RasterCount + 1):
-    #     band = ds_out.GetRasterBand(i)
-    #     band.SetDescription(band_names[i - 1])
-
-
-    # Pre-processing
-    if tiff_per_band:
         projection_in: str = ds_in.GetProjection()
         if (
                 '["EPSG","4326"]' in projection_in  # default
@@ -128,8 +108,12 @@ def tiff_to_gtiff(input_path, output_path=None, tiff_per_band=False) -> list:
             ds_single_band.FlushCache()
             ds_single.FlushCache()  # saves to disk
         return output_paths
-    else: # Coherence or interferogram
-        ds_in.SetGeoTransform(transform_in)
+
+    else: # coherence and interferogram
+        ds_in = gdal.Open(str(input_path), gdalconst.GA_Update)
+        for i, name in enumerate(band_names, start=1):
+            band = ds_in.GetRasterBand(i)
+            band.SetDescription(name)
         ds_in.FlushCache()  # saves to disk if not in memory
         return [input_path]
 
