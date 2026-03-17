@@ -3,6 +3,9 @@
 # docker run -it --memory=15G -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --rm openeo_insar:1.56
 FROM ghcr.io/osgeo/gdal:ubuntu-small-3.10.0
 LABEL description="The main aim of the CLOUDInSAR project is to develop an open-source, cloud-based solution for processing and analyzing Sentinel-1 InSAR data."
+LABEL authors="Michele Claus, Emile Sonneveld"
+LABEL maintainer="michele.claus@eurac.edu, emile.sonneveld@vito.be"
+
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -25,15 +28,6 @@ RUN apt-get -qq update && \
         software-properties-common && \
     rm -rf /var/lib/apt/lists/*
 
-# Download and install jacksum and s5cmd
-RUN curl -sL -O 'https://s3.waw3-2.cloudferro.com/swift/v1/jacksum/jacksum_1.7.0-4.1_all.deb' && \
-    dpkg -i jacksum_1.7.0-4.1_all.deb && rm jacksum_1.7.0-4.1_all.deb && \
-    curl -sL -O 'https://github.com/peak/s5cmd/releases/download/v2.2.2/s5cmd_2.2.2_linux_amd64.deb' && \
-    dpkg -i s5cmd_2.2.2_linux_amd64.deb && rm s5cmd_2.2.2_linux_amd64.deb
-
-#COPY ./utilities /src/utilities/ # Copy at the end of file to avoid slow rebuilds
-ENV PATH="${PATH}:/src/utilities/"
-
 RUN add-apt-repository -y ppa:deadsnakes/ppa
 RUN apt-get -qq update && \
     apt-get -qq install -y \
@@ -44,11 +38,17 @@ RUN apt-get -qq update && \
       autoconf \
       libgfortran5
 
-LABEL authors="Michele Claus, Emile Sonneveld"
-LABEL maintainer="michele.claus@eurac.edu, emile.sonneveld@vito.be"
+# Download and install jacksum and s5cmd
+RUN curl -sL -O 'https://s3.waw3-2.cloudferro.com/swift/v1/jacksum/jacksum_1.7.0-4.1_all.deb' && \
+    dpkg -i jacksum_1.7.0-4.1_all.deb && rm jacksum_1.7.0-4.1_all.deb && \
+    curl -sL -O 'https://github.com/peak/s5cmd/releases/download/v2.2.2/s5cmd_2.2.2_linux_amd64.deb' && \
+    dpkg -i s5cmd_2.2.2_linux_amd64.deb && rm s5cmd_2.2.2_linux_amd64.deb
+
+#COPY ./utilities /src/utilities/ # Copy at the end of file to avoid slow rebuilds
+ENV PATH="${PATH}:/src/utilities/"
 
 ### Install esa-snap ###
-ENV SNAPVER=11
+ENV SNAPVER=12
 
 RUN mkdir -p /src/esa-snap-docker
 COPY esa-snap-docker/response.varfile /src/esa-snap-docker/response.varfile
@@ -83,12 +83,6 @@ RUN cd /src && \
 
 ENV PATH="${PATH}:/src/"
 
-# simple_stac_builder is good enough
-#RUN cd /opt && \
-#    git clone --recursive https://github.com/VitoTAP/stac-catalog-builder.git --depth 1 && \
-#    cd stac-catalog-builder && \
-#    python3 -m pip install -q -e .
-
 RUN wget https://step.esa.int/thirdparties/snaphu/2.0.4/snaphu-v2.0.4_linux.zip && \
     unzip -q -d /opt snaphu-v2.0.4_linux.zip && \
     chmod +x /opt/snaphu-v2.0.4_linux/bin/snaphu && \
@@ -97,9 +91,8 @@ ENV PATH="$PATH:/opt/snaphu-v2.0.4_linux/bin"
 
 # COPY . /src
 COPY ./utilities /src/utilities/
-COPY ./notebooks/ /src/notebooks/
+COPY ./notebooks/graphs/ /src/notebooks/graphs/
 COPY ./sar /src/sar/
 COPY *.sh /src/
-
 
 WORKDIR /src
