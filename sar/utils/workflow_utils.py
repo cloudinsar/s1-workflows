@@ -320,7 +320,14 @@ def exec_proc(command, cwd=None, write_output=True, env=None):
     return ret, output
 
 
-def retrieve_bursts_with_id_and_iw(start_date, end_date, pol, sbswath, burst_id=None, spatial_extent=None) -> List[Dict]:
+def retrieve_bursts_with_id_and_iw(
+        start_date,
+        end_date,
+        pol: str,
+        sbswath: str,
+        burst_id=None,
+        spatial_extent=None,
+) -> List[Dict]:
     intersect_snippet = ""
     if spatial_extent:
         se = spatial_extent

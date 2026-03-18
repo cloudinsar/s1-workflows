@@ -61,8 +61,9 @@ bursts = retrieve_bursts_with_id_and_iw(
     start_date,
     end_date,
     input_dict['polarization'],
-    input_dict['burst_id'],
-    input_dict['sub_swath']
+    sbswath=input_dict['sub_swath'],
+    burst_id=input_dict['burst_id'] if "burst_id" in input_dict else None,
+    spatial_extent=input_dict['spatial_extent'] if "spatial_extent" in input_dict else None,
 )
 
 flattened_pairs = set()
@@ -77,6 +78,7 @@ for burst in bursts:
         _log.info(f"Skipping burst {burst['BurstId']} ({begin} - {end})")
         continue
     cmd = [
+        "bash",
         "sentinel1_burst_extractor.sh",
         "-n", burst["ParentProductName"],
         "-p", input_dict["polarization"].lower(),
