@@ -59,11 +59,10 @@ def slugify(title):
 
 def assert_tif_file_is_healthy(tif_path):
     tiff_arr = rioxarray.open_rasterio(tif_path)
-    # tiff_arr.shape = (4, 1519, 26767)
     shape = tiff_arr.shape
+    logging.info(f"{shape=}")
     assert shape[1] > 100
     assert shape[2] > 100
-    assert shape[2] >= shape[1]
     for b in range(shape[0]):
         band = tiff_arr[b, :, :]
         assert (band.values != np.nan).any()

@@ -328,6 +328,7 @@ def retrieve_bursts_with_id_and_iw(
         burst_id=None,
         spatial_extent=None,
 ) -> List[Dict]:
+    assert spatial_extent or burst_id
     intersect_snippet = ""
     if spatial_extent:
         se = spatial_extent
@@ -335,17 +336,21 @@ def retrieve_bursts_with_id_and_iw(
         print(f"Visualize WKT: https://wktmap.com/?wkt={urllib.parse.quote_plus(wkt)}")
         intersect_snippet = f"Data.CSC.Intersects(area=geography'{wkt}') and "
 
+    page_size = 1000
     https_request = "https://catalogue.dataspace.copernicus.eu/odata/v1/Bursts?$filter=" + urllib.parse.quote(
                 f"ContentDate/Start ge {start_date}T00:00:00.000Z and ContentDate/Start le {end_date}T23:59:59.000Z and "
                 f"PolarisationChannels eq '{pol.upper()}' and "
                 + (f"BurstId eq {burst_id} and " if burst_id else "")
                 + intersect_snippet +
-                f"SwathIdentifier eq '{sbswath.upper()}'") + "&$top=1000"
+                f"SwathIdentifier eq '{sbswath.upper()}'") + f"&$top={page_size}"
     print(https_request)
     with urllib.request.urlopen(https_request) as response:
         content = response.read().decode()
 
-    return json.loads(content)["value"]
+    bursts = json.loads(content)["value"]
+    if len(bursts) >= page_size:
+        raise Exception("Too many bursts found: " + str(len(bursts)))
+    return bursts
 
 if __name__ == "__main__":
     # for testing
