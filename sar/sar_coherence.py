@@ -131,7 +131,8 @@ for prm_date, prm_filename in date_to_path.items():
         )
         asset_paths.append(output_filename)
         if not os.path.exists(output_filename):
-            tiff_to_gtiff.tiff_to_gtiff(output_filename_tmp, output_filename)
+            tiff_to_gtiff.tiff_to_gtiff(output_filename_tmp)
+            Path(output_filename_tmp).rename(output_filename) # Don't re-writie SNAP outputs, but rename them to match the expected naming convention
 
 # slow when running outside Docker, because the whole home directory is scanned.
 simple_stac_builder.generate_catalog(

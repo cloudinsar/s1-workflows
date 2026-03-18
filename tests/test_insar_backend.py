@@ -1,6 +1,7 @@
 import logging
 
 import rioxarray
+from openeo import DataCube
 from openeo.rest.stac_resource import StacResource
 from openeo.internal.graph_building import PGNode
 
@@ -17,6 +18,7 @@ local_openEO = False
 
 def get_connection():
     import openeo
+    # url = "https://openeo.stag.amsterdam.openeo.dataspace.copernicus.eu/"  # OTC
     # url = "https://openeo.dev.warsaw.openeo.dataspace.copernicus.eu/"  # needs VPN
     # url = "https://openeo-staging.dataspace.copernicus.eu/"
     url = "https://openeo.dataspace.copernicus.eu"
@@ -37,24 +39,30 @@ cwl_prefix = "https://raw.githubusercontent.com/cloudinsar/s1-workflows/refs/hea
 @pytest.mark.parametrize(
     "cwl_path",
     [
-        "cwl/sar_coherence.cwl",
+        # "cwl/sar_coherence.cwl",
         "cwl/sar_coherence_parallel_temporal_extent.cwl",
     ],
 )
 @pytest.mark.parametrize(
-    "input_dict",
+    "input_dict_path",
     [
-        # json.loads((repo_directory / "sar/example_inputs/input_dict_2018_vh_new.json").read_text()),
-        json.loads((repo_directory / "sar/example_inputs/input_dict_2024_vv_new.json").read_text()),
+        # "sar/example_inputs/input_dict_2018_vh_new.json",
+        # "sar/example_inputs/input_dict_whole_2023_new.json",
+        "sar/example_inputs/input_dict_2024_vv_new.json",
     ],
 )
-def test_georeferenced_new_sar(cwl_path, input_dict, auto_title):
+def test_georeferenced_new_sar(cwl_path, input_dict_path, auto_title):
     import openeo
     now = datetime.now()
     tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests_", "tests/tmp_")).absolute()
     tmp_dir.mkdir(exist_ok=True)
 
+    input_dict = json.loads(Path(repo_directory / input_dict_path).read_text())
     cwl = Path(repository_root / cwl_path).read_text()
+    # stac_resource = StacResource(graph=PGNode("run_cwl_to_stac", namespace=None, arguments={
+    #     "cwl": cwl,
+    #     "context": input_dict,
+    # }), connection=get_connection())
     datacube = get_connection().datacube_from_process(
         "run_udf",
         data=None,

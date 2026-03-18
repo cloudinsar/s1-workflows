@@ -35,7 +35,7 @@ dev = [
     "xarray",
     "rasterio",
     "rio-cogeo",
-    "cwltool",
+    "cwltool>=3.0.0",
     "mypy",
     "openeo",
 ]
