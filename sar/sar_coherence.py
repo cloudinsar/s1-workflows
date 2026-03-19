@@ -30,7 +30,7 @@ default_dict = {
 }
 input_dict = {k: v for k, v in input_dict.items() if v is not None}
 input_dict = {**default_dict, **input_dict}  # merge with defaults
-_log.info(input_dict)
+_log.info(f"{input_dict=}")
 start_date = input_dict["temporal_extent"][0]
 end_date = input_dict["temporal_extent"][1]
 

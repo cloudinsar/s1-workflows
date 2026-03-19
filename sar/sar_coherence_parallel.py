@@ -32,7 +32,7 @@ default_dict = {
 }
 input_dict = {k: v for k, v in input_dict.items() if v is not None}
 input_dict = {**default_dict, **input_dict}  # merge with defaults
-_log.info(input_dict)
+_log.info(f"{input_dict=}")
 if isinstance(input_dict["InSAR_pairs"][0], str):
     _log.info("Single pair detected in InSAR_pairs, converting to list of pairs.")
     input_dict["InSAR_pairs"] = [input_dict["InSAR_pairs"]]

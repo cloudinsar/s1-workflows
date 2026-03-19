@@ -61,6 +61,7 @@ def test_georeferenced_new_sar(cwl_path, input_dict_path, auto_title):
     cwl = Path(repository_root / cwl_path).read_text()
     # stac_resource = StacResource(graph=PGNode("run_cwl_to_stac", namespace=None, arguments={
     #     "cwl": cwl,
+    #     # "cwl_url": "https://raw.githubusercontent.com/cloudinsar/s1-workflows/refs/heads/main/" + cwl_path,
     #     "context": input_dict,
     # }), connection=get_connection())
     datacube = get_connection().datacube_from_process(
