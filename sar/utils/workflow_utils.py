@@ -8,7 +8,7 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 import logging.config
 
 import urllib
@@ -324,8 +324,8 @@ def retrieve_bursts_with_id_and_iw(
         start_date,
         end_date,
         pol: str,
+        burst_id: Optional[int],
         sbswath: str,
-        burst_id=None,
         spatial_extent=None,
 ) -> List[Dict]:
     assert spatial_extent or burst_id
