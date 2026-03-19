@@ -79,15 +79,16 @@ def run_stac_catalog_and_verify(catalog_path: Path, tmp_dir: Path):
     ],
 )
 @pytest.mark.parametrize(
-    "input_dict",
+    "input_dict_path",
     [
-        json.loads((repo_directory / "sar/example_inputs/input_dict_2018_vh_new.json").read_text()),
-        # json.loads((repo_directory / "sar/example_inputs/input_dict_2024_vv_new.json").read_text()),
-        # json.loads((repo_directory / "sar/example_inputs/input_dict_andes_new.json").read_text()),
-        json.loads((repo_directory / "sar/example_inputs/input_dict_suriname_new.json").read_text()),
+        "sar/example_inputs/input_dict_2018_vh_new.json",
+        # "sar/example_inputs/input_dict_2024_vv_new.json",
+        # "sar/example_inputs/input_dict_andes_new.json",
+        "sar/example_inputs/input_dict_suriname_new.json",
     ],
 )
-def test_insar_new(script, input_dict, auto_title):
+def test_insar_new(script, input_dict_path, auto_title):
+    input_dict = json.loads(Path(repo_directory / input_dict_path).read_text())
     input_base64_json = base64.b64encode(json.dumps(input_dict).encode("utf8")).decode("ascii")
 
     tmp_dir = Path(repository_root / slugify(auto_title).replace("tests_", "tests/tmp_")).absolute()

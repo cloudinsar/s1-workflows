@@ -4,10 +4,7 @@
     "2025-01-31"
   ],
   "temporal_baseline": 12,
-  "burst_id_DISABLED": 334176,
-  "burst_id_DISABLED": 334178,
-  "burst_id_DISABLED": 257574,
-  "burst_id_DISABLED": 177381,
+  "burst_id": 177381,
   "spatial_extent": {
     "east": -56.41,
     "south": 5.22,
