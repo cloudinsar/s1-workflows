@@ -350,6 +350,14 @@ def retrieve_bursts_with_id_and_iw(
     bursts = json.loads(content)["value"]
     if len(bursts) >= page_size:
         raise Exception("Too many bursts found: " + str(len(bursts)))
+
+    burst_ids = set([burst["BurstId"] for burst in bursts])
+    if len(burst_ids) > 0:
+        # Select one BurstId:
+        lowest_burst_id = min(burst_ids)
+        _log.info(f"{burst_ids=}, selecting one with lowest number: {lowest_burst_id}")
+        bursts = list(filter(lambda x: x["BurstId"] == lowest_burst_id, bursts))
+
     return bursts
 
 if __name__ == "__main__":
