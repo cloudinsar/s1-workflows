@@ -8,7 +8,7 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 import logging.config
 
 import urllib
@@ -320,17 +320,45 @@ def exec_proc(command, cwd=None, write_output=True, env=None):
     return ret, output
 
 
-def retrieve_bursts_with_id_and_iw(start_date, end_date, pol, burst_id, sbswath) -> List[Dict]:
+def retrieve_bursts_with_id_and_iw(
+        start_date,
+        end_date,
+        pol: str,
+        burst_id: Optional[int],
+        sbswath: str,
+        spatial_extent=None,
+) -> List[Dict]:
+    assert spatial_extent or burst_id
+    intersect_snippet = ""
+    if spatial_extent:
+        se = spatial_extent
+        wkt = f"SRID=4326;POLYGON(({se['west']} {se['south']},{se['east']} {se['south']},{se['east']} {se['north']},{se['west']} {se['north']},{se['west']} {se['south']}))"
+        print(f"Visualize WKT: https://wktmap.com/?wkt={urllib.parse.quote_plus(wkt)}")
+        intersect_snippet = f"Data.CSC.Intersects(area=geography'{wkt}') and "
+
+    page_size = 1000
     https_request = "https://catalogue.dataspace.copernicus.eu/odata/v1/Bursts?$filter=" + urllib.parse.quote(
                 f"ContentDate/Start ge {start_date}T00:00:00.000Z and ContentDate/Start le {end_date}T23:59:59.000Z and "
                 f"PolarisationChannels eq '{pol.upper()}' and "
-                f"BurstId eq {burst_id} and "
-                f"SwathIdentifier eq '{sbswath.upper()}'") + "&$top=1000"
-
+                + (f"BurstId eq {burst_id} and " if burst_id else "")
+                + intersect_snippet +
+                f"SwathIdentifier eq '{sbswath.upper()}'") + f"&$top={page_size}"
+    print(https_request)
     with urllib.request.urlopen(https_request) as response:
         content = response.read().decode()
 
-    return json.loads(content)["value"]
+    bursts = json.loads(content)["value"]
+    if len(bursts) >= page_size:
+        raise Exception("Too many bursts found: " + str(len(bursts)))
+
+    burst_ids = set([burst["BurstId"] for burst in bursts])
+    if len(burst_ids) > 0:
+        # Select one BurstId:
+        lowest_burst_id = min(burst_ids)
+        _log.info(f"{burst_ids=}, selecting one with lowest number: {lowest_burst_id}")
+        bursts = list(filter(lambda x: x["BurstId"] == lowest_burst_id, bursts))
+
+    return bursts
 
 if __name__ == "__main__":
     # for testing

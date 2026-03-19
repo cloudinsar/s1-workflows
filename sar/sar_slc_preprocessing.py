@@ -66,21 +66,27 @@ for pol in input_dict["polarization"]:
     start_date = parse_date(input_dict['temporal_extent'][0])
     end_date = parse_date(input_dict['temporal_extent'][1])
 
-    # Moved the function in workflow_utils.py
     bursts = retrieve_bursts_with_id_and_iw(input_dict['temporal_extent'][0],
                                             input_dict['temporal_extent'][1],
                                             pol,
-                                            input_dict['burst_id'],
-                                            input_dict['sub_swath'])
+                                            sbswath=input_dict['sub_swath'],
+                                            burst_id=input_dict['burst_id'] if "burst_id" in input_dict else None,
+                                            spatial_extent=input_dict[
+                                                'spatial_extent'] if "spatial_extent" in input_dict else None,
+                                            )
 
     # Check if primary date is within the provided temporal extent.
     # If not, we need do a second query to retrieve it separately.
     if (primary_date < start_date) or (primary_date > end_date):
         burst_primary = retrieve_bursts_with_id_and_iw(input_dict["primary_date"],
-                                                input_dict["primary_date"],
-                                                pol,
-                                                input_dict['burst_id'],
-                                                input_dict['sub_swath'])
+                                                       input_dict["primary_date"],
+                                                       pol,
+                                                       sbswath=input_dict['sub_swath'],
+                                                       burst_id=input_dict[
+                                                           'burst_id'] if "burst_id" in input_dict else None,
+                                                       spatial_extent=input_dict[
+                                                           'spatial_extent'] if "spatial_extent" in input_dict else None,
+                                                       )
         if len(burst_primary) == 0:
             raise Exception(f"No bursts found for primary_date: {input_dict['primary_date']}, burst_id: {input_dict['burst_id']}, subswath: {input_dict['sub_swath']}")
         bursts.append(burst_primary[0])
@@ -93,7 +99,7 @@ for pol in input_dict["polarization"]:
             "-n", burst["ParentProductName"],
             "-p", pol.lower(),
             "-s", str(input_dict["sub_swath"].lower()),
-            "-r", str(input_dict["burst_id"]),
+            "-r", str(burst["BurstId"]),
             "-o", str(tmp_insar),
         ]
         _, output = exec_proc(cmd, cwd=repo_directory / "utilities", write_output=False)

@@ -83,6 +83,7 @@ def run_stac_catalog_and_verify(catalog_path: Path, tmp_dir: Path):
     [
         "sar/example_inputs/input_dict_2018_vh_new.json",
         # "sar/example_inputs/input_dict_2024_vv_new.json",
+        # "sar/example_inputs/input_dict_2018_vh_new_spatial_extent.json",
         # "sar/example_inputs/input_dict_andes_new.json",
         "sar/example_inputs/input_dict_suriname_new.json",
     ],
