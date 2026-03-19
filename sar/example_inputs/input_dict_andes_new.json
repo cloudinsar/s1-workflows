@@ -1,0 +1,23 @@
+{
+  "temporal_extent": [
+    "2025-01-01",
+    "2025-01-31"
+  ],
+  "temporal_baseline": 12,
+  "burst_id_DISABLED": 334176,
+  "burst_id_DISABLED": 334178,
+  "burst_id_DISABLED": 257574,
+  "burst_id": 177381,
+  "spatial_extent_DISABLED": {
+    "east": -67.73884555826048,
+    "south": -28.749871363254467,
+    "west": -68.27507192964296,
+    "north": -28.213455389295863
+  },
+  "coherence_window_az": 2,
+  "coherence_window_rg": 10,
+  "n_az_looks": 1,
+  "n_rg_looks": 4,
+  "polarization": "VV",
+  "sub_swath": "IW2"
+}

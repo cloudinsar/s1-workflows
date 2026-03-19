@@ -83,6 +83,8 @@ def run_stac_catalog_and_verify(catalog_path: Path, tmp_dir: Path):
     [
         json.loads((repo_directory / "sar/example_inputs/input_dict_2018_vh_new.json").read_text()),
         # json.loads((repo_directory / "sar/example_inputs/input_dict_2024_vv_new.json").read_text()),
+        # json.loads((repo_directory / "sar/example_inputs/input_dict_andes_new.json").read_text()),
+        json.loads((repo_directory / "sar/example_inputs/input_dict_suriname_new.json").read_text()),
     ],
 )
 def test_insar_new(script, input_dict, auto_title):
