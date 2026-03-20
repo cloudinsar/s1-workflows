@@ -39,7 +39,7 @@ if not "n_rg_looks" in input_dict or not "n_az_looks" in input_dict:
     _log.info("Setting default multillok parameters")
     input_dict["n_rg_looks"] = 4
     input_dict["n_az_looks"] = 1
-_log.info(input_dict)
+_log.info(f"{input_dict=}")
 start_date = min([min(pair) for pair in input_dict["InSAR_pairs"]])
 end_date = max([max(pair) for pair in input_dict["InSAR_pairs"]])
 

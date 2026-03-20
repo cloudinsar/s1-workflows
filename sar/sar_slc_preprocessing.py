@@ -42,7 +42,7 @@ elif isinstance(input_dict.get("polarization"), str):
 if not input_dict.get("sub_swath"):
     input_dict["sub_swath"] = "IW3"
 assert len(input_dict["temporal_extent"]) == 2, "temporal_extent should be a list with two dates"
-_log.info(input_dict)
+_log.info(f"{input_dict=}")
 
 result_folder = Path.cwd().absolute()
 # result_folder = repo_directory / "output"
@@ -212,6 +212,7 @@ for pol in input_dict["polarization"]:
                              )
         # TODO: Delete tmp files
 
+assert prm_date
 # date_to_output_paths = {datetime(2024, 8, 9, 5, 59, 7).date(): ['/home/emile/openeo/s1-workflows/S1_2images_prm_20240809T055907_vv_i_VV.tif',
 #                                            '/home/emile/openeo/s1-workflows/S1_2images_prm_20240809T055907_vv_q_VV.tif',
 #                                            '/home/emile/openeo/s1-workflows/S1_2images_prm_20240809T055907_vv_grid_lat.tif',
@@ -227,7 +228,7 @@ for pol in input_dict["polarization"]:
 #      '/home/emile/openeo/s1-workflows/S1_2images_sec_20240821T055907_vh_q_VH.tif']}
 # TODO: Assert latlon are the same for all polarizations
 # remove latlon bands from primary date:
-prm_output_paths_element = date_to_output_paths.get(prm_date)
+prm_output_paths_element = date_to_output_paths[prm_date]
 if len(input_dict["polarization"]) > 1:
     # remove elements matching  "_" + input_dict["polarization"][0] + "_grid_"
     prm_output_paths_element = [
@@ -240,7 +241,7 @@ assert len(latlon_band_files) == 2
 for date in date_to_output_paths:
     if date == prm_date:
         continue
-    output_paths_element = date_to_output_paths.get(date)
+    output_paths_element = date_to_output_paths[date]
     output_paths_element.extend(latlon_band_files)
 
 output_paths = list(date_to_output_paths.values())

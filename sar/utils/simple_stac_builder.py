@@ -238,7 +238,7 @@ def generate_catalog(
         collection_stac["cube:dimensions"]["x"]["extent"] = native_x_extent
         collection_stac["cube:dimensions"]["y"]["extent"] = native_y_extent
     else:
-        _log.info("multiple crs detected, can't set crs in stac root: " + str(crs_set))
+        _log.info("Different then 1 crs detected, can't set crs in stac root: " + str(crs_set))
 
     collection_stac["cube:dimensions"]["t"]["extent"] = collection_stac["extent"]["temporal"]["interval"][0]
 
