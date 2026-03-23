@@ -84,10 +84,14 @@ def run_stac_catalog_and_verify(catalog_path: Path, tmp_dir: Path):
         "sar/example_inputs/input_dict_2018_vh_new.json",
         # "sar/example_inputs/input_dict_2024_vv_new.json",
         # "sar/example_inputs/input_dict_2018_vh_new_spatial_extent.json",
-        # "sar/example_inputs/input_dict_andes_new.json",
-        "sar/example_inputs/input_dict_suriname_new.json",
-        "sar/example_inputs/input_dict_suriname2_new.json",
-        "sar/example_inputs/input_dict_helena_new.json",
+        "sar/example_inputs/input_dict_andes_new.json",  # nodata
+        "sar/example_inputs/input_dict_georgia_new.json",  # ok
+        # "sar/example_inputs/input_dict_japan_new.json",  # tags missing
+        "sar/example_inputs/input_dict_lapaz_new.json",  # nodata
+        "sar/example_inputs/input_dict_suriname_new.json",  # nodata.
+        "sar/example_inputs/input_dict_suriname2_new.json",  # nodata
+        "sar/example_inputs/input_dict_togo_new.json",  # ok
+        # "sar/example_inputs/input_dict_vancouver_new.json",  # tags missing. Spatial extent moves to other side of the world
     ],
 )
 def test_insar_new(script, input_dict_path, auto_title):

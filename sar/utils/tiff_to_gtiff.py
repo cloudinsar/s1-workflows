@@ -36,7 +36,9 @@ def tiff_to_gtiff(input_path, output_path=None, tiff_per_band=False) -> list:
 
     with input_path.open("rb") as f:
         tags = exifread.process_file(f)
+        _log.info("TIFF tags found: " + ", ".join(tags.keys()))
         tag = next(filter(lambda x: x.tag == 65000, tags.values()), None)
+        assert tag == tags.get('Image OwnerName')
         if tag:
             xml_str = tag.values
             root = ET.fromstring(xml_str)
@@ -56,6 +58,8 @@ def tiff_to_gtiff(input_path, output_path=None, tiff_per_band=False) -> list:
                 return band_name
 
             band_names = list(map(tag_to_band_name, band_tags))
+        else:
+            _log.warning("No band name tag found in tags.")
 
     if tiff_per_band: # pre-processing
         ds_in = gdal.Open(str(input_path), gdalconst.GA_ReadOnly)
