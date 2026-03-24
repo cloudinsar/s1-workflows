@@ -36,9 +36,10 @@ end_date = input_dict["temporal_extent"][1]
 s1_bursts = retrieve_bursts_with_id_and_iw(
     start_date,
     end_date,
-    input_dict["polarization"],
-    input_dict["burst_id"],
-    input_dict["sub_swath"]
+    input_dict["polarization"] if "polarization" in input_dict else None,
+    sbswath=input_dict["sub_swath"],
+    burst_id=input_dict["burst_id"] if "burst_id" in input_dict else None,
+    spatial_extent=input_dict["spatial_extent"] if "spatial_extent" in input_dict else None,
 )
 
 dates = [datetime.strptime(b["BeginningDateTime"][:10], "%Y-%m-%d") for b in s1_bursts]
