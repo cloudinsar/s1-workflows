@@ -339,7 +339,7 @@ def retrieve_bursts_with_id_and_iw(
     page_size = 1000
     https_request = "https://catalogue.dataspace.copernicus.eu/odata/v1/Bursts?$filter=" + urllib.parse.quote(
                 f"ContentDate/Start ge {start_date}T00:00:00.000Z and ContentDate/Start le {end_date}T23:59:59.000Z and "
-                f"PolarisationChannels eq '{pol.upper()}' and "
+                + (f"PolarisationChannels eq '{pol.upper()}' and " if pol else "")
                 + (f"BurstId eq {burst_id} and " if burst_id else "")
                 + intersect_snippet +
                 f"SwathIdentifier eq '{sbswath.upper()}'") + f"&$top={page_size}"
@@ -352,7 +352,7 @@ def retrieve_bursts_with_id_and_iw(
         raise Exception("Too many bursts found: " + str(len(bursts)))
 
     burst_ids = set([burst["BurstId"] for burst in bursts])
-    if len(burst_ids) > 0:
+    if len(burst_ids) > 1:
         # Select one BurstId:
         lowest_burst_id = min(burst_ids)
         _log.info(f"{burst_ids=}, selecting one with lowest number: {lowest_burst_id}")
