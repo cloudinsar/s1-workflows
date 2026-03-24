@@ -1,0 +1,15 @@
+{
+  "temporal_extent": [
+    "2025-01-01",
+    "2025-01-31"
+  ],
+  "temporal_baseline": 12,
+  "spatial_extent": {
+    "east": 89.49,
+    "south": 23.82,
+    "west": 89.44,
+    "north": 23.89
+  },
+  "polarization": "VV",
+  "sub_swath": "IW2"
+}
