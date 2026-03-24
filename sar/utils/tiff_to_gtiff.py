@@ -38,6 +38,7 @@ def tiff_to_gtiff(input_path, output_path=None, tiff_per_band=False) -> list:
         tags = exifread.process_file(f)
         _log.info("TIFF tags found: " + ", ".join(tags.keys()))
         tag = next(filter(lambda x: x.tag == 65000, tags.values()), None)
+        # https://exiftool.org/TagNames/EXIF.html
         assert tag == tags.get('Image OwnerName')
         if tag:
             xml_str = tag.values
