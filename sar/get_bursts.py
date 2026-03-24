@@ -25,10 +25,10 @@ else:
     _log.info("Using debug arguments!")
     # input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_whole_2023_new.json").read_text())
     # input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_2018_vh_new.json").read_text())
-    input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_2024_vv_new.json").read_text())
+    input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_andes_new.json").read_text())
 
 input_dict = {k: v for k, v in input_dict.items() if v is not None}
-# _log.info(f"{input_dict=}")
+_log.info(f"{input_dict=}")
 
 start_date = input_dict["temporal_extent"][0]  # TODO: date must be in the correct format, since later we append T00...
 end_date = input_dict["temporal_extent"][1]

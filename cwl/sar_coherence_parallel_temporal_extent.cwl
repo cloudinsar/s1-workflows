@@ -40,7 +40,7 @@
 #           --preserve-environment=AWS_ACCESS_KEY_ID \
 #           --preserve-environment=AWS_SECRET_ACCESS_KEY \
 #           --preserve-environment=AWS_ENDPOINT_URL_S3 \
-#           cwl/sar_coherence_parallel_temporal_extent.cwl sar/example_inputs/input_dict_2018_vh_new.json
+#           cwl/sar_coherence_parallel_temporal_extent.cwl sar/example_inputs/input_dict_andes_new.json
 
 cwlVersion: v1.2
 
@@ -62,7 +62,7 @@ $graph:
     
     inputs:
       burst_id:
-        type: int
+        type: int?
         doc: "Sentinel-1 burst ID"
       
       polarization:
@@ -77,7 +77,10 @@ $graph:
       temporal_extent:
         type: string[]
         doc: "Temporal extent as [start_date, end_date], e.g., ['2024-08-01', '2024-09-30']"
-      
+
+      spatial_extent:
+        type: Any?
+
       temporal_baseline:
         type: int
         doc: "Temporal baseline in days for pair generation"
@@ -103,6 +106,7 @@ $graph:
         run: "#get_insar_pairs"
         in:
           burst_id: burst_id
+          spatial_extent: spatial_extent
           polarization: polarization
           sub_swath: sub_swath
           temporal_extent: temporal_extent
@@ -121,6 +125,7 @@ $graph:
         in:
           InSAR_pair: extract_pairs/pairs_array
           burst_id: burst_id
+          spatial_extent: spatial_extent
           polarization: polarization
           sub_swath: sub_swath
           coherence_window_rg: coherence_window_rg
@@ -159,14 +164,16 @@ $graph:
                 });
               }
       - class: DockerRequirement
-        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260317T1236
+        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260324T1613-spatial
       - class: NetworkAccess
         networkAccess: true
       - class: InlineJavascriptRequirement
     
     inputs:
       burst_id:
-        type: int
+        type: int?
+      spatial_extent:
+        type: Any?
       polarization:
         type: string
       sub_swath:
@@ -258,7 +265,7 @@ $graph:
                 });
               }
       - class: DockerRequirement
-        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260219T1446
+        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260324T1613-spatial
       - class: NetworkAccess
         networkAccess: true
       - class: ResourceRequirement
@@ -273,7 +280,9 @@ $graph:
         type: string[]
         doc: "Single InSAR pair as [primary_date, secondary_date]"
       burst_id:
-        type: int
+        type: int?
+      spatial_extent:
+        type: Any?
       polarization:
         type: string
       sub_swath:
