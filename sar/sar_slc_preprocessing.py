@@ -85,7 +85,7 @@ for pol in input_dict["polarization"]:
                                                        spatial_extent=input_dict.get("spatial_extent"),
                                                        )
         if len(burst_primary) == 0:
-            raise Exception(f"No bursts found for primary_date: {input_dict['primary_date']}, burst_id: {input_dict['burst_id']}, subswath: {input_dict['sub_swath']}")
+            raise Exception(f"No bursts found for primary_date: {input_dict['primary_date']}, burst_id: {input_dict.get('burst_id')}, subswath: {input_dict.get('sub_swath')}")
         bursts.append(burst_primary[0])
 
     burst_paths = []

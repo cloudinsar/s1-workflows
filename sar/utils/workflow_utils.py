@@ -324,8 +324,8 @@ def retrieve_bursts_with_id_and_iw(
         start_date: Optional[str],
         end_date: Optional[str],
         pol: Optional[str],
-        burst_id: Optional[int],
-        sbswath: Optional[str],
+        burst_id: Optional[int] = None,
+        sbswath: Optional[str] = None,
         spatial_extent: Optional[dict] = None,
 ) -> List[Dict]:
     assert spatial_extent or burst_id
