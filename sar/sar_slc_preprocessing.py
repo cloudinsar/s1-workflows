@@ -68,11 +68,10 @@ for pol in input_dict["polarization"]:
 
     bursts = retrieve_bursts_with_id_and_iw(input_dict['temporal_extent'][0],
                                             input_dict['temporal_extent'][1],
-                                            pol,
-                                            sbswath=input_dict['sub_swath'],
-                                            burst_id=input_dict['burst_id'] if "burst_id" in input_dict else None,
-                                            spatial_extent=input_dict[
-                                                'spatial_extent'] if "spatial_extent" in input_dict else None,
+                                            input_dict.get("polarization"),
+                                            sbswath=input_dict.get("sub_swath"),
+                                            burst_id=input_dict.get("burst_id"),
+                                            spatial_extent=input_dict.get("spatial_extent"),
                                             )
 
     # Check if primary date is within the provided temporal extent.
