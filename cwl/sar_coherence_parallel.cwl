@@ -27,7 +27,7 @@ $graph:
           type: array
           items: string
       burst_id:
-        type: int
+        type: int?
       coherence_window_az:
         type: int?
       coherence_window_rg:
@@ -56,7 +56,7 @@ $graph:
             type: array
             items: string
       burst_id:
-        type: int
+        type: int?
       coherence_window_az:
         type: int?
       coherence_window_rg:
@@ -118,7 +118,7 @@ $graph:
             type: array
             items: string
       burst_id:
-        type: int
+        type: int?
       coherence_window_az:
         type: int?
       coherence_window_rg:
