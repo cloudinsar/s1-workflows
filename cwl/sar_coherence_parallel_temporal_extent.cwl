@@ -157,6 +157,7 @@ $graph:
               ${
                 return JSON.stringify({
                   "burst_id": inputs.burst_id,
+                  "spatial_extent": inputs.spatial_extent,
                   "polarization": inputs.polarization,
                   "sub_swath": inputs.sub_swath,
                   "temporal_extent": inputs.temporal_extent,
@@ -258,6 +259,7 @@ $graph:
                 return JSON.stringify({
                   "InSAR_pairs": [inputs.InSAR_pair],
                   "burst_id": inputs.burst_id,
+                  "spatial_extent": inputs.spatial_extent,
                   "polarization": inputs.polarization,
                   "sub_swath": inputs.sub_swath,
                   "coherence_window_rg": inputs.coherence_window_rg,
