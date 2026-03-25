@@ -25,7 +25,7 @@ else:
     _log.info("Using debug arguments!")
     # input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_whole_2023_new.json").read_text())
     # input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_2018_vh_new.json").read_text())
-    input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_andes_new.json").read_text())
+    input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_2024_vv_new.json").read_text())
 
 input_dict = {k: v for k, v in input_dict.items() if v is not None}
 _log.info(f"{input_dict=}")
@@ -36,10 +36,10 @@ end_date = input_dict["temporal_extent"][1]
 s1_bursts = retrieve_bursts_with_id_and_iw(
     start_date,
     end_date,
-    input_dict["polarization"] if "polarization" in input_dict else None,
-    sbswath=input_dict["sub_swath"],
-    burst_id=input_dict["burst_id"] if "burst_id" in input_dict else None,
-    spatial_extent=input_dict["spatial_extent"] if "spatial_extent" in input_dict else None,
+    input_dict.get("polarization"),
+    sbswath=input_dict.get("sub_swath"),
+    burst_id=input_dict.get("burst_id"),
+    spatial_extent=input_dict.get("spatial_extent"),
 )
 
 dates = [datetime.strptime(b["BeginningDateTime"][:10], "%Y-%m-%d") for b in s1_bursts]

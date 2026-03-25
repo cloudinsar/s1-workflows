@@ -40,7 +40,7 @@
 #           --preserve-environment=AWS_ACCESS_KEY_ID \
 #           --preserve-environment=AWS_SECRET_ACCESS_KEY \
 #           --preserve-environment=AWS_ENDPOINT_URL_S3 \
-#           cwl/sar_coherence_parallel_temporal_extent.cwl sar/example_inputs/input_dict_andes_new.json
+#           cwl/sar_coherence_parallel_temporal_extent.cwl sar/example_inputs/input_dict_2018_vh_new.json
 
 cwlVersion: v1.2
 
@@ -80,6 +80,7 @@ $graph:
 
       spatial_extent:
         type: Any?
+        doc: "Specifies area where to search for bursts. If multiple bursts are found, the one with the lowest id number will be selected. This parameter can be used instead of `burst_id`."
 
       temporal_baseline:
         type: int

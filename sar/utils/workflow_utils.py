@@ -321,28 +321,31 @@ def exec_proc(command, cwd=None, write_output=True, env=None):
 
 
 def retrieve_bursts_with_id_and_iw(
-        start_date,
-        end_date,
-        pol: str,
+        start_date: Optional[str],
+        end_date: Optional[str],
+        pol: Optional[str],
         burst_id: Optional[int],
-        sbswath: str,
-        spatial_extent=None,
+        sbswath: Optional[str],
+        spatial_extent: Optional[dict] = None,
 ) -> List[Dict]:
     assert spatial_extent or burst_id
-    intersect_snippet = ""
+    filters = [
+        f"ContentDate/Start ge {start_date}T00:00:00.000Z" if start_date else None,
+        f"ContentDate/Start le {end_date}T23:59:59.000Z" if end_date else None,
+        f"PolarisationChannels eq '{pol.upper()}'" if pol else None,
+        f"BurstId eq {burst_id}" if burst_id else None,
+        f"SwathIdentifier eq '{sbswath.upper()}'" if sbswath else None,
+    ]
     if spatial_extent:
         se = spatial_extent
         wkt = f"SRID=4326;POLYGON(({se['west']} {se['south']},{se['east']} {se['south']},{se['east']} {se['north']},{se['west']} {se['north']},{se['west']} {se['south']}))"
         print(f"Visualize WKT: https://wktmap.com/?wkt={urllib.parse.quote_plus(wkt)}")
-        intersect_snippet = f"Data.CSC.Intersects(area=geography'{wkt}') and "
+        filters.append(f"Data.CSC.Intersects(area=geography'{wkt}')")
 
+    filters = list(filter(None, filters))
     page_size = 1000
     https_request = "https://catalogue.dataspace.copernicus.eu/odata/v1/Bursts?$filter=" + urllib.parse.quote(
-                f"ContentDate/Start ge {start_date}T00:00:00.000Z and ContentDate/Start le {end_date}T23:59:59.000Z and "
-                + (f"PolarisationChannels eq '{pol.upper()}' and " if pol else "")
-                + (f"BurstId eq {burst_id} and " if burst_id else "")
-                + intersect_snippet +
-                f"SwathIdentifier eq '{sbswath.upper()}'") + f"&$top={page_size}"
+        " and ".join(filters)) + f"&$top={page_size}"
     print(https_request)
     with urllib.request.urlopen(https_request) as response:
         content = response.read().decode()
