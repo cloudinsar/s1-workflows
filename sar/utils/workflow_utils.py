@@ -76,7 +76,7 @@ input_dict_2024_vv_parallel = {
     # Multillok parameters:
     "n_az_looks": 1,
     "n_rg_looks": 4,
-    "polarization": "vv",
+    "polarization": "VV",
     "sub_swath": "IW2",
 }
 
@@ -94,7 +94,7 @@ input_dict_2024_vv = {
     # Multillok parameters:
     "n_az_looks": 1,
     "n_rg_looks": 4,
-    "polarization": "vv",
+    "polarization": "VV",
     "sub_swath": "IW2",
 }
 
@@ -105,28 +105,28 @@ input_dict_2018_vh = {
     "coherence_window_rg": 10,
     "n_az_looks": 1,
     "n_rg_looks": 4,
-    "polarization": "vh",
+    "polarization": "VH",
     "sub_swath": "IW2",
 }
 
 input_dict_belgium_vv = {
     "InSAR_pairs": [["2024-08-09", "2024-08-21"]],
     "burst_id": 234893,
-    "polarization": "vv",
+    "polarization": "VV",
     "sub_swath": "IW1",
 }
 input_dict_2018_vh_preprocessing = {
     "temporal_extent": ["2018-01-28", "2018-02-03"],
     "primary_date": "2018-01-28",
     "burst_id": 329488,
-    "polarization": "vh",
+    "polarization": ["VH"],
     "sub_swath": "IW2",
 }
 
 input_dict_belgium_vv_preprocessing = {
     "burst_id": 234893,
     "primary_date": "2024-08-09",
-    "polarization": ["vv"],
+    "polarization": ["VV"],
     "sub_swath": "IW1",
     "temporal_extent": ["2024-08-09", "2024-08-21"],
 }
@@ -134,7 +134,7 @@ input_dict_belgium_vv_preprocessing = {
 input_dict_belgium_vv_master_outside_preprocessing = {
     "burst_id": 234893,
     "primary_date": "2024-09-02",
-    "polarization": ["vv"],
+    "polarization": ["VV"],
     "sub_swath": "IW1",
     "temporal_extent": ["2024-08-09", "2024-08-21"],
 }
@@ -142,7 +142,7 @@ input_dict_belgium_vv_master_outside_preprocessing = {
 input_dict_belgium_vv_vh_preprocessing = {
     "burst_id": 234893,
     "primary_date": "2024-08-09",
-    "polarization": ["vv", "vh"],
+    "polarization": ["VV", "VH"],
     "sub_swath": "IW1",
     "temporal_extent": ["2024-08-09", "2024-09-02"],
 }
@@ -151,7 +151,7 @@ input_dict_belgium_vv_vh_preprocessing = {
 input_dict_2024_vv_preprocessing = {
         "burst_id": 249435,
         "primary_date": "2024-08-09",
-        "polarization": ["vv"],
+        "polarization": ["VV"],
         "sub_swath": "IW2",
         "temporal_extent": [
           "2024-08-08",

@@ -66,13 +66,15 @@ $graph:
         doc: "Sentinel-1 burst ID"
       
       polarization:
-        type: string
-        doc: "Polarization (vv or vh)"
-      
+        - type: enum
+          symbols: [ "VV", "VH" ]
+
       sub_swath:
-        type: string
+        type:
+          type: enum
+          symbols: [ "IW1", "IW2", "IW3" ]
         default: "IW2"
-        doc: "Sub-swath identifier (IW1, IW2, or IW3)"
+        doc: "Sub-swath identifier"
       
       temporal_extent:
         type: string[]
@@ -177,9 +179,11 @@ $graph:
       spatial_extent:
         type: Any?
       polarization:
-        type: string
+        - type: enum
+          symbols: [ "VV", "VH" ]
       sub_swath:
-        type: string
+        - type: enum
+          symbols: [ "IW1", "IW2", "IW3" ]
       temporal_extent:
         type: string[]
       temporal_baseline:
@@ -287,9 +291,11 @@ $graph:
       spatial_extent:
         type: Any?
       polarization:
-        type: string
+        - type: enum
+          symbols: [ "VV", "VH" ]
       sub_swath:
-        type: string
+        - type: enum
+          symbols: [ "IW1", "IW2", "IW3" ]
       coherence_window_rg:
         type: int?
       coherence_window_az:

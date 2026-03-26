@@ -33,9 +33,15 @@ inputs:
   coherence_window_rg:
     type: int?
   polarization:
-    type: string
+    type:
+      type: enum
+      symbols: [ "VV", "VH" ]
   sub_swath:
-    type: string
+    type:
+      type: enum
+      symbols: [ "IW1", "IW2", "IW3" ]
+    default: "IW2"
+    doc: "Sub-swath identifier"
 outputs:
   output_file:
     type: File[]
