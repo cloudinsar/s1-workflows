@@ -21,6 +21,8 @@ def generate():
             "Limits the data to process to the specified bounding box or polygons. "
             "Used to find the Sentinel-1 burst to process when `burst_id` is not provided."
         ),
+        optional=True,
+        default=None,
     )
 
     temporal_extent = Parameter.temporal_interval(
