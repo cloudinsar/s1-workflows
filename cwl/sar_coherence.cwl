@@ -25,7 +25,9 @@ inputs:
   temporal_baseline:
     type: int
   burst_id:
-    type: int
+    type: int?
+  spatial_extent:
+    type: Any?
   coherence_window_az:
     type: int?
   coherence_window_rg:

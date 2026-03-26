@@ -83,17 +83,17 @@ def run_stac_catalog_and_verify(catalog_path: Path, tmp_dir: Path):
     [
         "sar/example_inputs/input_dict_2018_vh_new.json",
         # "sar/example_inputs/input_dict_2024_vv_new.json",
-        # "sar/example_inputs/input_dict_2018_vh_new_spatial_extent.json",
-        # "sar/example_inputs/input_dict_andes_new.json",  # nodata. "Cannot invoke \"java.awt.image.Raster.getDataBuffer()\" because \"tile\" is null" on CI
-        "sar/example_inputs/input_dict_capetown_new.json",  # ok
-        "sar/example_inputs/input_dict_georgia_new.json",  # ok
-        # "sar/example_inputs/input_dict_japan_new.json",  # tags missing
-        # "sar/example_inputs/input_dict_lapaz_new.json",  # nodata. "Cannot invoke \"java.awt.image.Raster.getDataBuffer()\" because \"tile\" is null" on CI
-        "sar/example_inputs/input_dict_suriname_new.json",  # nodata.
-        "sar/example_inputs/input_dict_suriname2_new.json",  # nodata
-        "sar/example_inputs/input_dict_togo_new.json",  # ok
-        "sar/example_inputs/input_dict_bangladesh_new.json",  # nodata
-        # "sar/example_inputs/input_dict_vancouver_new.json",  # tags missing. Spatial extent moves to other side of the world
+        "sar/example_inputs/input_dict_2018_vh_new_spatial_extent.json",
+        # "sar/example_inputs/input_dict_andes_new.json",
+        # "sar/example_inputs/input_dict_capetown_new.json",
+        # "sar/example_inputs/input_dict_georgia_new.json",
+        "sar/example_inputs/input_dict_japan_new.json", # VV
+        # "sar/example_inputs/input_dict_lapaz_new.json",
+        # "sar/example_inputs/input_dict_suriname_new.json",
+        # "sar/example_inputs/input_dict_suriname2_new.json",
+        # "sar/example_inputs/input_dict_togo_new.json",
+        # "sar/example_inputs/input_dict_bangladesh_new.json",
+        # "sar/example_inputs/input_dict_vancouver_new.json",
     ],
 )
 def test_insar_new(script, input_dict_path, auto_title):
@@ -187,3 +187,24 @@ def test_sar_preprocessing(input_dict, auto_title):
         assert_tif_file_is_healthy(file)
     for jf in json_files:
         run_stac_catalog_and_verify(jf, tmp_dir)
+
+
+@pytest.mark.parametrize(
+    "input_dict_path",
+    [
+        "sar/example_inputs/input_dict_2018_vh_new.json",
+        "sar/example_inputs/input_dict_2018_vh_new_spatial_extent.json",
+    ],
+)
+def test_insar_get_bursts(input_dict_path, auto_title):
+    tmp_dir = Path(repository_root / slugify(auto_title).replace("tests_", "tests/tmp_")).absolute()
+    if tmp_dir.exists():
+        shutil.rmtree(tmp_dir)
+    tmp_dir.mkdir(exist_ok=True)
+    exec_proc(["python", repository_root / "sar/get_bursts.py", repo_directory / input_dict_path], cwd=tmp_dir)
+
+    json_files = list(tmp_dir.glob("*insar_pairs_inputs.json"))
+    with open(json_files[0], "r") as file:
+        j = json.load(file)
+        print(f"Amount of pairs found: {len(j['InSAR_pairs'])}")
+        assert len(j['InSAR_pairs']) > 0

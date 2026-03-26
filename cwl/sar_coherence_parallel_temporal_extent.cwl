@@ -62,7 +62,7 @@ $graph:
     
     inputs:
       burst_id:
-        type: int
+        type: int?
         doc: "Sentinel-1 burst ID"
       
       polarization:
@@ -77,7 +77,11 @@ $graph:
       temporal_extent:
         type: string[]
         doc: "Temporal extent as [start_date, end_date], e.g., ['2024-08-01', '2024-09-30']"
-      
+
+      spatial_extent:
+        type: Any?
+        doc: "Specifies area where to search for bursts. If multiple bursts are found, the one with the lowest id number will be selected. This parameter can be used instead of `burst_id`."
+
       temporal_baseline:
         type: int
         doc: "Temporal baseline in days for pair generation"
@@ -103,6 +107,7 @@ $graph:
         run: "#get_insar_pairs"
         in:
           burst_id: burst_id
+          spatial_extent: spatial_extent
           polarization: polarization
           sub_swath: sub_swath
           temporal_extent: temporal_extent
@@ -121,6 +126,7 @@ $graph:
         in:
           InSAR_pair: extract_pairs/pairs_array
           burst_id: burst_id
+          spatial_extent: spatial_extent
           polarization: polarization
           sub_swath: sub_swath
           coherence_window_rg: coherence_window_rg
@@ -152,6 +158,7 @@ $graph:
               ${
                 return JSON.stringify({
                   "burst_id": inputs.burst_id,
+                  "spatial_extent": inputs.spatial_extent,
                   "polarization": inputs.polarization,
                   "sub_swath": inputs.sub_swath,
                   "temporal_extent": inputs.temporal_extent,
@@ -166,7 +173,9 @@ $graph:
     
     inputs:
       burst_id:
-        type: int
+        type: int?
+      spatial_extent:
+        type: Any?
       polarization:
         type: string
       sub_swath:
@@ -251,6 +260,7 @@ $graph:
                 return JSON.stringify({
                   "InSAR_pairs": [inputs.InSAR_pair],
                   "burst_id": inputs.burst_id,
+                  "spatial_extent": inputs.spatial_extent,
                   "polarization": inputs.polarization,
                   "sub_swath": inputs.sub_swath,
                   "coherence_window_rg": inputs.coherence_window_rg,
@@ -273,7 +283,9 @@ $graph:
         type: string[]
         doc: "Single InSAR pair as [primary_date, secondary_date]"
       burst_id:
-        type: int
+        type: int?
+      spatial_extent:
+        type: Any?
       polarization:
         type: string
       sub_swath:
