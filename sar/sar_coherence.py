@@ -64,7 +64,7 @@ for burst in bursts:
         "-r", str(burst["BurstId"]),
         "-o", str(tmp_insar),
     ]
-    _, output = exec_proc(cmd, cwd=repo_directory / "utilities", write_output=False)
+    _, output = exec_proc(cmd, cwd=repo_directory / "utilities", write_output=True)
     # get paths from stdout:
     needle = "out_path: "
     bursts_from_output = sorted(
