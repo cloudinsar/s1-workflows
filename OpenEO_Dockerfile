@@ -68,7 +68,7 @@ ENV PATH="${PATH}:/usr/local/esa-snap/bin"
 ENV PATH="/opt/venv/bin:$PATH"
 RUN python3.11 -m venv /opt/venv && \
     cd /src && \
-    mkdir -p python && \
+    mkdir -p sar && \
     pip config set global.disable-pip-version-check true
 
 RUN cd /opt && \
@@ -91,7 +91,7 @@ ENV PATH="$PATH:/opt/snaphu-v2.0.4_linux/bin"
 # COPY . /src
 COPY ./utilities /src/utilities/
 COPY ./snap_graphs/ /src/snap_graphs/
-COPY ./python /src/python/
+COPY ./sar /src/sar/
 COPY *.sh /src/
 
 WORKDIR /src
