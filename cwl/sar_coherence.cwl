@@ -67,12 +67,12 @@ $graph:
       
       polarization:
         type: string
-        doc: "Polarization (one of "vv", "vh", "hh", "hv")"
+        doc: "Polarization (one of vv, vh, hh, hv)"
       
       sub_swath:
         type: string
         default: "IW2"
-        doc: "Sub-swath identifier (one of "IW1", "IW2", "IW3", "EW1", "EW2", "EW3", "EW4", "EW5")"
+        doc: "Sub-swath identifier (one of IW1, IW2, IW3, EW1, EW2, EW3, EW4, EW5)"
       
       temporal_extent:
         type: string[]
