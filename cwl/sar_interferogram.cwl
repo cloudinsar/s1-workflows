@@ -37,9 +37,14 @@ inputs:
   n_rg_looks:
     type: int?
   polarization:
-    type: string
+    - type: enum
+      symbols: [ "VV", "VH" ]
   sub_swath:
-    type: string?
+    type:
+      type: enum
+      symbols: [ "IW1", "IW2", "IW3" ]
+    default: "IW2"
+    doc: "Sub-swath identifier"
 outputs:
   output_file:
     type: File[]

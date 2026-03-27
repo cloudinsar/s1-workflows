@@ -49,10 +49,36 @@ $graph:
     class: Workflow
 
     doc: |
-      Parallel InSAR coherence workflow:
-      1. Generate InSAR pairs from input date range and burst parameters
-      2. Process each pair in parallel (scatter)
-      2. STAC results (removed for now)
+      This process computes the Interferometric Coherence for a series of Sentinel-1 bursts, allowing to specify custom sizes of the coherence window by setting the coherence_window_az and coherence_window_rg parameters. It requires you to provide the temporal_extent for the period of interest, the temporal_baseline (6, 12 or more days), the burst_id and sub_swath to select the Sentinel-1 burst of interest.
+      The implementation is based on SNAP and defined as a CWL (Common Workflow Language) available here: [sar_coherence_parallel_temporal_extent.cwl](https://github.com/cloudinsar/s1-workflows/blob/main/cwl/sar_coherence_parallel_temporal_extent.cwl)
+      <https://www.eurac.edu/en/projects/cloudinsar>.
+      
+      An example on how to use it:
+      
+      ```python
+      import openeo
+
+      connection = openeo.connect("openeo.dataspace.copernicus.eu/").authenticate_oidc()
+      stac_resource = connection.datacube_from_process(
+          "sar_coherence",
+          namespace="https://raw.githubusercontent.com/ESA-APEx/apex_algorithms/refs/heads/main/algorithm_catalog/eurac/sar_coherence/openeo_udp/sar_coherence.json",
+          **{
+              "temporal_extent": ["2018-01-28", "2018-02-03"],
+              "temporal_baseline": 6,
+              "burst_id": 329488,
+              "coherence_window_az": 2,
+              "coherence_window_rg": 10,
+              "n_az_looks": 1,
+              "n_rg_looks": 4,
+              "polarization": "VH",
+              "sub_swath": "IW2"
+          }
+      )
+      
+      job = stac_resource.create_job(title="sar_coherence test")
+      job.start_and_wait()
+      job.get_results().download_files()
+      ```
     
     requirements:
       - class: ScatterFeatureRequirement
@@ -63,7 +89,10 @@ $graph:
     inputs:
       burst_id:
         type: int?
-        doc: "Sentinel-1 burst ID"
+        doc: |
+          A temporal extent could have multiple bursts per day. Use [this notebook](https://github.com/cloudinsar/s1-workflows/blob/main/notebooks/LPS_DEMO/Input_selection.ipynb) to find a fitting `burst_id`.
+          Alternatively, the burst id map can be downloaded here: [Burst ID Maps 2022-05-30](https://sar-mpc.eu/files/S1_burstid_20220530.zip).
+          You can also specify `temporal_extent` instead, so that a `burst_id` gets automatically selected.
       
       polarization:
         - type: enum
@@ -82,11 +111,11 @@ $graph:
 
       spatial_extent:
         type: Any?
-        doc: "Specifies area where to search for bursts. If multiple bursts are found, the one with the lowest id number will be selected. This parameter can be used instead of `burst_id`."
+        doc: Specifies area where to search for bursts. If multiple bursts are found, the one with the lowest id number will be selected. This parameter can be used instead of `burst_id`.
 
       temporal_baseline:
         type: int
-        doc: "Temporal baseline in days for pair generation"
+        doc: "Should be a multiple of 6. This is used to select how many days the secondary date will be after the primary for each date pair."
       
       coherence_window_rg:
         type: int?
