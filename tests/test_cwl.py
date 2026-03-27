@@ -20,7 +20,7 @@ def test_cwl_validate():
         cmd = ["cwltool", "--disable-color", "--debug", "--validate", str(cwl_file)]
         name = cwl_file.name
         if str(name).startswith("sar_coherence"):
-            cmd += [repository_root / "python/example_inputs/input_dict_test_parallel.json"]
+            cmd += [repository_root / "sar/example_inputs/input_dict_test_parallel.json"]
         elif str(name).startswith("sar_slc_preprocessing"):
-            cmd += [repository_root / "python/example_inputs/input_dict_2018_vh_preprocessing.json"]
+            cmd += [repository_root / "sar/example_inputs/input_dict_2018_vh_preprocessing.json"]
         exec_proc(cmd)
