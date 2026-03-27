@@ -81,19 +81,19 @@ def run_stac_catalog_and_verify(catalog_path: Path, tmp_dir: Path):
 @pytest.mark.parametrize(
     "input_dict_path",
     [
-        "sar/example_inputs/input_dict_2018_vh_new.json",
-        # "sar/example_inputs/input_dict_2024_vv_new.json",
-        "sar/example_inputs/input_dict_2018_vh_new_spatial_extent.json",
-        # "sar/example_inputs/input_dict_andes_new.json",
-        # "sar/example_inputs/input_dict_capetown_new.json",
-        # "sar/example_inputs/input_dict_georgia_new.json",
-        "sar/example_inputs/input_dict_japan_new.json", # VV
-        # "sar/example_inputs/input_dict_lapaz_new.json",
-        # "sar/example_inputs/input_dict_suriname_new.json",
-        # "sar/example_inputs/input_dict_suriname2_new.json",
-        # "sar/example_inputs/input_dict_togo_new.json",
-        # "sar/example_inputs/input_dict_bangladesh_new.json",
-        # "sar/example_inputs/input_dict_vancouver_new.json",
+        "python/example_inputs/input_dict_2018_vh_new.json",
+        # "python/example_inputs/input_dict_2024_vv_new.json",
+        "python/example_inputs/input_dict_2018_vh_new_spatial_extent.json",
+        # "python/example_inputs/input_dict_andes_new.json",
+        # "python/example_inputs/input_dict_capetown_new.json",
+        # "python/example_inputs/input_dict_georgia_new.json",
+        "python/example_inputs/input_dict_japan_new.json", # VV
+        # "python/example_inputs/input_dict_lapaz_new.json",
+        # "python/example_inputs/input_dict_suriname_new.json",
+        # "python/example_inputs/input_dict_suriname2_new.json",
+        # "python/example_inputs/input_dict_togo_new.json",
+        # "python/example_inputs/input_dict_bangladesh_new.json",
+        # "python/example_inputs/input_dict_vancouver_new.json",
     ],
 )
 def test_insar_new(script, input_dict_path, auto_title):
@@ -104,7 +104,7 @@ def test_insar_new(script, input_dict_path, auto_title):
     if tmp_dir.exists():
         shutil.rmtree(tmp_dir)
     tmp_dir.mkdir(exist_ok=True)
-    exec_proc(["python", repository_root / "sar" / script, input_base64_json], cwd=tmp_dir)
+    exec_proc(["python", repository_root / "python" / script, input_base64_json], cwd=tmp_dir)
 
     json_files = list(tmp_dir.glob("*collection*.json"))
     assert json_files, "A *collection*.json file generated"
@@ -122,7 +122,7 @@ def test_insar_new(script, input_dict_path, auto_title):
 @pytest.mark.parametrize(
     "script",
     [
-        "sar_coherence_parallel.py",
+        "sar_coherence.py",
         "sar_interferogram.py",
     ],
 )
@@ -141,7 +141,7 @@ def test_insar(script, input_dict, auto_title):
     if tmp_dir.exists():
         shutil.rmtree(tmp_dir)
     tmp_dir.mkdir(exist_ok=True)
-    exec_proc(["python", repository_root / "sar" / script, input_base64_json], cwd=tmp_dir)
+    exec_proc(["python", repository_root / "python" / script, input_base64_json], cwd=tmp_dir)
 
     json_files = list(tmp_dir.glob("*collection*.json"))
     assert json_files, "A *collection*.json file generated"
@@ -166,7 +166,7 @@ def test_insar(script, input_dict, auto_title):
     ],
 )
 def test_sar_preprocessing(input_dict, auto_title):
-    script = "sar/sar_slc_preprocessing.py"
+    script = "python/sar_slc_preprocessing.py"
 
     input_base64_json = base64.b64encode(json.dumps(input_dict).encode("utf8")).decode("ascii")
 
@@ -192,8 +192,8 @@ def test_sar_preprocessing(input_dict, auto_title):
 @pytest.mark.parametrize(
     "input_dict_path",
     [
-        "sar/example_inputs/input_dict_2018_vh_new.json",
-        "sar/example_inputs/input_dict_2018_vh_new_spatial_extent.json",
+        "python/example_inputs/input_dict_2018_vh_new.json",
+        "python/example_inputs/input_dict_2018_vh_new_spatial_extent.json",
     ],
 )
 def test_insar_get_bursts(input_dict_path, auto_title):
@@ -201,7 +201,7 @@ def test_insar_get_bursts(input_dict_path, auto_title):
     if tmp_dir.exists():
         shutil.rmtree(tmp_dir)
     tmp_dir.mkdir(exist_ok=True)
-    exec_proc(["python", repository_root / "sar/get_bursts.py", repo_directory / input_dict_path], cwd=tmp_dir)
+    exec_proc(["python", repository_root / "python/get_bursts.py", repo_directory / input_dict_path], cwd=tmp_dir)
 
     json_files = list(tmp_dir.glob("*insar_pairs_inputs.json"))
     with open(json_files[0], "r") as file:

@@ -39,16 +39,15 @@ cwl_prefix = "https://raw.githubusercontent.com/cloudinsar/s1-workflows/refs/hea
 @pytest.mark.parametrize(
     "cwl_path",
     [
-        # "cwl/sar_coherence.cwl",
-        "cwl/sar_coherence_parallel_temporal_extent.cwl",
+        "cwl/sar_coherence.cwl",
     ],
 )
 @pytest.mark.parametrize(
     "input_dict_path",
     [
-        # "sar/example_inputs/input_dict_2018_vh_new.json",
-        # "sar/example_inputs/input_dict_whole_2023_new.json",
-        "sar/example_inputs/input_dict_2024_vv_new.json",
+        # "python/example_inputs/input_dict_2018_vh_new.json",
+        # "python/example_inputs/input_dict_whole_2023_new.json",
+        "python/example_inputs/input_dict_2024_vv_new.json",
     ],
 )
 def test_georeferenced_new_sar(cwl_path, input_dict_path, auto_title):
@@ -98,7 +97,7 @@ def test_georeferenced_new_sar(cwl_path, input_dict_path, auto_title):
 @pytest.mark.parametrize(
     "cwl_path",
     [
-        # "cwl/sar_coherence_parallel.cwl",
+        # "cwl/sar_coherence.cwl",
         "cwl/sar_interferogram.cwl",
     ],
 )
@@ -107,9 +106,9 @@ def test_georeferenced_new_sar(cwl_path, input_dict_path, auto_title):
     [
         # input_dict_2018_vh,
         # input_dict_belgium_vv,
-        # json.loads((repo_directory / "sar/example_inputs/input_dict_whole_2023.json").read_text()),
-        json.loads((repo_directory / "sar/example_inputs/input_dict_2024_vv.json").read_text()),
-        # json.loads((repo_directory / "sar/example_inputs/input_dict_2023.json").read_text()),
+        # json.loads((repo_directory / "python/example_inputs/input_dict_whole_2023.json").read_text()),
+        json.loads((repo_directory / "python/example_inputs/input_dict_2024_vv.json").read_text()),
+        # json.loads((repo_directory / "python/example_inputs/input_dict_2023.json").read_text()),
     ],
 )
 def test_georeferenced_sar(cwl_path, input_dict, auto_title):
