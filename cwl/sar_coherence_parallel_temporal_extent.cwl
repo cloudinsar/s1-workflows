@@ -31,8 +31,8 @@
 #   - temporal_extent: ["start_date", "end_date"] e.g., ["2024-08-01", "2024-08-30"]
 #   - temporal_baseline: Days between pairs (e.g., 12)
 #   - burst_id: Sentinel-1 burst identifier (e.g., 249435)
-#   - polarization: "vv" or "vh"
-#   - sub_swath: "IW1", "IW2", or "IW3"
+#   - polarization: one of "vv", "vh"
+#   - sub_swath: one of "IW1", "IW2", "IW3"
 #   - coherence_window_rg/az: Window sizes for coherence estimation
 #
 # LOCAL USAGE:
