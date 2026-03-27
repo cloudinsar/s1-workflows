@@ -126,7 +126,7 @@ for pair in input_dict["InSAR_pairs"]:
             "gpt",
             str(
                 repo_directory
-                / "notebooks/graphs/interferogram_sarGeometry.xml"
+                / "snap_graphs/interferogram_sarGeometry.xml"
             ),
             f"-Pprm_filename={prm_filename}",
             f"-Psec_filename={sec_filename}",
@@ -143,7 +143,7 @@ for pair in input_dict["InSAR_pairs"]:
             "gpt",
             str(
                 repo_directory
-                / "notebooks/graphs/snaphu_export.xml"
+                / "snap_graphs/snaphu_export.xml"
             ),
             f"-Pphase_filename={output_filename_tmp}.dim",
             f"-Poutput_folder_snaphu={tmp_insar}",
@@ -176,7 +176,7 @@ for pair in input_dict["InSAR_pairs"]:
                 "-J-Xmx14G",
                 str(
                     repo_directory
-                    / "notebooks/graphs/geocode_snaphuInterferogram_WGS84.xml"
+                    / "snap_graphs/geocode_snaphuInterferogram_WGS84.xml"
                 ),
                 f'-Pinterferogram_filename={output_filename_tmp}.dim',
                 f'-PsaveDEM="{str(saveDEM).lower()}"',

@@ -147,7 +147,7 @@ for pol in input_dict["polarization"]:
             "gpt",
             str(
                 repo_directory
-                / "notebooks/graphs/pre-processing_2images_SavePrm_GeoTiff.xml"
+                / "snap_graphs/pre-processing_2images_SavePrm_GeoTiff.xml"
             ),
             f"-Pprm_filename={prm_filename}",
             f"-Psec_filename={sec_filename}",
@@ -187,7 +187,7 @@ for pol in input_dict["polarization"]:
                 "gpt",
                 str(
                     repo_directory
-                    / "notebooks/graphs/pre-processing_2images_SaveOnlySec_GeoTiff.xml"
+                    / "snap_graphs/pre-processing_2images_SaveOnlySec_GeoTiff.xml"
                 ),
                 f"-Pprm_filename={prm_filename}",
                 f"-Psec_filename={sec_filename}",
