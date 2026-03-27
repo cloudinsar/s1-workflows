@@ -31,8 +31,8 @@
 #   - temporal_extent: ["start_date", "end_date"] e.g., ["2024-08-01", "2024-08-30"]
 #   - temporal_baseline: Days between pairs (e.g., 12)
 #   - burst_id: Sentinel-1 burst identifier (e.g., 249435)
-#   - polarization: "vv" or "vh"
-#   - sub_swath: "IW1", "IW2", or "IW3"
+#   - polarization: one of "vv", "vh", "hh", "hv"
+#   - sub_swath: one of "IW1", "IW2", "IW3", "EW1", "EW2", "EW3", "EW4", "EW5"
 #   - coherence_window_rg/az: Window sizes for coherence estimation
 #
 # LOCAL USAGE:
@@ -67,12 +67,12 @@ $graph:
       
       polarization:
         type: string
-        doc: "Polarization (vv or vh)"
+        doc: "Polarization (one of "vv", "vh", "hh", "hv")"
       
       sub_swath:
         type: string
         default: "IW2"
-        doc: "Sub-swath identifier (IW1, IW2, or IW3)"
+        doc: "Sub-swath identifier (one of "IW1", "IW2", "IW3", "EW1", "EW2", "EW3", "EW4", "EW5")"
       
       temporal_extent:
         type: string[]
