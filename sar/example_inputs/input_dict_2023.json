@@ -32,6 +32,6 @@
   "burst_id": 30343,
   "coherence_window_az": 5,
   "coherence_window_rg": 21,
-  "polarization": "vv",
+  "polarization": "VV",
   "sub_swath": "IW3"
 }
