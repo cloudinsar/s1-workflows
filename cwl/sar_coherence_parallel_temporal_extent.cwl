@@ -68,8 +68,6 @@ $graph:
               "burst_id": 329488,
               "coherence_window_az": 2,
               "coherence_window_rg": 10,
-              "n_az_looks": 1,
-              "n_rg_looks": 4,
               "polarization": "VH",
               "sub_swath": "IW2"
           }
@@ -102,7 +100,6 @@ $graph:
         type:
           type: enum
           symbols: [ "IW1", "IW2", "IW3" ]
-        default: "IW2"
         doc: "Sub-swath identifier"
       
       temporal_extent:

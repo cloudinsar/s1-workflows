@@ -70,8 +70,10 @@ inputs:
     doc: "Coherence window size in azimuth direction"
   n_az_looks:
     type: int?
+    default: 1
   n_rg_looks:
     type: int?
+    default: 4
   polarization:
     - type: enum
       symbols: [ "VV", "VH" ]
@@ -79,7 +81,6 @@ inputs:
     type:
       type: enum
       symbols: [ "IW1", "IW2", "IW3" ]
-    default: "IW2"
     doc: "Sub-swath identifier"
 outputs:
   output_file:
