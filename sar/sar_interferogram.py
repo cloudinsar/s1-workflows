@@ -36,7 +36,7 @@ if not "coherence_window_rg" in input_dict or not "coherence_window_az" in input
     input_dict["coherence_window_rg"] = 10
     input_dict["coherence_window_az"] = 2
 if not "n_rg_looks" in input_dict or not "n_az_looks" in input_dict:
-    _log.info("Setting default multillok parameters")
+    _log.info("Setting default multi-look window size")
     input_dict["n_rg_looks"] = 4
     input_dict["n_az_looks"] = 1
 _log.info(f"{input_dict=}")
