@@ -49,9 +49,10 @@ $graph:
     class: Workflow
 
     doc: |
-      This process computes the Interferometric Coherence for a series of Sentinel-1 bursts, allowing to specify custom sizes of the coherence window by setting the coherence_window_az and coherence_window_rg parameters. It requires you to provide the temporal_extent for the period of interest, the temporal_baseline (6, 12 or more days), the burst_id and sub_swath to select the Sentinel-1 burst of interest.
-      The implementation is based on SNAP and defined as a CWL (Common Workflow Language) available here: [sar_coherence_parallel_temporal_extent.cwl](https://github.com/cloudinsar/s1-workflows/blob/main/cwl/sar_coherence_parallel_temporal_extent.cwl)
-      <https://www.eurac.edu/en/projects/cloudinsar>.
+      This process generates a time series of Sentinel‑1 interferometric coherence for user‑defined interferometric pairs. The area of interest is specified at burst level using the Sentinel‑1 burst_id and sub_swath, ensuring precise spatial targeting and consistent acquisition geometry across the time series.
+      Interferometric pairs can be defined in two ways: 1) explicitly, by providing a list of pairs through the InSAR_pair parameter, allowing full control over pair selection; 2) automatically, by specifying a temporal extent and maximum temporal baseline, from which valid interferometric pairs are generated according to the user‑defined constraints. This flexibility supports different analysis strategies, from targeted pair selection to systematic time‑series generation.
+      The workflow is implemented using ESA SNAP operators and is defined as a Common Workflow Language (CWL) pipeline [sar_coherence.cwl](https://github.com/cloudinsar/s1-workflows/blob/main/cwl/sar_coherence_parallel_temporal_extent.cwl).
+      Interferometric coherence provides a quantitative measure of phase stability between acquisitions and is widely used to assess surface change and temporal decorrelation driven by factors such as snow cover, vegetation dynamics, surface moisture, or mass movement. Coherence time series can be used for a variety of scientific and operational applications, including land cover classification, change detection, and as a diagnostic input for more advanced SAR analysis workflows.
       
       An example on how to use it:
       
