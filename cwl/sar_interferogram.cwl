@@ -92,7 +92,6 @@ inputs:
     type:
       type: enum
       symbols: [ "IW1", "IW2", "IW3" ]
-    default: "IW2"
     doc: "Sub-swath identifier"
 outputs:
   output_file:

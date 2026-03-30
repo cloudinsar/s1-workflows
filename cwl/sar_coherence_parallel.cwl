@@ -96,7 +96,7 @@ $graph:
         dockerPull: vito-docker.artifactory.vgt.vito.be/openeo-geopyspark-driver-example-stac-catalog:1.7
       - class: NetworkAccess
         networkAccess: true
-
+    # https://github.com/Open-EO/openeo-geopyspark-driver/blob/master/docker/local_batch_job/example_stac_catalog/simple_stac_merge.py
     baseCommand: ["/data/simple_stac_merge.py", "collection.json"]
     inputs:
       simple_stac_merge_in1:
