@@ -4,6 +4,11 @@ cwlVersion: v1.2
 class: CommandLineTool
 
 doc: |
+  This process computes a time series of Interferometric Coherence, Wrapped Interferograms and Unwrapped Interferograms for a Sentinel-1 burst of interest.
+  The interferometric pairs to be processed must be specified in the InSAR_pair list. The burst of interest must be selected by providing the burst_id and sub_swath.
+  The implementation is based on SNAP and defined as a CWL (Common Workflow Language) available here: [sar_interferogram.cwl](https://github.com/cloudinsar/s1-workflows/blob/main/cwl/sar_interferogram.cwl)
+  <https://www.eurac.edu/en/projects/cloudinsar>.
+
   An example on how to use it:
   
   ```python
@@ -58,8 +63,12 @@ inputs:
       items:
         type: array
         items: string
+    doc: "The list of [primary date, secondary date] pairs used to compute the interferogram. Use [this notebook](https://github.com/cloudinsar/s1-workflows/blob/main/notebooks/LPS_DEMO/Input_selection.ipynb) to create the list of insar pairs based on your requirements."
   burst_id:
     type: int
+    doc: |
+          The Sentinel-1 burst identifier. Use [this notebook](https://github.com/cloudinsar/s1-workflows/blob/main/notebooks/LPS_DEMO/Input_selection.ipynb) to find a fitting `burst_id`.
+          Alternatively, the burst id map can be downloaded here: [Burst ID Maps 2022-05-30](https://sar-mpc.eu/files/S1_burstid_20220530.zip)."
   coherence_window_rg:
     type: int?
     default: 10
@@ -68,12 +77,14 @@ inputs:
     type: int?
     default: 2
     doc: "Coherence window size in azimuth direction"
-  n_az_looks:
-    type: int?
-    default: 1
   n_rg_looks:
     type: int?
     default: 4
+    doc: "Multi-look window size in range direction"
+  n_az_looks:
+    type: int?
+    default: 1
+    doc: "Multi-look window size in azimuth direction"
   polarization:
     - type: enum
       symbols: [ "VV", "VH" ]
