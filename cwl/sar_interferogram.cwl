@@ -4,10 +4,9 @@ cwlVersion: v1.2
 class: CommandLineTool
 
 doc: |
-  This process computes a time series of Interferometric Coherence, Wrapped Interferograms and Unwrapped Interferograms for a Sentinel-1 burst of interest.
-  The interferometric pairs to be processed must be specified in the InSAR_pair list. The burst of interest must be selected by providing the burst_id and sub_swath.
-  The implementation is based on SNAP and defined as a CWL (Common Workflow Language) available here: [sar_interferogram.cwl](https://github.com/cloudinsar/s1-workflows/blob/main/cwl/sar_interferogram.cwl)
-  <https://www.eurac.edu/en/projects/cloudinsar>.
+  This process generates a time series of Sentinel-1 interferometric coherence, wrapped interferograms, and unwrapped interferograms for user‑defined interferometric pairs. The area of interest is defined at burst level, using the Sentinel‑1 burst_id and sub_swath, ensuring precise spatial targeting and consistent geometry across acquisitions. The interferometric pairs to be processed are explicitly provided by the user through the InSAR_pair list, allowing full control over temporal baselines.
+  The workflow is implemented using ESA SNAP operators and is defined as a Common Workflow Language (CWL) pipeline [sar_interferogram.cwl](https://github.com/cloudinsar/s1-workflows/blob/main/cwl/sar_interferogram.cwl).
+  The generated interferograms are fully suitable for multi‑temporal interferometric analysis. In particular, the outputs can be directly used as input to multi‑temporal InSAR toolkits such as MintPy, enabling time‑series deformation analysis using methods like SBAS or Persistent Scatterer approaches.
 
   An example on how to use it:
   
