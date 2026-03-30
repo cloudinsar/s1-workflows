@@ -253,6 +253,7 @@ $graph:
 
     doc: "Merge the coherence results in a single STAC Collection"
 
+    # https://github.com/Open-EO/openeo-geopyspark-driver/blob/master/docker/local_batch_job/example_stac_catalog/simple_stac_merge.py
     baseCommand: ["/data/simple_stac_merge.py", "S1_2images_collection.json"]
 
     requirements:
