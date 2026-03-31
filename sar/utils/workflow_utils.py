@@ -329,9 +329,9 @@ def retrieve_bursts_with_id_and_iw(
         spatial_extent: Optional[dict] = None,
 ) -> List[Dict]:
     assert spatial_extent or burst_id
-    if not "T" in start_date:
+    if start_date and not "T" in start_date:
         start_date = f"{start_date}T00:00:00.000Z"
-    if not "T" in end_date:
+    if end_date and not "T" in end_date:
         end_date = f"{end_date}T23:59:59.000Z"
     filters = [
         f"ContentDate/Start ge {start_date}" if start_date else None,
