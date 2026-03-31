@@ -193,6 +193,7 @@ def test_sar_preprocessing(input_dict, auto_title):
     "input_dict_path",
     [
         "sar/example_inputs/input_dict_2018_vh_new.json",
+        "sar/example_inputs/input_dict_2018_vh_new_datetime.json",
         "sar/example_inputs/input_dict_2018_vh_new_spatial_extent.json",
     ],
 )
