@@ -61,8 +61,8 @@ $graph:
 
       connection = openeo.connect("openeo.dataspace.copernicus.eu/").authenticate_oidc()
       stac_resource = connection.datacube_from_process(
-          "sar_coherence",
-          namespace="https://raw.githubusercontent.com/ESA-APEx/apex_algorithms/refs/heads/main/algorithm_catalog/eurac/sar_coherence/openeo_udp/sar_coherence.json",
+          "sentinel1_sar_coherence",
+          namespace="https://raw.githubusercontent.com/ESA-APEx/apex_algorithms/refs/heads/main/algorithm_catalog/eurac/sentinel1_sar_coherence/openeo_udp/sentinel1_sar_coherence.json",
           **{
               "temporal_extent": ["2018-01-28", "2018-02-03"],
               "temporal_baseline": 6,
@@ -74,7 +74,7 @@ $graph:
           }
       )
       
-      job = stac_resource.create_job(title="sar_coherence test")
+      job = stac_resource.create_job(title="sentinel1_sar_coherence test")
       job.start_and_wait()
       job.get_results().download_files()
       ```
