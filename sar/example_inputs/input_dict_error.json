@@ -1,0 +1,10 @@
+{
+  "burst_id": 329488,
+  "polarization": "VH",
+  "sub_swath": "IW2",
+  "temporal_baseline": 6,
+  "temporal_extent": [
+    "2018-01-28T00:00:00Z",
+    "2018-02-03T00:00:00Z"
+  ]
+}
