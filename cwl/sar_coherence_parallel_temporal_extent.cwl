@@ -105,7 +105,7 @@ $graph:
       
       temporal_extent:
         type: string[]
-        doc: "Temporal extent as [start_date, end_date], e.g., ['2024-08-01', '2024-09-30']. Specify at least a 6 days interval to make sure at least one pair gets found."
+        doc: "Temporal extent as [start_date, end_date], e.g., ['2024-08-01', '2024-09-30']. Specify at least a period equivalent to the selected temporal baseline * 2 to make sure at least one pair gets found. E.g. for a temporal baseline of 12 days, select at least a 24 days interval."
 
       spatial_extent:
         type: Any?
