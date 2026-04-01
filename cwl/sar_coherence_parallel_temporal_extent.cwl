@@ -64,7 +64,7 @@ $graph:
           "sentinel1_sar_coherence",
           namespace="https://raw.githubusercontent.com/ESA-APEx/apex_algorithms/refs/heads/main/algorithm_catalog/eurac/sentinel1_sar_coherence/openeo_udp/sentinel1_sar_coherence.json",
           **{
-              "temporal_extent": ["2018-01-28", "2018-02-03"],
+              "temporal_extent": ["2018-01-28", "2018-02-04"],
               "temporal_baseline": 6,
               "burst_id": 329488,
               "coherence_window_az": 2,
@@ -105,7 +105,7 @@ $graph:
       
       temporal_extent:
         type: string[]
-        doc: "Temporal extent as [start_date, end_date], e.g., ['2024-08-01', '2024-09-30']"
+        doc: "Temporal extent as [start_date, end_date], e.g., ['2024-08-01', '2024-09-30']. Specify at least a 6 days interval to make sure at least one pair gets found."
 
       spatial_extent:
         type: Any?
