@@ -40,14 +40,14 @@ $graph:
       job.start_and_wait()
       job.get_results().download_files()
       ```
-    baseCommand: /src/sar/sar_interferogram_parallel.py
+    baseCommand: /src/sar/sar_interferogram.py
     requirements:
       - class: InitialWorkDirRequirement
         listing:
           - entryname: "arguments.json"
             entry: $(inputs)
       - class: DockerRequirement
-        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260331T0925-parallel_interferogram
+        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260402T1018-parallel_interferogram
       - class: NetworkAccess
         networkAccess: true
       - class: ResourceRequirement

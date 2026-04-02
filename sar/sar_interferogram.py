@@ -40,16 +40,25 @@ if not "n_rg_looks" in input_dict or not "n_az_looks" in input_dict:
     input_dict["n_rg_looks"] = 4
     input_dict["n_az_looks"] = 1
 _log.info(f"{input_dict=}")
+
+# When using the CWL scatter for parallel execution, we will get only an element containing two dates
+# To make sure everything works, we wrap it into a list
+if not isinstance(input_dict["InSAR_pairs"][0],list):
+    input_dict["InSAR_pairs"] = [input_dict["InSAR_pairs"]]
+
 start_date = min([min(pair) for pair in input_dict["InSAR_pairs"]])
 end_date = max([max(pair) for pair in input_dict["InSAR_pairs"]])
 
-primary_dates = [pair[0] for pair in input_dict["InSAR_pairs"]]
-primary_dates_duplicates = set([d for d in primary_dates if primary_dates.count(d) > 1])
-if primary_dates_duplicates:
-    raise ValueError(
-        f"Duplicate primary date(s) found in InSAR_pairs: {primary_dates_duplicates}. "
-        "You can load multiple primary dates over multiple processes if needed."
-    )
+# We can allow to have multiple results with the same primary date, since we export the SNAP results directly in STAC,
+# we are not supposed to load them again in openEO with load_stac, which would complain about more than one
+# element having the same datetime (if we use the primary date as datetime).
+# primary_dates = [pair[0] for pair in input_dict["InSAR_pairs"]]
+# primary_dates_duplicates = set([d for d in primary_dates if primary_dates.count(d) > 1])
+# if primary_dates_duplicates:
+#     raise ValueError(
+#         f"Duplicate primary date(s) found in InSAR_pairs: {primary_dates_duplicates}. "
+#         "You can load multiple primary dates over multiple processes if needed."
+#     )
 
 result_folder = Path.cwd().absolute()
 # result_folder = repo_directory / "output"
