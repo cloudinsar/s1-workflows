@@ -16,6 +16,7 @@ def test_cwl_validate():
     cwl_files = list((repository_root / "cwl").glob("*.cwl"))
     assert cwl_files
     json_files = list((repository_root / "sar/example_inputs").glob("*.json"))
+    json_files = list(filter(lambda x: "_error" not in str(x), json_files))
     assert json_files
     json_files_new = list(filter(lambda x: "_new" in str(x), json_files))
     json_files_preprocessing = list(filter(lambda x: str(x).endswith("_preprocessing.json"), json_files))
