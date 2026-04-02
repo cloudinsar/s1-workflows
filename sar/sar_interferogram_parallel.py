@@ -65,7 +65,7 @@ _log.info(f"end_date: {end_date}")
 result_folder = Path.cwd().absolute()
 # result_folder = repo_directory / "output"
 # result_folder.mkdir(exist_ok=True)
-tmp_insar = Path("./tmp/insar")
+tmp_insar = Path("/tmp/insar")
 tmp_insar.mkdir(parents=True, exist_ok=True)
 # The InSAR_pairs might contain dates which are far apart, so we shouldn't download all the bursts in between but only the required ones.
 bursts = []
