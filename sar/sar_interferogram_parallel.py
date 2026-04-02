@@ -41,8 +41,12 @@ if not "n_rg_looks" in input_dict or not "n_az_looks" in input_dict:
     input_dict["n_az_looks"] = 1
 _log.info(f"{input_dict=}")
 
-primary_dates = [pair[0] for pair in input_dict["InSAR_pairs"]]
-secondary_dates = [pair[1] for pair in input_dict["InSAR_pairs"]]
+if not isinstance(input_dict["InSAR_pairs"][0],list):
+    input_dict["InSAR_pairs"] = [input_dict["InSAR_pairs"]]
+
+
+primary_date = [pair[0] for pair in input_dict["InSAR_pairs"]]
+secondary_date = [pair[1] for pair in input_dict["InSAR_pairs"]]
 
 
 start_date = min([min(pair) for pair in input_dict["InSAR_pairs"]])
@@ -88,7 +92,8 @@ import json
 set_of_jsons = {json.dumps(d, sort_keys=True) for d in bursts}
 bursts = [json.loads(t) for t in set_of_jsons]
 
-
+# import sys
+# sys.exit(0)
 # flattened_pairs = set()
 # for pair in input_dict["InSAR_pairs"]:
 #     for date in pair:

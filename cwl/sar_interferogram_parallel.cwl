@@ -47,7 +47,7 @@ $graph:
           - entryname: "arguments.json"
             entry: $(inputs)
       - class: DockerRequirement
-        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260326T0832
+        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260331T0925-parallel_interferogram
       - class: NetworkAccess
         networkAccess: true
       - class: ResourceRequirement
@@ -60,9 +60,7 @@ $graph:
       InSAR_pairs:
         type:
           type: array
-          items:
-            type: array
-            items: string
+          items: string
         doc: "The list of [primary date, secondary date] pairs used to compute the interferogram. Use [this notebook](https://github.com/cloudinsar/s1-workflows/blob/main/notebooks/LPS_DEMO/Input_selection.ipynb) to create the list of insar pairs based on your requirements."
       burst_id:
         type: int
@@ -86,14 +84,9 @@ $graph:
         default: 1
         doc: "Multi-look window size in azimuth direction"
       polarization:
-        - type: enum
-          symbols: [ "VV", "VH" ]
+        type: string
       sub_swath:
-        type:
-          type: enum
-          symbols: [ "IW1", "IW2", "IW3" ]
-        default: "IW2"
-        doc: "Sub-swath identifier"
+        type: string
 
     arguments:
       - arguments.json
