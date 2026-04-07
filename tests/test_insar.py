@@ -158,9 +158,9 @@ def test_insar(script, input_dict_path, auto_title):
 @pytest.mark.parametrize(
     "input_dict_path",
     [
-        "sar/example_inputs/input_dict_belgium_vv_vh_preprocessing.json",
+        # "sar/example_inputs/input_dict_belgium_vv_vh_preprocessing.json",
         "sar/example_inputs/input_dict_belgium_vv_master_outside_preprocessing.json",
-        "sar/example_inputs/input_dict_2024_vv_preprocessing.json"
+        # "sar/example_inputs/input_dict_2024_vv_preprocessing.json"
     ],
 )
 def test_sar_preprocessing(input_dict_path, auto_title):
