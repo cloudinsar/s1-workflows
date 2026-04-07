@@ -163,7 +163,7 @@ def test_insar(script, input_dict_path, auto_title):
         "sar/example_inputs/input_dict_2024_vv_preprocessing.json"
     ],
 )
-def test_sar_preprocessing(input_dict, auto_title):
+def test_sar_preprocessing(input_dict_path, auto_title):
     script = "sar/sar_slc_preprocessing.py"
 
     input_dict = json.loads(Path(repo_directory / input_dict_path).read_text())
