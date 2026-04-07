@@ -15,12 +15,26 @@ def test_cwl_validate():
     exec_proc(["node", "--version"])
     cwl_files = list((repository_root / "cwl").glob("*.cwl"))
     assert cwl_files
+    json_files = list((repository_root / "sar/example_inputs").glob("*.json"))
+    json_files = list(filter(lambda x: "_error" not in str(x), json_files))
+    assert json_files
+    json_files_new = list(filter(lambda x: "_new" in str(x), json_files))
+    json_files_preprocessing = list(filter(lambda x: str(x).endswith("_preprocessing.json"), json_files))
+    json_files_rest = set(json_files) - set(json_files_new) - set(json_files_preprocessing) - set(json_files_new) - set(json_files_preprocessing)
+    assert json_files_rest
     for cwl_file in cwl_files:
         print(f"Checking {cwl_file}")
-        cmd = ["cwltool", "--disable-color", "--debug", "--validate", str(cwl_file)]
         name = cwl_file.name
-        if str(name).startswith("sar_coherence"):
-            cmd += [repository_root / "sar/example_inputs/input_dict_test_parallel.json"]
+        json_files_filtered = None
+        if str(name).startswith("sar_coherence_parallel_temporal_extent"):
+            json_files_filtered = json_files_new
+        elif str(name).startswith("sar_coherence_parallel") or str(name).startswith("sar_interferogram"):
+            json_files_filtered = json_files_rest
+        elif str(name).startswith("sar_coherence"):
+            json_files_filtered = json_files_new
         elif str(name).startswith("sar_slc_preprocessing"):
-            cmd += [repository_root / "sar/example_inputs/input_dict_2018_vh_preprocessing.json"]
-        exec_proc(cmd)
+            json_files_filtered = json_files_preprocessing
+        assert json_files_filtered
+        for j in json_files_filtered:
+            cmd = ["cwltool", "--disable-color", "--debug", "--validate", str(cwl_file), j]
+            exec_proc(cmd)
