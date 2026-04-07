@@ -112,7 +112,7 @@ $graph:
           - entryname: "arguments.json"
             entry: $(inputs)
       - class: DockerRequirement
-        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260402T1143-parallel_interferogram
+        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260407T1421-restructure_repo
       - class: NetworkAccess
         networkAccess: true
       - class: ResourceRequirement
