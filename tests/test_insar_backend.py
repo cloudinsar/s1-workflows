@@ -1,5 +1,5 @@
 import logging
-
+import json
 import rioxarray
 from openeo import DataCube
 from openeo.rest.stac_resource import StacResource
@@ -144,15 +144,17 @@ def test_georeferenced_sar(cwl_path, input_dict, auto_title):
 
 @pytest.mark.skip(reason="TODO: Log into openEO backend")
 @pytest.mark.parametrize(
-    "input_dict",
+    "input_dict_path",
     [
         # input_dict_2018_vh_preprocessing,
         # input_dict_belgium_vv_vh_preprocessing,
-        input_dict_belgium_vv_preprocessing,
+        "sar/example_inputs/input_dict_belgium_vv_vh_preprocessing.json",
         # input_dict_2024_vv_preprocessing,
     ],
 )
-def test_sar_preprocessing(input_dict, auto_title):
+def test_sar_preprocessing(input_dict_path, auto_title):
+    input_dict = json.loads(Path(repo_directory / input_dict_path).read_text())
+
     now = datetime.now()
     tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests_", "tests/tmp_")).absolute()
     tmp_dir.mkdir(exist_ok=True)

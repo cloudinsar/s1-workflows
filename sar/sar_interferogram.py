@@ -36,20 +36,29 @@ if not "coherence_window_rg" in input_dict or not "coherence_window_az" in input
     input_dict["coherence_window_rg"] = 10
     input_dict["coherence_window_az"] = 2
 if not "n_rg_looks" in input_dict or not "n_az_looks" in input_dict:
-    _log.info("Setting default multillok parameters")
+    _log.info("Setting default multi-look window size")
     input_dict["n_rg_looks"] = 4
     input_dict["n_az_looks"] = 1
 _log.info(f"{input_dict=}")
+
+# When using the CWL scatter for parallel execution, we will get only an element containing two dates
+# To make sure everything works, we wrap it into a list
+if not isinstance(input_dict["InSAR_pairs"][0],list):
+    input_dict["InSAR_pairs"] = [input_dict["InSAR_pairs"]]
+
 start_date = min([min(pair) for pair in input_dict["InSAR_pairs"]])
 end_date = max([max(pair) for pair in input_dict["InSAR_pairs"]])
 
-primary_dates = [pair[0] for pair in input_dict["InSAR_pairs"]]
-primary_dates_duplicates = set([d for d in primary_dates if primary_dates.count(d) > 1])
-if primary_dates_duplicates:
-    raise ValueError(
-        f"Duplicate primary date(s) found in InSAR_pairs: {primary_dates_duplicates}. "
-        "You can load multiple primary dates over multiple processes if needed."
-    )
+# We can allow to have multiple results with the same primary date, since we export the SNAP results directly in STAC,
+# we are not supposed to load them again in openEO with load_stac, which would complain about more than one
+# element having the same datetime (if we use the primary date as datetime).
+# primary_dates = [pair[0] for pair in input_dict["InSAR_pairs"]]
+# primary_dates_duplicates = set([d for d in primary_dates if primary_dates.count(d) > 1])
+# if primary_dates_duplicates:
+#     raise ValueError(
+#         f"Duplicate primary date(s) found in InSAR_pairs: {primary_dates_duplicates}. "
+#         "You can load multiple primary dates over multiple processes if needed."
+#     )
 
 result_folder = Path.cwd().absolute()
 # result_folder = repo_directory / "output"
@@ -126,7 +135,7 @@ for pair in input_dict["InSAR_pairs"]:
             "gpt",
             str(
                 repo_directory
-                / "snap_graphs/interferogram_sarGeometry.xml"
+                / "notebooks/graphs/interferogram_sarGeometry.xml"
             ),
             f"-Pprm_filename={prm_filename}",
             f"-Psec_filename={sec_filename}",
@@ -143,7 +152,7 @@ for pair in input_dict["InSAR_pairs"]:
             "gpt",
             str(
                 repo_directory
-                / "snap_graphs/snaphu_export.xml"
+                / "notebooks/graphs/snaphu_export.xml"
             ),
             f"-Pphase_filename={output_filename_tmp}.dim",
             f"-Poutput_folder_snaphu={tmp_insar}",
@@ -176,7 +185,7 @@ for pair in input_dict["InSAR_pairs"]:
                 "-J-Xmx14G",
                 str(
                     repo_directory
-                    / "snap_graphs/geocode_snaphuInterferogram_WGS84.xml"
+                    / "notebooks/graphs/geocode_snaphuInterferogram_WGS84.xml"
                 ),
                 f'-Pinterferogram_filename={output_filename_tmp}.dim',
                 f'-PsaveDEM="{str(saveDEM).lower()}"',
