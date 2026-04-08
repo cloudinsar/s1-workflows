@@ -123,7 +123,7 @@ def test_insar_new(script, input_dict_path, auto_title):
     "script",
     [
         "sar_coherence_parallel.py",
-        "sar_interferogram_parallel.py",
+        "sar_interferogram.py",
     ],
 )
 @pytest.mark.parametrize(
