@@ -52,6 +52,14 @@ for date_ref in dates:
                 datetime.strftime(date_ref, "%Y-%m-%d"),
                 datetime.strftime(date_sec, "%Y-%m-%d")
             ])
+
+if len(InSARpairs) == 0:
+    if "T00:00:00" in end_date:
+        raise ValueError(
+            f"Not enough bursts found to make pairs. Is the end time intentionally put in the very beginning of that day? End date: '{end_date}'")
+    else:
+        raise ValueError(f"Not enough bursts found to make pairs for the given parameters: {input_dict}")
+
 input_dict["InSAR_pairs"] = InSARpairs
 
 result_folder = Path.cwd().absolute()

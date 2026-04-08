@@ -229,7 +229,7 @@ prm_output_paths_element = date_to_output_paths[prm_date]
 if len(input_dict["polarization"]) > 1:
     # remove elements matching  "_" + input_dict["polarization"][0] + "_grid_"
     prm_output_paths_element = [
-        path for path in prm_output_paths_element if f"_{input_dict['polarization'][0]}_grid_" not in str(path)
+        path for path in prm_output_paths_element if f"_{input_dict['polarization'][0].lower()}_grid_" not in str(path)
     ]
     date_to_output_paths[prm_date] = prm_output_paths_element
 latlon_band_files = [path for path in prm_output_paths_element if "_grid_" in str(path)]

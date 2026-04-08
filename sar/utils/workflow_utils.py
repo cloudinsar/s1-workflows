@@ -76,7 +76,7 @@ input_dict_2024_vv_parallel = {
     # Multillok parameters:
     "n_az_looks": 1,
     "n_rg_looks": 4,
-    "polarization": "vv",
+    "polarization": "VV",
     "sub_swath": "IW2",
 }
 
@@ -94,7 +94,7 @@ input_dict_2024_vv = {
     # Multillok parameters:
     "n_az_looks": 1,
     "n_rg_looks": 4,
-    "polarization": "vv",
+    "polarization": "VV",
     "sub_swath": "IW2",
 }
 
@@ -105,28 +105,28 @@ input_dict_2018_vh = {
     "coherence_window_rg": 10,
     "n_az_looks": 1,
     "n_rg_looks": 4,
-    "polarization": "vh",
+    "polarization": "VH",
     "sub_swath": "IW2",
 }
 
 input_dict_belgium_vv = {
     "InSAR_pairs": [["2024-08-09", "2024-08-21"]],
     "burst_id": 234893,
-    "polarization": "vv",
+    "polarization": "VV",
     "sub_swath": "IW1",
 }
 input_dict_2018_vh_preprocessing = {
     "temporal_extent": ["2018-01-28", "2018-02-03"],
     "primary_date": "2018-01-28",
     "burst_id": 329488,
-    "polarization": "vh",
+    "polarization": ["VH"],
     "sub_swath": "IW2",
 }
 
 input_dict_belgium_vv_preprocessing = {
     "burst_id": 234893,
     "primary_date": "2024-08-09",
-    "polarization": ["vv"],
+    "polarization": ["VV"],
     "sub_swath": "IW1",
     "temporal_extent": ["2024-08-09", "2024-08-21"],
 }
@@ -134,7 +134,7 @@ input_dict_belgium_vv_preprocessing = {
 input_dict_belgium_vv_master_outside_preprocessing = {
     "burst_id": 234893,
     "primary_date": "2024-09-02",
-    "polarization": ["vv"],
+    "polarization": ["VV"],
     "sub_swath": "IW1",
     "temporal_extent": ["2024-08-09", "2024-08-21"],
 }
@@ -142,7 +142,7 @@ input_dict_belgium_vv_master_outside_preprocessing = {
 input_dict_belgium_vv_vh_preprocessing = {
     "burst_id": 234893,
     "primary_date": "2024-08-09",
-    "polarization": ["vv", "vh"],
+    "polarization": ["VV", "VH"],
     "sub_swath": "IW1",
     "temporal_extent": ["2024-08-09", "2024-09-02"],
 }
@@ -151,7 +151,7 @@ input_dict_belgium_vv_vh_preprocessing = {
 input_dict_2024_vv_preprocessing = {
         "burst_id": 249435,
         "primary_date": "2024-08-09",
-        "polarization": ["vv"],
+        "polarization": ["VV"],
         "sub_swath": "IW2",
         "temporal_extent": [
           "2024-08-08",
@@ -329,9 +329,13 @@ def retrieve_bursts_with_id_and_iw(
         spatial_extent: Optional[dict] = None,
 ) -> List[Dict]:
     assert spatial_extent or burst_id
+    if start_date and not "T" in start_date:
+        start_date = f"{start_date}T00:00:00.000Z"
+    if end_date and not "T" in end_date:
+        end_date = f"{end_date}T23:59:59.000Z"
     filters = [
-        f"ContentDate/Start ge {start_date}T00:00:00.000Z" if start_date else None,
-        f"ContentDate/Start le {end_date}T23:59:59.000Z" if end_date else None,
+        f"ContentDate/Start ge {start_date}" if start_date else None,
+        f"ContentDate/Start le {end_date}" if end_date else None,
         f"PolarisationChannels eq '{pol.upper()}'" if pol else None,
         f"BurstId eq {burst_id}" if burst_id else None,
         f"SwathIdentifier eq '{sbswath.upper()}'" if sbswath else None,

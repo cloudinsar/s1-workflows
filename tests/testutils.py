@@ -11,6 +11,7 @@ from PIL import Image
 from sar.utils.workflow_utils import *
 
 repository_root = Path(__file__).parent.parent
+_log = logging.getLogger(__name__)
 
 
 def assert_xarray_equals(
@@ -60,12 +61,14 @@ def slugify(title):
 def assert_tif_file_is_healthy(tif_path):
     tiff_arr = rioxarray.open_rasterio(tif_path)
     shape = tiff_arr.shape
-    logging.info(f"{shape=}")
+    _log.info(f"{shape=}")
     assert shape[1] > 100
     assert shape[2] > 100
     for b in range(shape[0]):
         band = tiff_arr[b, :, :]
-        assert (band.values != np.nan).any()
+        nan_percentage = np.isnan(band.values).mean()
+        _log.info(f"{nan_percentage=}")
+        assert nan_percentage < 0.8, f"Too high NaN percentage: {nan_percentage}"
 
     # - The offset of the main IFD should be < 300. It is 21236950 instead
     # - The offset of the IFD for overview of index 0 is 684, whereas it should be greater than the one of the main image, which is at byte 21236950
