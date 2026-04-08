@@ -1,6 +1,3 @@
 [submodule "utilities"]
 	path = utilities
 	url = https://github.com/cloudinsar/cdse-utilities.git
-[submodule "esa-snap-docker"]
-	path = esa-snap-docker
-	url = https://github.com/cloudinsar/esa-snap-docker

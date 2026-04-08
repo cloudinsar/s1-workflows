@@ -108,7 +108,7 @@ for pair in input_dict["InSAR_pairs"]:
     if not os.path.exists(output_filename_tmp):
         gpt_cmd = [
             "gpt",
-            str(repo_directory / "notebooks/graphs/coh_2images_GeoTiff.xml"),
+            str(repo_directory / "snap_graphs/coh_2images_GeoTiff.xml"),
             f"-Pprm_filename={prm_filename}",
             f"-Psec_filename={sec_filename}",
             f"-PcohWinRg={input_dict['coherence_window_rg']}",
