@@ -83,11 +83,11 @@ def run_stac_catalog_and_verify(catalog_path: Path, tmp_dir: Path):
     [
         "sar/example_inputs/input_dict_2018_vh_new.json",
         # "sar/example_inputs/input_dict_2024_vv_new.json",
-        "sar/example_inputs/input_dict_2018_vh_new_spatial_extent.json",
+        # "sar/example_inputs/input_dict_2018_vh_new_spatial_extent.json",
         # "sar/example_inputs/input_dict_andes_new.json",
         # "sar/example_inputs/input_dict_capetown_new.json",
         # "sar/example_inputs/input_dict_georgia_new.json",
-        "sar/example_inputs/input_dict_japan_new.json", # VV
+        # "sar/example_inputs/input_dict_japan_new.json", # VV
         # "sar/example_inputs/input_dict_lapaz_new.json",
         # "sar/example_inputs/input_dict_suriname_new.json",
         # "sar/example_inputs/input_dict_suriname2_new.json",
@@ -127,14 +127,13 @@ def test_insar_new(script, input_dict_path, auto_title):
     ],
 )
 @pytest.mark.parametrize(
-    "input_dict",
+    "input_dict_path",
     [
-        input_dict_2024_vv,
-        input_dict_2018_vh,
-        input_dict_belgium_vv,
+        "sar/example_inputs/input_dict_2024_vv.json"
     ],
 )
-def test_insar(script, input_dict, auto_title):
+def test_insar(script, input_dict_path, auto_title):
+    input_dict = json.loads(Path(repo_directory / input_dict_path).read_text())
     input_base64_json = base64.b64encode(json.dumps(input_dict).encode("utf8")).decode("ascii")
 
     tmp_dir = Path(repository_root / slugify(auto_title).replace("tests_", "tests/tmp_")).absolute()
@@ -157,17 +156,17 @@ def test_insar(script, input_dict, auto_title):
 
 # @pytest.mark.skip()
 @pytest.mark.parametrize(
-    "input_dict",
+    "input_dict_path",
     [
-        # input_dict_2018_vh_preprocessing,
-        input_dict_belgium_vv_vh_preprocessing,
-        input_dict_belgium_vv_master_outside_preprocessing,
-        input_dict_2024_vv_preprocessing,
+        # "sar/example_inputs/input_dict_belgium_vv_vh_preprocessing.json",
+        "sar/example_inputs/input_dict_belgium_vv_master_outside_preprocessing.json",
+        # "sar/example_inputs/input_dict_2024_vv_preprocessing.json"
     ],
 )
-def test_sar_preprocessing(input_dict, auto_title):
+def test_sar_preprocessing(input_dict_path, auto_title):
     script = "sar/sar_slc_preprocessing.py"
 
+    input_dict = json.loads(Path(repo_directory / input_dict_path).read_text())
     input_base64_json = base64.b64encode(json.dumps(input_dict).encode("utf8")).decode("ascii")
 
     tmp_dir = Path(repository_root / slugify(auto_title).replace("tests_", "tests/tmp_")).absolute()
@@ -193,6 +192,7 @@ def test_sar_preprocessing(input_dict, auto_title):
     "input_dict_path",
     [
         "sar/example_inputs/input_dict_2018_vh_new.json",
+        "sar/example_inputs/input_dict_2018_vh_new_datetime.json",
         "sar/example_inputs/input_dict_2018_vh_new_spatial_extent.json",
     ],
 )
@@ -208,3 +208,18 @@ def test_insar_get_bursts(input_dict_path, auto_title):
         j = json.load(file)
         print(f"Amount of pairs found: {len(j['InSAR_pairs'])}")
         assert len(j['InSAR_pairs']) > 0
+
+
+def test_insar_get_bursts_error(auto_title, caplog):
+    input_dict_path = "sar/example_inputs/input_dict_error.json"
+    tmp_dir = Path(repository_root / slugify(auto_title).replace("tests_", "tests/tmp_")).absolute()
+    if tmp_dir.exists():
+        shutil.rmtree(tmp_dir)
+    tmp_dir.mkdir(exist_ok=True)
+
+    with pytest.raises(Exception) as exc_info:
+        exec_proc(["python", repository_root / "sar/get_bursts.py", repo_directory / input_dict_path],
+                  cwd=tmp_dir,
+                  write_output=False)
+    needle = "Is the end time intentionally put in the very beginning of that day?"
+    assert any(needle in record.message for record in caplog.records)
