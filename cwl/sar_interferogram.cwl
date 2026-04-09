@@ -15,10 +15,10 @@ $graph:
       ```python
       import openeo
 
-      connection = openeo.connect("openeo.dataspace.copernicus.eu/").authenticate_oidc()
+      connection = openeo.connect("https://openeo.dataspace.copernicus.eu").authenticate_oidc()
       stac_resource = connection.datacube_from_process(
-        "sar_interferogram",
-        namespace="https://raw.githubusercontent.com/ESA-APEx/apex_algorithms/refs/heads/insar/algorithm_catalog/eurac/sar_interferogram/openeo_udp/sar_interferogram.json",
+        "sentinel1_sar_interferogram",
+        namespace="https://raw.githubusercontent.com/ESA-APEx/apex_algorithms/573649f793549fbcd2696b44d5222782ef211bc3/algorithm_catalog/eurac/sentinel1_sar_interferogram/openeo_udp/sentinel1_sar_interferogram.json",
         **{
             "InSAR_pairs": [
                 [
@@ -36,7 +36,7 @@ $graph:
         }
       )
       
-      job = stac_resource.create_job(title="sar_interferogram test")
+      job = stac_resource.create_job(title="sentinel1_sar_interferogram test")
       job.start_and_wait()
       job.get_results().download_files()
       ```
@@ -54,11 +54,10 @@ $graph:
         doc: "The list of [primary date, secondary date] pairs used to compute the interferogram. Use [this notebook](https://github.com/cloudinsar/s1-workflows/blob/main/notebooks/LPS_DEMO/Input_selection.ipynb) to create the list of insar pairs based on your requirements."
 
       burst_id:
-        type: int?
+        type: int
         doc: |
-          A temporal extent could have multiple bursts per day. Use [this notebook](https://github.com/cloudinsar/s1-workflows/blob/main/notebooks/LPS_DEMO/Input_selection.ipynb) to find a fitting `burst_id`.
+         The Sentinel-1 burst identifier. Use [this notebook](https://github.com/cloudinsar/s1-workflows/blob/main/notebooks/LPS_DEMO/Input_selection.ipynb) to find a fitting `burst_id`.
           Alternatively, the burst id map can be downloaded here: [Burst ID Maps 2022-05-30](https://sar-mpc.eu/files/S1_burstid_20220530.zip).
-          You can also specify `temporal_extent` instead, so that a `burst_id` gets automatically selected.
 
       coherence_window_rg:
         type: int?
@@ -69,6 +68,16 @@ $graph:
         type: int?
         default: 2
         doc: "Coherence window size in azimuth direction"
+
+      n_rg_looks:
+        type: int?
+        default: 4
+        doc: "Multi-look window size in range direction"
+
+      n_az_looks:
+        type: int?
+        default: 1
+        doc: "Multi-look window size in azimuth direction"
 
       polarization:
         - type: enum
@@ -93,6 +102,8 @@ $graph:
           burst_id: main/burst_id
           coherence_window_az: main/coherence_window_az
           coherence_window_rg: main/coherence_window_rg
+          n_rg_looks: main/n_rg_looks
+          n_az_looks: main/n_az_looks
           polarization: main/polarization
           sub_swath: main/sub_swath
         out: [ scatter_node_out ]
