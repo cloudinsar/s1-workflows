@@ -97,7 +97,6 @@ def test_georeferenced_new_sar(cwl_path, input_dict_path, auto_title):
 @pytest.mark.parametrize(
     "cwl_path",
     [
-        # "cwl/sar_coherence.cwl",
         "cwl/sar_interferogram.cwl",
     ],
 )
@@ -109,6 +108,7 @@ def test_georeferenced_new_sar(cwl_path, input_dict_path, auto_title):
         # json.loads((repo_directory / "sar/example_inputs/input_dict_whole_2023.json").read_text()),
         json.loads((repo_directory / "sar/example_inputs/input_dict_2024_vv.json").read_text()),
         # json.loads((repo_directory / "sar/example_inputs/input_dict_2023.json").read_text()),
+        # json.loads((repo_directory / "sar/example_inputs/input_dict_2018_vh.json").read_text()),
     ],
 )
 def test_georeferenced_sar(cwl_path, input_dict, auto_title):
