@@ -18,7 +18,7 @@ $graph:
       connection = openeo.connect("https://openeo.dataspace.copernicus.eu").authenticate_oidc()
       stac_resource = connection.datacube_from_process(
         "sentinel1_sar_interferogram",
-        namespace="https://raw.githubusercontent.com/ESA-APEx/apex_algorithms/573649f793549fbcd2696b44d5222782ef211bc3/algorithm_catalog/eurac/sentinel1_sar_interferogram/openeo_udp/sentinel1_sar_interferogram.json",
+        namespace="https://raw.githubusercontent.com/ESA-APEx/apex_algorithms/refs/heads/main/algorithm_catalog/eurac/sentinel1_sar_interferogram/openeo_udp/sentinel1_sar_interferogram.json",
         **{
             "InSAR_pairs": [
                 [

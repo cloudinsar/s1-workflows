@@ -59,7 +59,7 @@ $graph:
       ```python
       import openeo
 
-      connection = openeo.connect("openeo.dataspace.copernicus.eu/").authenticate_oidc()
+      connection = openeo.connect("https://openeo.dataspace.copernicus.eu").authenticate_oidc()
       stac_resource = connection.datacube_from_process(
           "sentinel1_sar_coherence",
           namespace="https://raw.githubusercontent.com/ESA-APEx/apex_algorithms/refs/heads/main/algorithm_catalog/eurac/sentinel1_sar_coherence/openeo_udp/sentinel1_sar_coherence.json",
