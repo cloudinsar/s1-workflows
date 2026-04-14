@@ -2,9 +2,11 @@ import urllib
 import json
 
 import folium
+from folium.plugins import Draw
 from folium.plugins.treelayercontrol import TreeLayerControl
 
 from shapely import from_wkt
+from shapely.geometry import shape
 
 import numpy as np
 import pandas as pd
@@ -22,6 +24,9 @@ from pathlib import Path
 from dateutil.parser import parse
 import datetime
 
+
+import leafmap
+from IPython.display import JSON
 
 def retrieve_bursts(start_date, end_date, pol, aoi):
 
@@ -105,7 +110,7 @@ def show_bursts(bursts, aoi):
     }
     
     TreeLayerControl(overlay_tree=overlay_tree).add_to(m)
-    return m
+    return children, m
 
 
 def display_calendar(year, month, highlighted_dates={}):
