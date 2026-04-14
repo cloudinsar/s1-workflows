@@ -1,11 +1,60 @@
 #!/usr/bin/env python3
+import hashlib
 import logging
-import os
-from typing import List, Union
+from contextlib import contextmanager
+from typing import Union
 
-from .workflow_utils import *
+import pystac
+
+from sar.utils.workflow_utils import *
 
 _log = logging.getLogger(__name__)
+
+_schema_cache_dir = Path(__file__).parent.parent.parent / ".stac_schema_cache"
+
+
+@contextmanager
+def _cached_http():
+    """
+    Context manager that patches pystac's default StacIO to:
+    1. Add User-Agent headers to avoid 403 responses from servers like proj.org
+    2. Cache HTTP responses to disk to avoid repeated external calls
+    """
+    from pystac import StacIO
+    from pystac.stac_io import DefaultStacIO
+
+    cache_dir = Path(_schema_cache_dir)
+    cache_dir.mkdir(parents=True, exist_ok=True)
+
+    class CachingStacIO(DefaultStacIO):
+        def __init__(self):
+            super().__init__(headers={"User-Agent": "Python (https://github.com/cloudinsar/s1-workflows)"})
+
+        def read_text_from_href(self, href: str) -> str:
+            if href.startswith("http"):
+                cache_key = hashlib.md5(href.encode()).hexdigest()
+                suffix = ".txt"
+                if "." in href[-6:] and not href.endswith("/"):
+                    slash_pos = href.rfind("/")
+                    dot_pos = href.rfind(".")
+                    if slash_pos != -1 and dot_pos != -1 and dot_pos > slash_pos:
+                        suffix = "_" + href[slash_pos + 1 :]
+                cache_file = cache_dir / f"{cache_key}{suffix}"
+                if cache_file.exists():
+                    _log.debug(f"Cache hit for {href}")
+                    return cache_file.read_text(encoding="utf-8")
+                _log.debug(f"Fetching {href}")
+                content = super().read_text_from_href(href)
+                cache_file.write_text(content, encoding="utf-8")
+                return content
+            return super().read_text_from_href(href)
+
+    old_default = StacIO._default_io
+    StacIO.set_default(CachingStacIO)
+    try:
+        yield
+    finally:
+        StacIO._default_io = old_default
 
 
 def generate_catalog(
@@ -255,7 +304,8 @@ def generate_catalog(
         logging.basicConfig(level=logging.DEBUG)
 
         collection = Collection.from_file(stac_root / collection_filename)
-        collection.validate_all()
+        with _cached_http():
+            collection.validate_all()
         _log.info("pystac validation successful")
     except Exception as e:
         _log.info("pystac validation failed: " + str(e))
@@ -268,5 +318,12 @@ if __name__ == "__main__":
         generate_catalog(Path(sys.argv[1]))
     else:
         _log.info("Using debug arguments!")
+        with _cached_http():
+            # This is a test snippet to run in a safe environment, intended to pe-load the cache:
+            s = pystac.StacIO.default()
+            s.read_text("https://stac-extensions.github.io/datacube/v2.2.0/schema.json")
+            s.read_text("https://proj.org/schemas/v0.2/projjson.schema.json")
+            s.read_text("https://proj.org/schemas/v0.4/projjson.schema.json")
+
         generate_catalog(Path("."), date_regex=re.compile(r".*_(?P<date1>\d{8}T\d{6}).nc$"))
     _log.info("done")
