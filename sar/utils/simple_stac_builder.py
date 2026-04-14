@@ -319,10 +319,11 @@ if __name__ == "__main__":
     else:
         _log.info("Using debug arguments!")
         with _cached_http():
-            # Cache common URLs
+            # This is a test snippet to run in a safe environment, intended to pe-load the cache:
             s = pystac.StacIO.default()
             s.read_text("https://stac-extensions.github.io/datacube/v2.2.0/schema.json")
             s.read_text("https://proj.org/schemas/v0.2/projjson.schema.json")
             s.read_text("https://proj.org/schemas/v0.4/projjson.schema.json")
+
         generate_catalog(Path("."), date_regex=re.compile(r".*_(?P<date1>\d{8}T\d{6}).nc$"))
     _log.info("done")
