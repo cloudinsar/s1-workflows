@@ -346,10 +346,10 @@ def retrieve_bursts_with_id_and_iw(
         print(f"Visualize WKT: https://wktmap.com/?wkt={urllib.parse.quote_plus(wkt)}")
         filters.append(f"Data.CSC.Intersects(area=geography'{wkt}')")
 
-    filters = list(filter(None, filters))
+    filters2 = list(filter(None, filters))
     page_size = 1000
     https_request = "https://catalogue.dataspace.copernicus.eu/odata/v1/Bursts?$filter=" + urllib.parse.quote(
-        " and ".join(filters)) + f"&$top={page_size}"
+        " and ".join(filters2)) + f"&$top={page_size}"
     print(https_request)
     with urllib.request.urlopen(https_request) as response:
         content = response.read().decode()
