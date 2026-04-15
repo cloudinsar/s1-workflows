@@ -40,8 +40,7 @@ export PATH="${PATH}:/root/.nvm/versions/node/v24.11.1/bin"
 cd "$SCRIPT_DIR"
 # General dependencies are probably already installed. Now download test dependencies:
 python -m pip install -q -e ".[dev]"
-python -m pytest
 
-# mypy has error, only on GitHub Actions CI:
-# tests/testutils.py:35: error: Value of type variable "_ArrayT" of "append" cannot be "ndarray[Any, Any] | DataArray | ndarray[tuple[Any, ...], dtype[Any]]"  [type-var]
-# mypy --ignore-missing-imports --no-strict-optional --allow-untyped-globals --allow-redefinition --no-warn-unreachable sar/sar_coherence.py
+mypy --ignore-missing-imports --no-strict-optional --allow-untyped-globals --allow-redefinition --no-warn-unreachable sar
+
+python -m pytest
