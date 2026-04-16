@@ -33,7 +33,7 @@ def assert_xarray_equals(
             difference_ndarray.shape[1],
             difference_ndarray.shape[2],
         )
-        difference_ndarray = np.append(difference_ndarray, np.zeros(band_slice_shape), axis=0)
+        difference_ndarray = np.append(np.asarray(difference_ndarray), np.zeros(band_slice_shape), axis=0)
         difference_ndarray_rgb = difference_ndarray.transpose(1, 2, 0).astype("|u1")
         im = Image.fromarray(difference_ndarray_rgb)
         im.save("tmp_diff.tiff")

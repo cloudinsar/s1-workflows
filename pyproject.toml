@@ -38,6 +38,7 @@ dev = [
     "cwltool>=3.0.0",
     "mypy",
     "openeo",
+    # "openeo_driver", Get's installed in editable mode.
 ]
 
 [tool.setuptools.packages.find]
@@ -68,3 +69,6 @@ timeout = 4800
 [[tool.mypy.overrides]]
 module = ["osgeo.*"]
 ignore_missing_imports = true
+
+[tool.mypy]
+allow_redefinition = true
