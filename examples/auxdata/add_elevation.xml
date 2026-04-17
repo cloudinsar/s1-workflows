@@ -5,7 +5,7 @@
     <sources/>
     <parameters class="com.bc.ceres.binding.dom.XppDomElement">
       <useAdvancedOptions>false</useAdvancedOptions>
-      <file>/${input_filename}</file>
+      <file>${input_filename}</file>
       <formatName>GeoTIFF</formatName>
       <copyMetadata>true</copyMetadata>
       <bandNames/>
