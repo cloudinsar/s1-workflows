@@ -89,6 +89,7 @@ RUN wget https://step.esa.int/thirdparties/snaphu/2.0.4/snaphu-v2.0.4_linux.zip 
 ENV PATH="$PATH:/opt/snaphu-v2.0.4_linux/bin"
 
 # COPY . /src
+COPY ./.stac_schema_cache /src/.stac_schema_cache/
 COPY ./utilities /src/utilities/
 COPY ./snap_graphs/ /src/snap_graphs/
 COPY ./sar /src/sar/
