@@ -4,6 +4,9 @@ from testutils import *
 def test_parse_date():
     parse_date("2025-11-26")
     parse_date("20251126")
+    parse_date("2025-1-26")
+    parse_date("2025-01-1")
+    parse_date("2024-08-09T00:00:00Z") # from the datetime picker in the openEO editor
 
 
 def test_logging():

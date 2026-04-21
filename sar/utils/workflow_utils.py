@@ -188,17 +188,14 @@ def date_from_burst(burst_path):
 
 
 def parse_date(date_str: str) -> datetime:
-    if re.match(r"^\d{4}-\d{2}-\d{2}$", date_str) or re.match(r"^\d{4}-\d{1}-\d{1}$", date_str):
+    if re.match(r"^\d{4}-\d{1,2}-\d{1,2}$", date_str):
         return datetime.strptime(date_str, "%Y-%m-%d")
-    if re.match(r"^\d{4}\d{2}\d{2}$", date_str) or re.match(r"^\d{4}\d{1}\d{1}$", date_str):
+    if re.match(r"^\d{4}\d{2}\d{2}$", date_str):
         return datetime.strptime(date_str, "%Y%m%d")
+    if re.match(r"^\d{4}-\d{1,2}-\d{1,2}T\d{1,2}:\d{1,2}:\d{1,2}Z$", date_str):
+        return datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ")
     try:
         return datetime.strptime(date_str, "%Y%m%dT%H%M%S")
-    except ValueError:
-        pass
-    try:
-        # For example '2024-08-09T00:00:00Z' from the datetime picker in the openEO editor:
-        return datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ")
     except ValueError:
         pass
     return datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S.%fZ")
