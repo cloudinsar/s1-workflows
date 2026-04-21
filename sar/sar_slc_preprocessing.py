@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 import base64
-import glob
 import os
 import subprocess
 import sys
-import urllib.request
-from typing import Any, Dict, Optional
 from datetime import datetime
+from typing import Dict
 
 from sar.utils import simple_stac_builder
 from sar.utils import tiff_to_gtiff
@@ -31,13 +29,13 @@ else:
     input_dict = {
         "burst_id": 234893,
         "primary_date": "2024-09-02",
-        "polarization": ["vv", "vh"],
+        "polarization": ["VV", "VH"],
         "sub_swath": "IW1",
         "temporal_extent": ["2024-08-09", "2024-08-21"],
     }
 
 if not input_dict.get("polarization"):
-    input_dict["polarization"] = ["vv", "vh"]
+    input_dict["polarization"] = ["VV", "VH"]
 elif isinstance(input_dict.get("polarization"), str):
     input_dict["polarization"] = [input_dict.get("polarization")]
 if not input_dict.get("sub_swath"):
@@ -59,8 +57,8 @@ def add_to_date_dict(date: datetime, paths: list):
         date_to_output_paths[date] = []
     date_to_output_paths[date].extend(paths)
 
-
-prm_date_optional: Optional[datetime] = None
+# Use epoch date as default:
+prm_date: datetime = datetime(1970, 1, 1, 0, 0, 0)
 for pol in input_dict["polarization"]:
 
     primary_date = parse_date(input_dict["primary_date"])
@@ -124,7 +122,6 @@ for pol in input_dict["polarization"]:
     if prm_filename is None:
         raise FileNotFoundError("No burst found for primary date: " + str(input_prm_date))
     prm_date = parse_date(date_from_burst(prm_filename))
-    prm_date_optional = prm_date
     prm_bandname = f'{input_dict["sub_swath"].upper()}_{pol.upper()}_mst_{prm_date.strftime("%d%b%Y")}'
 
     burst_paths.remove(prm_filename)  # don't let primary and secondary be the same
@@ -211,8 +208,7 @@ for pol in input_dict["polarization"]:
                              )
         # TODO: Delete tmp files
 
-assert prm_date_optional
-prm_date = prm_date_optional
+assert prm_date.year != 1970
 
 # date_to_output_paths = {datetime(2024, 8, 9, 5, 59, 7).date(): ['/home/emile/openeo/s1-workflows/S1_2images_prm_20240809T055907_vv_i_VV.tif',
 #                                            '/home/emile/openeo/s1-workflows/S1_2images_prm_20240809T055907_vv_q_VV.tif',

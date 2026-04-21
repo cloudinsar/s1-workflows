@@ -48,4 +48,4 @@ outputs:
   output_results:
     type: Directory
     outputBinding:
-      glob: .
+      glob: [ "collection.json", "*2images*" ]
