@@ -1,4 +1,10 @@
 #!/usr/bin/env cwl-runner
+# LOCAL USAGE:
+#   cwltool --no-read-only --parallel --tmpdir-prefix=$HOME/tmp/ \
+#           --preserve-environment=AWS_ACCESS_KEY_ID \
+#           --preserve-environment=AWS_SECRET_ACCESS_KEY \
+#           --preserve-environment=AWS_ENDPOINT_URL_S3 \
+#           cwl/sar_slc_preprocessing.cwl sar/example_inputs/input_dict_belgium_vv_preprocessing.json
 cwlVersion: v1.2
 class: CommandLineTool
 baseCommand: /src/sar/sar_slc_preprocessing.py
@@ -8,7 +14,7 @@ doc: |
   The resulting co‑registered SLC stack provides the fundamental input for a wide range of advanced SAR analyses, including InSAR interferogram generation, coherence estimation, and polarimetric processing.
 requirements:
   DockerRequirement:
-    dockerPull: ghcr.io/cloudinsar/openeo_insar:20260317T1236
+    dockerPull: ghcr.io/cloudinsar/openeo_insar:20260421T0923
   NetworkAccess:
     networkAccess: true
   InitialWorkDirRequirement:
@@ -16,8 +22,8 @@ requirements:
       - entryname: "arguments.json"
         entry: $(inputs)
   ResourceRequirement:
-    ramMin: 7000
-    ramMax: 7000
+    ramMin: 11000
+    ramMax: 11000
     coresMin: 2
     coresMax: 7
 arguments:
@@ -30,11 +36,16 @@ inputs:
   primary_date:
     type: string
   polarization:
-    type: string[]
+    type:
+      type: array
+      items:
+        type: enum
+        symbols: [ "VV", "VH" ]
   sub_swath:
-    type: string
+    - type: enum
+      symbols: [ "IW1", "IW2", "IW3" ]
 outputs:
-  output_file:
-    type: File[]
+  output_results:
+    type: Directory
     outputBinding:
-      glob: ["collection.json", "*2images*"]
+      glob: .

@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 import base64
-import glob
 import os
 import subprocess
 import sys
-import urllib.request
-from typing import Any, Dict, Optional
 from datetime import datetime
+from typing import Dict
 
 from sar.utils import simple_stac_builder
 from sar.utils import tiff_to_gtiff
@@ -18,6 +16,7 @@ _log = logging.getLogger(__name__)
 
 start_time = datetime.now()
 
+input_dict: dict
 if len(sys.argv) > 1:
     arg = sys.argv[1]
     if os.path.isfile(arg):
@@ -26,17 +25,10 @@ if len(sys.argv) > 1:
         input_dict = json.loads(base64.b64decode(arg.encode("utf8")).decode("utf8"))
 else:
     _log.info("Using debug arguments!")
-    # input_dict = input_dict_2018_vh_preprocessing
-    input_dict = {
-        "burst_id": 234893,
-        "primary_date": "2024-09-02",
-        "polarization": ["vv", "vh"],
-        "sub_swath": "IW1",
-        "temporal_extent": ["2024-08-09", "2024-08-21"],
-    }
+    input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_2018_vh_preprocessing.json").read_text())
 
 if not input_dict.get("polarization"):
-    input_dict["polarization"] = ["vv", "vh"]
+    input_dict["polarization"] = ["VV", "VH"]
 elif isinstance(input_dict.get("polarization"), str):
     input_dict["polarization"] = [input_dict.get("polarization")]
 if not input_dict.get("sub_swath"):
@@ -49,6 +41,9 @@ result_folder = Path.cwd().absolute()
 # result_folder.mkdir(exist_ok=True)
 tmp_insar = Path("/tmp/insar")
 tmp_insar.mkdir(parents=True, exist_ok=True)
+now = datetime.now()
+tmp_insar_tmp = tmp_insar / ("tmp-" + now.strftime("%Y%m%dT%H%M%S%f") + "_" + str(os.path.basename(__file__)))
+tmp_insar_tmp.mkdir()
 
 date_to_output_paths: Dict[datetime, list] = dict()
 
@@ -58,8 +53,8 @@ def add_to_date_dict(date: datetime, paths: list):
         date_to_output_paths[date] = []
     date_to_output_paths[date].extend(paths)
 
-
-prm_date: Optional[datetime] = None
+# Use epoch date as default:
+prm_date: datetime = datetime(1970, 1, 1, 0, 0, 0)
 for pol in input_dict["polarization"]:
 
     primary_date = parse_date(input_dict["primary_date"])
@@ -135,10 +130,10 @@ for pol in input_dict["polarization"]:
     sec_bandname = f'{input_dict["sub_swath"].upper()}_{pol.upper()}_slv1_{sec_date.strftime("%d%b%Y")}'
     # Avoid "2images" in the name here:
     output_prm_filename_tmp = (
-        f"{result_folder}/tmp_prm_{prm_date.strftime('%Y%m%dT%H%M%S')}_{pol.lower()}.tif"
+        f"{tmp_insar_tmp}/tmp_prm_{prm_date.strftime('%Y%m%dT%H%M%S')}_{pol.lower()}.tif"
     )
     output_sec_filename_tmp = (
-        f"{result_folder}/tmp_sec_{sec_date.strftime('%Y%m%dT%H%M%S')}_{pol.lower()}.tif"
+        f"{tmp_insar_tmp}/tmp_sec_{sec_date.strftime('%Y%m%dT%H%M%S')}_{pol.lower()}.tif"
     )
     if not os.path.exists(output_prm_filename_tmp) or not os.path.exists(
             output_sec_filename_tmp
@@ -157,7 +152,6 @@ for pol in input_dict["polarization"]:
             f"-Poutput_prm_filename={output_prm_filename_tmp}",
             f"-Poutput_sec_filename={output_sec_filename_tmp}",
         ] + snap_extra_arguments
-        _log.info(gpt_cmd)
         exec_proc(gpt_cmd, write_output=False)
 
     output_prm_filename = f"{result_folder}/S1_2images_prm_{prm_date.strftime('%Y%m%dT%H%M%S')}_{pol.lower()}_<band_name>.tif"
@@ -195,8 +189,7 @@ for pol in input_dict["polarization"]:
                 f"-Pi_q_sec_bandnames=i_{sec_bandname},q_{sec_bandname}",
                 f"-Poutput_sec_filename={output_sec_filename_tmp}",
             ] + snap_extra_arguments
-            _log.info(gpt_cmd)
-            subprocess.check_call(gpt_cmd, stderr=subprocess.STDOUT)
+            exec_proc(gpt_cmd, write_output=False)
 
         output_sec_filename = (
             f"{result_folder}/S1_2images_sec_{sec_date.strftime('%Y%m%dT%H%M%S')}_<band_name>.tif"
@@ -209,7 +202,8 @@ for pol in input_dict["polarization"]:
                              )
         # TODO: Delete tmp files
 
-assert prm_date
+assert prm_date.year != 1970
+
 # date_to_output_paths = {datetime(2024, 8, 9, 5, 59, 7).date(): ['/home/emile/openeo/s1-workflows/S1_2images_prm_20240809T055907_vv_i_VV.tif',
 #                                            '/home/emile/openeo/s1-workflows/S1_2images_prm_20240809T055907_vv_q_VV.tif',
 #                                            '/home/emile/openeo/s1-workflows/S1_2images_prm_20240809T055907_vv_grid_lat.tif',

@@ -22,7 +22,7 @@ if len(sys.argv) > 1:
         input_dict = json.loads(base64.b64decode(arg.encode("utf8")).decode("utf8"))
 else:
     _log.info("Using debug arguments!")
-    input_dict = input_dict_2018_vh
+    input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_2018_vh.json").read_text())
 
 default_dict = {
     "polarization": "vv",

@@ -63,102 +63,6 @@ def setup_insar_environment():
         _log.info("adding SNAP to PATH")  # needed when running outside of docker
         os.environ["PATH"] = os.environ["PATH"] + ":/usr/local/esa-snap/bin"
 
-
-input_dict_2024_vv_parallel = {
-    "temporal_extent": [
-    "2024-08-09",
-    "2024-09-03"
-  ],
-    "burst_id": 249435,
-    # Coherence window size:
-    "coherence_window_az": 2,
-    "coherence_window_rg": 10,
-    # Multillok parameters:
-    "n_az_looks": 1,
-    "n_rg_looks": 4,
-    "polarization": "VV",
-    "sub_swath": "IW2",
-}
-
-input_dict_2024_vv = {
-    "InSAR_pairs": [
-        ["2024-08-09", "2024-08-21"],
-        ["2024-08-21", "2024-09-02"],
-        # ["2024-08-21", "2024-09-14"],
-        # ["2024-09-02", "2024-09-14"],
-    ],
-    "burst_id": 249435,
-    # Coherence window size:
-    "coherence_window_az": 2,
-    "coherence_window_rg": 10,
-    # Multillok parameters:
-    "n_az_looks": 1,
-    "n_rg_looks": 4,
-    "polarization": "VV",
-    "sub_swath": "IW2",
-}
-
-input_dict_2018_vh = {
-    "InSAR_pairs": [["2018-01-28", "2018-02-03"]],
-    "burst_id": 329488,
-    "coherence_window_az": 2,
-    "coherence_window_rg": 10,
-    "n_az_looks": 1,
-    "n_rg_looks": 4,
-    "polarization": "VH",
-    "sub_swath": "IW2",
-}
-
-input_dict_belgium_vv = {
-    "InSAR_pairs": [["2024-08-09", "2024-08-21"]],
-    "burst_id": 234893,
-    "polarization": "VV",
-    "sub_swath": "IW1",
-}
-input_dict_2018_vh_preprocessing = {
-    "temporal_extent": ["2018-01-28", "2018-02-03"],
-    "primary_date": "2018-01-28",
-    "burst_id": 329488,
-    "polarization": ["VH"],
-    "sub_swath": "IW2",
-}
-
-input_dict_belgium_vv_preprocessing = {
-    "burst_id": 234893,
-    "primary_date": "2024-08-09",
-    "polarization": ["VV"],
-    "sub_swath": "IW1",
-    "temporal_extent": ["2024-08-09", "2024-08-21"],
-}
-
-input_dict_belgium_vv_master_outside_preprocessing = {
-    "burst_id": 234893,
-    "primary_date": "2024-09-02",
-    "polarization": ["VV"],
-    "sub_swath": "IW1",
-    "temporal_extent": ["2024-08-09", "2024-08-21"],
-}
-
-input_dict_belgium_vv_vh_preprocessing = {
-    "burst_id": 234893,
-    "primary_date": "2024-08-09",
-    "polarization": ["VV", "VH"],
-    "sub_swath": "IW1",
-    "temporal_extent": ["2024-08-09", "2024-09-02"],
-}
-
-# Parameters that gave empty bands on staging:
-input_dict_2024_vv_preprocessing = {
-        "burst_id": 249435,
-        "primary_date": "2024-08-09",
-        "polarization": ["VV"],
-        "sub_swath": "IW2",
-        "temporal_extent": [
-          "2024-08-08",
-          "2024-09-03"
-        ]
-}
-
 snap_extra_arguments = [
     "-J-Dsnap.dataio.bigtiff.compression.type=LZW",
     "-J-Dsnap.dataio.bigtiff.tiling.width=512",
@@ -317,7 +221,7 @@ def exec_proc(command, cwd=None, write_output=True, env=None):
 
     if ret != 0:
         if not write_output:
-            _log.info(output)
+            _log.warning(output)
         raise Exception("Process returned error status code: " + str(ret))
     return ret, output
 
