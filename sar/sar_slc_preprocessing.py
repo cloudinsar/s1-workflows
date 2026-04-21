@@ -18,6 +18,7 @@ _log = logging.getLogger(__name__)
 
 start_time = datetime.now()
 
+input_dict: dict
 if len(sys.argv) > 1:
     arg = sys.argv[1]
     if os.path.isfile(arg):
@@ -59,7 +60,7 @@ def add_to_date_dict(date: datetime, paths: list):
     date_to_output_paths[date].extend(paths)
 
 
-prm_date: Optional[datetime] = None
+prm_date_optional: Optional[datetime] = None
 for pol in input_dict["polarization"]:
 
     primary_date = parse_date(input_dict["primary_date"])
@@ -123,6 +124,7 @@ for pol in input_dict["polarization"]:
     if prm_filename is None:
         raise FileNotFoundError("No burst found for primary date: " + str(input_prm_date))
     prm_date = parse_date(date_from_burst(prm_filename))
+    prm_date_optional = prm_date
     prm_bandname = f'{input_dict["sub_swath"].upper()}_{pol.upper()}_mst_{prm_date.strftime("%d%b%Y")}'
 
     burst_paths.remove(prm_filename)  # don't let primary and secondary be the same
@@ -209,7 +211,9 @@ for pol in input_dict["polarization"]:
                              )
         # TODO: Delete tmp files
 
-assert prm_date
+assert prm_date_optional
+prm_date = prm_date_optional
+
 # date_to_output_paths = {datetime(2024, 8, 9, 5, 59, 7).date(): ['/home/emile/openeo/s1-workflows/S1_2images_prm_20240809T055907_vv_i_VV.tif',
 #                                            '/home/emile/openeo/s1-workflows/S1_2images_prm_20240809T055907_vv_q_VV.tif',
 #                                            '/home/emile/openeo/s1-workflows/S1_2images_prm_20240809T055907_vv_grid_lat.tif',
