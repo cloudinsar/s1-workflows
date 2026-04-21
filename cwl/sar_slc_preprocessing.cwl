@@ -1,4 +1,10 @@
 #!/usr/bin/env cwl-runner
+# LOCAL USAGE:
+#   cwltool --no-read-only --parallel --tmpdir-prefix=$HOME/tmp/ \
+#           --preserve-environment=AWS_ACCESS_KEY_ID \
+#           --preserve-environment=AWS_SECRET_ACCESS_KEY \
+#           --preserve-environment=AWS_ENDPOINT_URL_S3 \
+#           cwl/sar_slc_preprocessing.cwl sar/example_inputs/input_dict_belgium_vv_preprocessing.json
 cwlVersion: v1.2
 class: CommandLineTool
 baseCommand: /src/sar/sar_slc_preprocessing.py
@@ -33,13 +39,13 @@ inputs:
     type:
       type: array
       items:
-        - type: enum
-          symbols: [ "VV", "VH" ]
+        type: enum
+        symbols: [ "VV", "VH" ]
   sub_swath:
     - type: enum
       symbols: [ "IW1", "IW2", "IW3" ]
 outputs:
-  output_file:
-    type: File[]
+  output_results:
+    type: Directory
     outputBinding:
-      glob: ["collection.json", "*2images*"]
+      glob: .
