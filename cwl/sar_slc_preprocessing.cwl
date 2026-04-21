@@ -14,7 +14,7 @@ doc: |
   The resulting co‑registered SLC stack provides the fundamental input for a wide range of advanced SAR analyses, including InSAR interferogram generation, coherence estimation, and polarimetric processing.
 requirements:
   DockerRequirement:
-    dockerPull: ghcr.io/cloudinsar/openeo_insar:20260421T0923
+    dockerPull: ghcr.io/cloudinsar/openeo_insar:20260421T1438
   NetworkAccess:
     networkAccess: true
   InitialWorkDirRequirement:
