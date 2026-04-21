@@ -93,7 +93,7 @@ def test_georeferenced_new_sar(cwl_path, input_dict_path, auto_title):
             assert_tif_file_is_healthy(tif_path)
 
 
-# @pytest.mark.skip(reason="TODO: Log into openEO backend")
+@pytest.mark.skip(reason="TODO: Log into openEO backend")
 @pytest.mark.parametrize(
     "cwl_path",
     [
@@ -142,12 +142,12 @@ def test_georeferenced_sar(cwl_path, input_dict, auto_title):
             assert_tif_file_is_healthy(tif_path)
 
 
-# @pytest.mark.skip(reason="TODO: Log into openEO backend")
+@pytest.mark.skip(reason="TODO: Log into openEO backend")
 @pytest.mark.parametrize(
     "input_dict_path",
     [
-        # "sar/example_inputs/input_dict_2018_vh_preprocessing.json",
-        "sar/example_inputs/input_dict_belgium_vv_vh_preprocessing.json",
+        "sar/example_inputs/input_dict_2018_vh_preprocessing.json",
+        # "sar/example_inputs/input_dict_belgium_vv_vh_preprocessing.json",
         # "sar/example_inputs/input_dict_2024_vv_preprocessing.json",
     ],
 )
