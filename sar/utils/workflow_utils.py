@@ -196,6 +196,11 @@ def parse_date(date_str: str) -> datetime:
         return datetime.strptime(date_str, "%Y%m%dT%H%M%S")
     except ValueError:
         pass
+    try:
+        # For example '2024-08-09T00:00:00Z' from the datetime picker in the openEO editor:
+        return datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ")
+    except ValueError:
+        pass
     return datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S.%fZ")
 
 
