@@ -25,14 +25,7 @@ if len(sys.argv) > 1:
         input_dict = json.loads(base64.b64decode(arg.encode("utf8")).decode("utf8"))
 else:
     _log.info("Using debug arguments!")
-    # input_dict = input_dict_2018_vh_preprocessing
-    input_dict = {
-        "burst_id": 234893,
-        "primary_date": "2024-09-02",
-        "polarization": ["VV", "VH"],
-        "sub_swath": "IW1",
-        "temporal_extent": ["2024-08-09", "2024-08-21"],
-    }
+    input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_2018_vh_preprocessing.json").read_text())
 
 if not input_dict.get("polarization"):
     input_dict["polarization"] = ["VV", "VH"]
@@ -48,6 +41,9 @@ result_folder = Path.cwd().absolute()
 # result_folder.mkdir(exist_ok=True)
 tmp_insar = Path("/tmp/insar")
 tmp_insar.mkdir(parents=True, exist_ok=True)
+now = datetime.now()
+tmp_insar_tmp = tmp_insar / ("tmp-" + now.strftime("%Y%m%dT%H%M%S%f") + "_" + str(os.path.basename(__file__)))
+tmp_insar_tmp.mkdir()
 
 date_to_output_paths: Dict[datetime, list] = dict()
 
@@ -134,10 +130,10 @@ for pol in input_dict["polarization"]:
     sec_bandname = f'{input_dict["sub_swath"].upper()}_{pol.upper()}_slv1_{sec_date.strftime("%d%b%Y")}'
     # Avoid "2images" in the name here:
     output_prm_filename_tmp = (
-        f"{result_folder}/tmp_prm_{prm_date.strftime('%Y%m%dT%H%M%S')}_{pol.lower()}.tif"
+        f"{tmp_insar_tmp}/tmp_prm_{prm_date.strftime('%Y%m%dT%H%M%S')}_{pol.lower()}.tif"
     )
     output_sec_filename_tmp = (
-        f"{result_folder}/tmp_sec_{sec_date.strftime('%Y%m%dT%H%M%S')}_{pol.lower()}.tif"
+        f"{tmp_insar_tmp}/tmp_sec_{sec_date.strftime('%Y%m%dT%H%M%S')}_{pol.lower()}.tif"
     )
     if not os.path.exists(output_prm_filename_tmp) or not os.path.exists(
             output_sec_filename_tmp
@@ -156,7 +152,6 @@ for pol in input_dict["polarization"]:
             f"-Poutput_prm_filename={output_prm_filename_tmp}",
             f"-Poutput_sec_filename={output_sec_filename_tmp}",
         ] + snap_extra_arguments
-        _log.info(gpt_cmd)
         exec_proc(gpt_cmd, write_output=False)
 
     output_prm_filename = f"{result_folder}/S1_2images_prm_{prm_date.strftime('%Y%m%dT%H%M%S')}_{pol.lower()}_<band_name>.tif"
@@ -194,8 +189,7 @@ for pol in input_dict["polarization"]:
                 f"-Pi_q_sec_bandnames=i_{sec_bandname},q_{sec_bandname}",
                 f"-Poutput_sec_filename={output_sec_filename_tmp}",
             ] + snap_extra_arguments
-            _log.info(gpt_cmd)
-            subprocess.check_call(gpt_cmd, stderr=subprocess.STDOUT)
+            exec_proc(gpt_cmd, write_output=False)
 
         output_sec_filename = (
             f"{result_folder}/S1_2images_sec_{sec_date.strftime('%Y%m%dT%H%M%S')}_<band_name>.tif"
