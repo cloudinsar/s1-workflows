@@ -93,7 +93,7 @@ def test_georeferenced_new_sar(cwl_path, input_dict_path, auto_title):
             assert_tif_file_is_healthy(tif_path)
 
 
-@pytest.mark.skip(reason="TODO: Log into openEO backend")
+# @pytest.mark.skip(reason="TODO: Log into openEO backend")
 @pytest.mark.parametrize(
     "cwl_path",
     [
@@ -159,16 +159,12 @@ def test_sar_preprocessing(input_dict_path, auto_title):
     tmp_dir.mkdir(exist_ok=True)
     cwl_path = "cwl/sar_slc_preprocessing.cwl"
     cwl = Path(repository_root / cwl_path).read_text()
-    datacube = get_connection().datacube_from_process(
-        "run_udf",
-        data=None,
-        udf=cwl,
-        runtime="EOAP-CWL",
-        context=input_dict,
-    )
+    stac_resource = StacResource(graph=PGNode("run_cwl_to_stac", namespace=None, arguments={
+        "cwl": cwl,
+        "context": input_dict,
+    }), connection=get_connection())
 
     if local_openEO:
-        stac_resource = datacube.save_result(format="NetCDF")
         # stac_resource.download(tmp_dir / "result.nc")
         # Run in the same process, so that we can check the output directly:
         from openeogeotrellis.deploy.run_graph_locally import run_graph_locally
@@ -176,7 +172,6 @@ def test_sar_preprocessing(input_dict_path, auto_title):
 
         run_graph_locally(tmp_dir / "process_graph.json", tmp_dir)
     else:
-        stac_resource = datacube.save_result(format="GTiff") #, options={"overviews": "OFF"})
         # stac_resource = stac_resource.export_workspace(
         #     workspace="insar-results-workspace",
         #     merge=f"{auto_title}_{datetime.now().strftime('%Y-%m-%d_%H%M%S')}",

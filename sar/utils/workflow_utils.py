@@ -221,7 +221,7 @@ def exec_proc(command, cwd=None, write_output=True, env=None):
 
     if ret != 0:
         if not write_output:
-            _log.info(output)
+            _log.warning(output)
         raise Exception("Process returned error status code: " + str(ret))
     return ret, output
 
