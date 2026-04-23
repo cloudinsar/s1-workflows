@@ -31,10 +31,15 @@ arguments:
 inputs:
   temporal_extent:
     type: string[]
+    doc: "Temporal extent as [start_date, end_date], e.g., ['2024-08-01', '2024-09-30']."
   burst_id:
     type: int
+    doc: |
+      A temporal extent could have multiple bursts per day. Use [this notebook](https://github.com/cloudinsar/s1-workflows/blob/main/notebooks/LPS_DEMO/Input_selection.ipynb) to find a fitting `burst_id`.
+      Alternatively, the burst id map can be downloaded here: [Burst ID Maps 2022-05-30](https://sar-mpc.eu/files/S1_burstid_20220530.zip).
   primary_date:
     type: string
+    doc: "Acquisition date of the image to be used as reference of the coregistration operation."
   polarization:
     type:
       type: array
