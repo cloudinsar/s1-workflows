@@ -22,7 +22,7 @@ Generates geocoded InSAR coherence products.
 3. [`sentinel1_sar_interferogram`](https://algorithm-catalogue.apex.esa.int/apps/sentinel1_sar_interferogram) -
 Generates geocoded interferograms including coherence, and wrapped and unwrapped phase.
 
-4. `sentinel1_slc_preprocessing` -
+4. [`sentinel1_sar_slc_preprocessing`](https://esa-apex.github.io/apex-algorithms-catalogue-web/pr-preview/pr-472/apps/sentinel1_sar_slc_preprocessing/) -
 Generates a STAC collection of co-registered Sentinel-1 SLC bursts in SAR geometry.
 
 ## Burst-based processing
