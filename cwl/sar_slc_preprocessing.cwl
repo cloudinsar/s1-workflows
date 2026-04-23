@@ -44,6 +44,7 @@ inputs:
   sub_swath:
     - type: enum
       symbols: [ "IW1", "IW2", "IW3" ]
+      doc: "Sub-swath identifier"
 outputs:
   output_results:
     type: Directory
