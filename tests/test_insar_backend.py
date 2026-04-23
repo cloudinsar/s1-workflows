@@ -101,20 +101,19 @@ def test_georeferenced_new_sar(cwl_path, input_dict_path, auto_title):
     ],
 )
 @pytest.mark.parametrize(
-    "input_dict",
+    "input_dict_path",
     [
-        # input_dict_2018_vh,
-        # input_dict_belgium_vv,
-        # json.loads((repo_directory / "sar/example_inputs/input_dict_whole_2023.json").read_text()),
-        json.loads((repo_directory / "sar/example_inputs/input_dict_2024_vv.json").read_text()),
-        # json.loads((repo_directory / "sar/example_inputs/input_dict_2023.json").read_text()),
-        # json.loads((repo_directory / "sar/example_inputs/input_dict_2018_vh.json").read_text()),
+        # "sar/example_inputs/input_dict_whole_2023.json",
+        # "sar/example_inputs/input_dict_2024_vv.json",
+        # "sar/example_inputs/input_dict_2023.json",
+        "sar/example_inputs/input_dict_2018_vh.json",
     ],
 )
-def test_georeferenced_sar(cwl_path, input_dict, auto_title):
+def test_georeferenced_sar(cwl_path, input_dict_path, auto_title):
     now = datetime.now()
     tmp_dir = Path(repository_root / slugify(auto_title + "_" + str(now)).replace("tests_", "tests/tmp_")).absolute()
     tmp_dir.mkdir(exist_ok=True)
+    input_dict = json.loads(Path(repo_directory / input_dict_path).read_text())
     cwl = Path(repository_root / cwl_path).read_text()
     datacube = get_connection().datacube_from_process(
         "run_udf",

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import base64
+import gc
 import os
 import subprocess
 import sys
@@ -138,6 +139,7 @@ for pol in input_dict["polarization"]:
     if not os.path.exists(output_prm_filename_tmp) or not os.path.exists(
             output_sec_filename_tmp
     ):
+        gc.collect()
         gpt_cmd = [
             "gpt",
             str(
