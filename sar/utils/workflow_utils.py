@@ -208,7 +208,7 @@ def exec_proc(command, cwd=None, write_output=True, env=None):
                 raise Exception("Process returned with no stdout")
             for line in process.stdout:
                 if write_output:
-                    sys.stdout.write(line)
+                    _log.info(line)
                 output += line
             ret = process.wait()
 
