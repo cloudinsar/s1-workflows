@@ -234,7 +234,7 @@ def retrieve_bursts_with_id_and_iw(
         sbswath: Optional[str] = None,
         spatial_extent: Optional[dict] = None,
 ) -> List[Dict]:
-    assert spatial_extent or burst_id
+    assert spatial_extent or burst_id, "spatial_extent or burst_id is required"
     if start_date and not "T" in start_date:
         start_date = f"{start_date}T00:00:00.000Z"
     if end_date and not "T" in end_date:
