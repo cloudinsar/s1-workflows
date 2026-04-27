@@ -21,7 +21,7 @@ doc: |
   connection = openeo.connect("https://openeo.dataspace.copernicus.eu").authenticate_oidc()
   stac_resource = connection.datacube_from_process(
       "sentinel1_sar_slc_preprocessing",
-      namespace="https://raw.githubusercontent.com/ESA-APEx/apex_algorithms/2ed1e3dc9884c1d7354687b709563d239393c392/algorithm_catalog/eurac/sentinel1_sar_slc_preprocessing/openeo_udp/sentinel1_sar_slc_preprocessing.json",
+      namespace="https://raw.githubusercontent.com/ESA-APEx/apex_algorithms/refs/heads/main/algorithm_catalog/eurac/sentinel1_sar_slc_preprocessing/openeo_udp/sentinel1_sar_slc_preprocessing.json",
       **{
           "burst_id": 329488,
           "polarization": ["VH"],
