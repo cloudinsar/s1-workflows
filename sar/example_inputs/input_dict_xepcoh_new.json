@@ -1,0 +1,17 @@
+{
+  "coherence_window_az": 2,
+  "coherence_window_rg": 10,
+  "polarization": "VH",
+  "sub_swath": "IW2",
+  "temporal_baseline": 6,
+  "temporal_extent": [
+    "2026-04-17",
+    "2026-04-23"
+  ],
+  "spatial_extent": {
+    "east": 32.38,
+    "north": 46.67,
+    "south": 46.63,
+    "west": 32.32
+  }
+}

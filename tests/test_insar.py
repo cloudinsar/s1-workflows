@@ -94,6 +94,7 @@ def run_stac_catalog_and_verify(catalog_path: Path, tmp_dir: Path):
         # "sar/example_inputs/input_dict_togo_new.json",
         # "sar/example_inputs/input_dict_bangladesh_new.json",
         # "sar/example_inputs/input_dict_vancouver_new.json",
+        # "sar/example_inputs/input_dict_xepcoh_new.json",
     ],
 )
 def test_insar_new(script, input_dict_path, auto_title):

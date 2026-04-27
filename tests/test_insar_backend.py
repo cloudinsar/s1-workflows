@@ -48,6 +48,7 @@ cwl_prefix = "https://raw.githubusercontent.com/cloudinsar/s1-workflows/refs/hea
         # "sar/example_inputs/input_dict_2018_vh_new.json",
         # "sar/example_inputs/input_dict_whole_2023_new.json",
         "sar/example_inputs/input_dict_2024_vv_new.json",
+        # "sar/example_inputs/input_dict_xepcoh_new.json",
     ],
 )
 def test_georeferenced_new_sar(cwl_path, input_dict_path, auto_title):
