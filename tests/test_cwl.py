@@ -26,9 +26,7 @@ def test_cwl_validate():
         print(f"Checking {cwl_file}")
         name = cwl_file.name
         json_files_filtered = None
-        if str(name).startswith("sar_coherence_parallel_temporal_extent"):
-            json_files_filtered = json_files_new
-        elif str(name).startswith("sar_coherence_parallel") or str(name).startswith("sar_interferogram"):
+        if str(name).startswith("sar_coherence_parallel") or str(name).startswith("sar_interferogram"):
             json_files_filtered = json_files_rest
         elif str(name).startswith("sar_coherence"):
             json_files_filtered = json_files_new
