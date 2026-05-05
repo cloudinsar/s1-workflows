@@ -125,8 +125,8 @@ def test_georeferenced_sar(cwl_path, input_dict_path, auto_title):
     )
 
     if local_openEO:
-        datacube = datacube.save_result(format="NetCDF")
-        datacube.download(tmp_dir / "result.nc")
+        stac_resource = datacube.save_result(format="NetCDF")
+        stac_resource.download(tmp_dir / "result.nc")
     else:
         stac_resource = datacube.save_result(format="GTiff") #, options={"overviews": "OFF"})
         # stac_resource = stac_resource.export_workspace(
@@ -163,6 +163,13 @@ def test_sar_preprocessing(input_dict_path, auto_title):
         "cwl": cwl,
         "context": input_dict,
     }), connection=get_connection())
+    # stac_resource = get_connection().datacube_from_process(
+    #     "run_udf",
+    #     data=None,
+    #     udf=cwl,
+    #     runtime="EOAP-CWL",
+    #     context=input_dict,
+    # )
 
     if local_openEO:
         # stac_resource.download(tmp_dir / "result.nc")
