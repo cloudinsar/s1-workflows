@@ -127,8 +127,8 @@ $graph:
       - class: NetworkAccess
         networkAccess: true
       - class: ResourceRequirement
-        ramMin: 7000
-        ramMax: 7000
+        ramMin: 11000
+        ramMax: 11000
         coresMin: 2
         coresMax: 7
 
