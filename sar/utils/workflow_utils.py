@@ -15,6 +15,8 @@ import urllib
 import urllib.parse
 import urllib.request
 
+from openeo.utils.http import session_with_retries, DEFAULT_RETRY_FORCELIST
+
 _log = logging.getLogger(__name__)
 
 # __file__ could have exotic values in Docker:
@@ -257,8 +259,10 @@ def retrieve_bursts_with_id_and_iw(
     https_request = "https://catalogue.dataspace.copernicus.eu/odata/v1/Bursts?$filter=" + urllib.parse.quote(
         " and ".join(filters2)) + f"&$top={page_size}"
     print(https_request)
-    with urllib.request.urlopen(https_request) as response:
-        content = response.read().decode()
+    session = session_with_retries({"status_forcelist": DEFAULT_RETRY_FORCELIST | {500}})
+    response = session.get(https_request)
+    response.raise_for_status()
+    content = response.text
 
     bursts = json.loads(content)["value"]
     if len(bursts) >= page_size:
