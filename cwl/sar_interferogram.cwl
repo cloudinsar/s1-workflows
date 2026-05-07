@@ -123,7 +123,7 @@ $graph:
           - entryname: "arguments.json"
             entry: $(inputs)
       - class: DockerRequirement
-        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260507T1356
+        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260507T1746
       - class: NetworkAccess
         networkAccess: true
       - class: ResourceRequirement
