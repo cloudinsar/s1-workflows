@@ -12,6 +12,7 @@ import urllib.request
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+from reretry import retry
 
 import requests.adapters
 from urllib3 import Retry
@@ -26,8 +27,8 @@ repo_directory = Path(os.path.dirname(os.path.normpath(__file__).replace("//", "
 _log.info("repo_directory: " + str(repo_directory))
 
 
-retry = Retry(total=15, backoff_factor=2, status_forcelist={429, 500, 502, 503, 504})
-adapter = requests.adapters.HTTPAdapter(max_retries=retry)
+urllib_retry = Retry(total=15, backoff_factor=2, status_forcelist={429, 500, 502, 503, 504})
+adapter = requests.adapters.HTTPAdapter(max_retries=urllib_retry)
 robust_requests_session = requests.Session()
 # noinspection HttpUrlsUsage
 robust_requests_session.mount("http://", adapter)
@@ -233,6 +234,10 @@ def exec_proc(command, cwd=None, write_output=True, env=None):
             _log.error(output)
         raise Exception("Process returned error status code: " + str(ret))
     return ret, output
+
+@retry(exceptions=Exception, tries=4, delay=10, backoff=4, logger=_log)
+def exec_proc_retried(command, cwd=None, write_output=True, env=None):
+    return exec_proc(command, cwd=cwd, write_output=write_output, env=env)
 
 
 def retrieve_bursts_with_id_and_iw(

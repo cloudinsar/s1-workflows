@@ -1,10 +1,16 @@
-import sys
+import contextlib
+import logging
+import time
+import typing
+from datetime import datetime
 from pathlib import Path
 from typing import Union
 
+import mock
 import numpy as np
 import pytest
 import rioxarray
+import time_machine
 import xarray
 from PIL import Image
 
@@ -87,3 +93,39 @@ def auto_title(request) -> str:
     on the test's file and function name.
     """
     return request.node.nodeid
+
+
+class _Sleeper:
+    # TODO: Deduplicate with openeo-python-client v0.49.0 (openeo.testing.util.Sleeper)
+
+    def __init__(self):
+        self.history = []
+
+    @contextlib.contextmanager
+    def patch(self, time_machine: time_machine.TimeMachineFixture) -> typing.Iterator["_Sleeper"]:
+        orig_sleep = time.sleep
+
+        def sleep(seconds):
+            # Note: this requires that `time_machine.move_to()` has been called before
+            # also see https://github.com/adamchainz/time-machine/issues/247
+            time_machine.coordinates.shift(seconds)
+            self.history.append(seconds)
+            # Do some minimal sleeping to avoid messing up Python internals that depend on actual sleeping
+            orig_sleep(min(seconds, 0.1))
+
+        with mock.patch("time.sleep", new=sleep):
+            yield self
+
+    def did_sleep(self) -> bool:
+        return len(self.history) > 0
+
+
+@pytest.fixture
+def fast_sleep(time_machine) -> typing.Iterator[_Sleeper]:
+    """
+    Fixture using `time_machine` to make `sleep` instant and update the current time.
+    """
+    now = datetime.now().isoformat()
+    time_machine.move_to(now)
+    with _Sleeper().patch(time_machine=time_machine) as sleeper:
+        yield sleeper
