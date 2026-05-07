@@ -154,7 +154,7 @@ for pol in input_dict["polarization"]:
             f"-Poutput_prm_filename={output_prm_filename_tmp}",
             f"-Poutput_sec_filename={output_sec_filename_tmp}",
         ] + snap_extra_arguments
-        exec_proc(gpt_cmd, write_output=False)
+        exec_proc_retried(gpt_cmd, write_output=False)
 
     output_prm_filename = f"{result_folder}/S1_2images_prm_{prm_date.strftime('%Y%m%dT%H%M%S')}_{pol.lower()}_<band_name>.tif"
     output_sec_filename = f"{result_folder}/S1_2images_sec_{sec_date.strftime('%Y%m%dT%H%M%S')}_{pol.lower()}_<band_name>.tif"
@@ -191,7 +191,7 @@ for pol in input_dict["polarization"]:
                 f"-Pi_q_sec_bandnames=i_{sec_bandname},q_{sec_bandname}",
                 f"-Poutput_sec_filename={output_sec_filename_tmp}",
             ] + snap_extra_arguments
-            exec_proc(gpt_cmd, write_output=False)
+            exec_proc_retried(gpt_cmd, write_output=False)
 
         output_sec_filename = (
             f"{result_folder}/S1_2images_sec_{sec_date.strftime('%Y%m%dT%H%M%S')}_<band_name>.tif"

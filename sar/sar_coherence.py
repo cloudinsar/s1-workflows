@@ -105,7 +105,7 @@ for prm_date, prm_filename in date_to_path.items():
                 f"-Ppolarisation={input_dict['polarization'].upper()}",
                 f"-Poutput_filename={output_filename_tmp}",
             ] + snap_extra_arguments
-            exec_proc(gpt_cmd, write_output=False)
+            exec_proc_retried(gpt_cmd, write_output=False)
 
         output_filename = Path(
             f"{result_folder}/S1_coh_2images_{date_from_burst(prm_filename)}_{date_from_burst(sec_filename)}.tif"
