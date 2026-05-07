@@ -5,6 +5,9 @@ import shutil
 import sys
 
 import pytest
+from pystac import Collection
+
+from sar.utils.simple_stac_builder import _cached_http
 from testutils import *
 
 _log = logging.getLogger(__name__)
@@ -42,6 +45,11 @@ def get_tiffs_from_stac_catalog(catalog_path: Path):
 
 def run_stac_catalog_and_verify(catalog_path: Path, tmp_dir: Path):
     catalog_path = Path(catalog_path)
+
+    with _cached_http():
+        # Validate again in case manual changes are made after the catalog was generated.
+        validations = Collection.from_file(str(catalog_path)).validate_all()
+        assert validations > 0
 
     tiff_files_input = get_tiffs_from_stac_catalog(catalog_path)
     assert tiff_files_input, "There should be at least one .tif file generated"

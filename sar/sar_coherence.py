@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import base64
 from datetime import timedelta
+import sys
 
 from sar.utils import simple_stac_builder
 from sar.utils import tiff_to_gtiff

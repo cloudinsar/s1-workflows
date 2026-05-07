@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import hashlib
 import logging
+import sys
 from contextlib import contextmanager
 from typing import Union
 

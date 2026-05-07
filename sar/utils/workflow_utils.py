@@ -1,19 +1,20 @@
 import json
+import logging.config
 import math
 import os
 import re
 import shlex
 import socket
 import subprocess
-import sys
-from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict, List, Optional
-import logging.config
-
 import urllib
 import urllib.parse
 import urllib.request
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+import requests.adapters
+from urllib3 import Retry
 
 _log = logging.getLogger(__name__)
 
@@ -23,6 +24,14 @@ _log = logging.getLogger(__name__)
 # So we do a lot of normalization:
 repo_directory = Path(os.path.dirname(os.path.normpath(__file__).replace("//", "/"))).parent.parent.absolute()
 _log.info("repo_directory: " + str(repo_directory))
+
+
+retry = Retry(total=15, backoff_factor=2, status_forcelist={429, 500, 502, 503, 504})
+adapter = requests.adapters.HTTPAdapter(max_retries=retry)
+robust_requests_session = requests.Session()
+# noinspection HttpUrlsUsage
+robust_requests_session.mount("http://", adapter)
+robust_requests_session.mount("https://", adapter)
 
 
 def setup_insar_environment():
@@ -257,8 +266,9 @@ def retrieve_bursts_with_id_and_iw(
     https_request = "https://catalogue.dataspace.copernicus.eu/odata/v1/Bursts?$filter=" + urllib.parse.quote(
         " and ".join(filters2)) + f"&$top={page_size}"
     print(https_request)
-    with urllib.request.urlopen(https_request) as response:
-        content = response.read().decode()
+    response = robust_requests_session.get(https_request)
+    response.raise_for_status()
+    content = response.text
 
     bursts = json.loads(content)["value"]
     if len(bursts) >= page_size:
