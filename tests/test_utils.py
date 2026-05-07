@@ -18,3 +18,7 @@ def test_logging():
     # print("print should log as info")
     # print("Print should not crash on extra arguments", 123, {"key": "value"})
     # print("print should not crash with file redirect", file=sys.stderr)  # not sure if this is enough
+
+def test_exec_proc_retried(fast_sleep):
+    # Change the threshold in random_fail.py to do a propper test.
+    exec_proc_retried(["python", repository_root/ "tests/random_fail.py"])

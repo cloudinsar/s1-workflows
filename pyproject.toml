@@ -19,6 +19,9 @@ dependencies = [
     "jsonschema==4.23.0",
     "numpy",
     "exifread",
+    "mock",
+    "time_machine>=2.8.0,<3.0.0",
+    "reretry~=0.11.8",
     #  "GDAL",  # Installed depending on version in os
     # "python-json-logger~=2.0",
 ]
