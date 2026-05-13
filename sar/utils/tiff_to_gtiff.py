@@ -85,7 +85,7 @@ def tiff_to_gtiff(input_path, output_path=None, tiff_per_band=False) -> list:
                 and (ds_in.RasterXSize > 360 or ds_in.RasterYSize > 90)
         ):
             # set CRS to webmercator, to avoid pixels going out of the CRS bounds:
-            ds_in.SetProjection("EPSG:3857")
+            ds_out.SetProjection("EPSG:3857")
             # TODO: Remove GeoTiePoints
         driver_tiff = gdal.GetDriverByName("GTiff")
         for i in range(1, ds_out.RasterCount + 1):

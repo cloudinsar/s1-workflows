@@ -72,7 +72,12 @@ RUN python3.11 -m venv /opt/venv && \
     pip config set global.disable-pip-version-check true
 
 RUN cd /opt && \
-    git clone --recursive --shallow-submodules --depth 1 https://github.com/Open-EO/openeo-python-driver.git && \
+    git clone --no-checkout --depth 1 https://github.com/Open-EO/openeo-python-driver.git && \
+    cd /opt/openeo-python-driver && \
+    git fetch --depth=1 origin e8f9c00372128a5cba5a2c43e070db5827cc6360 && \
+    git checkout e8f9c00372128a5cba5a2c43e070db5827cc6360 && \
+    git submodule update --init --recursive --depth 1 && \
+    cd /opt/ && \
     python3 -m pip install -e /opt/openeo-python-driver --config-settings editable_mode=compat
 
 COPY pyproject.toml /src/pyproject.toml
