@@ -299,7 +299,6 @@ def generate_catalog(
         json.dump(collection_stac, f, indent=2)
 
     try:
-        _log.info("Trying pystac validation...")
         from pystac import Collection, Item
 
         logging.basicConfig(level=logging.DEBUG)

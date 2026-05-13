@@ -197,6 +197,12 @@ def test_sar_preprocessing(input_dict_path, auto_title):
         for tif_path in tif_paths:
             assert_tif_file_is_healthy(tif_path)
 
+        url = "https://s3.waw4-1.cloudferro.com/calrissian/pvc-91dd9cc8-952b-4f4a-abf9-77a9e32beb58/j-260511103149443793-cal-cwl-fbeee30d/qnu6gdwm/collection.json"
+        datacube_load = get_connection().load_stac(url)
+        job = datacube_load.create_job(title=auto_title + " datacube_load")
+        job.start_and_wait()
+        job.get_results().download_files(tmp_dir)
+
 
 @pytest.mark.skip(reason="TODO: Run against openEO backend to get result?")
 def test_compare_raw_with_result():
