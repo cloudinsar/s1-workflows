@@ -29,7 +29,6 @@ default_dict = {
     "coherence_window_rg": 10,
     "coherence_window_az": 2,
 }
-
 input_dict = {k: v for k, v in input_dict.items() if v is not None}
 input_dict = {**default_dict, **input_dict}  # merge with defaults
 _log.info(f"{input_dict=}")
@@ -41,6 +40,7 @@ result_folder = Path.cwd().absolute()
 # result_folder.mkdir(exist_ok=True)
 tmp_insar = Path("/tmp/insar")
 tmp_insar.mkdir(parents=True, exist_ok=True)
+
 bursts = retrieve_bursts_with_id_and_iw(
     start_date,
     end_date,
@@ -49,6 +49,7 @@ bursts = retrieve_bursts_with_id_and_iw(
     burst_id=input_dict.get("burst_id"),
     spatial_extent=input_dict.get("spatial_extent"),
 )
+
 # If we do not pass the subswath as input parameter, we get it from the automatically selected burst with lowest number
 subswath = input_dict.get("sub_swath") if input_dict.get("sub_swath") is not None else bursts[0]["SwathIdentifier"]
 burst_paths = []
