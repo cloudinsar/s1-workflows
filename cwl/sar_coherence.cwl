@@ -196,7 +196,7 @@ $graph:
                 });
               }
       - class: DockerRequirement
-        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260511T0923
+        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260514T1358-merge
       - class: NetworkAccess
         networkAccess: true
       - class: InlineJavascriptRequirement
@@ -210,8 +210,10 @@ $graph:
         - type: enum
           symbols: [ "VV", "VH" ]
       sub_swath:
-        - type: enum
-          symbols: [ "IW1", "IW2", "IW3" ]
+        type:
+          - "null"
+          - type: enum
+            symbols: [ "IW1", "IW2", "IW3" ]
       temporal_extent:
         type: string[]
       temporal_baseline:
