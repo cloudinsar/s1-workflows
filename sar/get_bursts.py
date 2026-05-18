@@ -42,6 +42,8 @@ s1_bursts = retrieve_bursts_with_id_and_iw(
     spatial_extent=input_dict.get("spatial_extent"),
 )
 
+subswath = input_dict.get("sub_swath") if input_dict.get("sub_swath") is not None else s1_bursts[0]["SwathIdentifier"]
+
 dates = [datetime.strptime(b["BeginningDateTime"][:10], "%Y-%m-%d") for b in s1_bursts]
 dates.sort()
 InSARpairs = []
@@ -61,7 +63,7 @@ if len(InSARpairs) == 0:
         raise ValueError(f"Not enough bursts found to make pairs for the given parameters: {input_dict}")
 
 input_dict["InSAR_pairs"] = InSARpairs
-
+input_dict["sub_swath_id"] = subswath
 result_folder = Path.cwd().absolute()
 # result_folder = repo_directory / "output"
 # result_folder.mkdir(exist_ok=True)

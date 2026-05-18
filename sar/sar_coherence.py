@@ -50,6 +50,8 @@ bursts = retrieve_bursts_with_id_and_iw(
     spatial_extent=input_dict.get("spatial_extent"),
 )
 
+# If we do not pass the subswath as input parameter, we get it from the automatically selected burst with lowest number
+subswath = input_dict.get("sub_swath") if input_dict.get("sub_swath") is not None else bursts[0]["SwathIdentifier"]
 burst_paths = []
 for burst in bursts:
     begin = parse_date(burst["BeginningDateTime"]).date()
@@ -61,7 +63,7 @@ for burst in bursts:
         "sentinel1_burst_extractor.sh",
         "-n", burst["ParentProductName"],
         "-p", input_dict["polarization"].lower(),
-        "-s", str(input_dict["sub_swath"].lower()),
+        "-s", str(subswath.lower()),
         "-r", str(burst["BurstId"]),
         "-o", str(tmp_insar),
     ]
