@@ -50,6 +50,7 @@ bursts = retrieve_bursts_with_id_and_iw(
     spatial_extent=input_dict.get("spatial_extent"),
 )
 
+bursts = sorted(bursts, key=lambda d: d['AbsoluteBurstId'])
 # If we do not pass the subswath as input parameter, we get it from the automatically selected burst with lowest number
 subswath = input_dict.get("sub_swath") if input_dict.get("sub_swath") is not None else bursts[0]["SwathIdentifier"]
 burst_paths = []

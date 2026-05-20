@@ -41,6 +41,7 @@ s1_bursts = retrieve_bursts_with_id_and_iw(
     burst_id=input_dict.get("burst_id"),
     spatial_extent=input_dict.get("spatial_extent"),
 )
+s1_bursts = sorted(s1_bursts, key=lambda d: d['AbsoluteBurstId'])
 
 subswath = input_dict.get("sub_swath") if input_dict.get("sub_swath") is not None else s1_bursts[0]["SwathIdentifier"]
 
