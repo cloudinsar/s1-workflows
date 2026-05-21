@@ -99,8 +99,9 @@ $graph:
 
       sub_swath:
         type:
-          type: enum
-          symbols: [ "IW1", "IW2", "IW3" ]
+          - "null"
+          - type: enum
+            symbols: [ "IW1", "IW2", "IW3" ]
         doc: "Sub-swath identifier"
       
       temporal_extent:
@@ -147,7 +148,7 @@ $graph:
         run: "#extract_pairs_array"
         in:
           pairs_json_file: generate_pairs/insar_pairs_json
-        out: [pairs_array]
+        out: [pairs_array, sub_swath_id]
       
       process_pairs:
         run: "#process_single_pair"
@@ -157,7 +158,7 @@ $graph:
           burst_id: burst_id
           spatial_extent: spatial_extent
           polarization: polarization
-          sub_swath: sub_swath
+          sub_swath: extract_pairs/sub_swath_id
           coherence_window_rg: coherence_window_rg
           coherence_window_az: coherence_window_az
         out: [pair_output]
@@ -195,7 +196,7 @@ $graph:
                 });
               }
       - class: DockerRequirement
-        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260511T0923
+        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260514T1358-merge
       - class: NetworkAccess
         networkAccess: true
       - class: InlineJavascriptRequirement
@@ -209,8 +210,10 @@ $graph:
         - type: enum
           symbols: [ "VV", "VH" ]
       sub_swath:
-        - type: enum
-          symbols: [ "IW1", "IW2", "IW3" ]
+        type:
+          - "null"
+          - type: enum
+            symbols: [ "IW1", "IW2", "IW3" ]
       temporal_extent:
         type: string[]
       temporal_baseline:
@@ -242,11 +245,16 @@ $graph:
           items:
             type: array
             items: string
+      sub_swath_id:
+        type: string
     
     expression: |
       ${
         var data = JSON.parse(inputs.pairs_json_file.contents);
-        return {"pairs_array": data.InSAR_pairs};
+        return {
+          "pairs_array": data.InSAR_pairs,
+          "sub_swath_id": data.sub_swath_id
+        };
       }
 
   - class: CommandLineTool
@@ -322,8 +330,7 @@ $graph:
         - type: enum
           symbols: [ "VV", "VH" ]
       sub_swath:
-        - type: enum
-          symbols: [ "IW1", "IW2", "IW3" ]
+        type: string
       coherence_window_rg:
         type: int?
       coherence_window_az:
