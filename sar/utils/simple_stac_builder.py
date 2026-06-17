@@ -77,7 +77,7 @@ def generate_catalog(
         "type": "Collection",
         "stac_version": "1.1.0",
         "id": "unknown-job",
-        "description": "Stac catalog made with " + os.path.basename(__file__),
+        "description": "Stac catalog made with " + str(os.path.basename(__file__)),
         "license": "unknown",
         "stac_extensions": [
             "https://stac-extensions.github.io/datacube/v2.2.0/schema.json"
@@ -220,9 +220,6 @@ def generate_catalog(
                         collection_stac["cube:dimensions"]["bands"]["values"].append(new_band)
             else:
                 collection_stac["cube:dimensions"]["bands"]["values"] = band_names
-            collection_stac["summaries"] = {
-                "bands": gdalinfo_stac["bands"],
-            }
             crs_set.add(gdalinfo_stac["proj:epsg"])
             del gdalinfo_stac["proj:projjson"]  # remove verbose information
             del gdalinfo_stac["proj:wkt2"]  # remove verbose information
@@ -278,6 +275,9 @@ def generate_catalog(
         with open(stac_item_filename, "w") as f:
             json.dump(stac, f, indent=2, default=default_serializer)
 
+        collection_stac["summaries"] = {
+            "bands": list(map(lambda x: {"name": x}, collection_stac["cube:dimensions"]["bands"]["values"])),
+        }
         collection_stac["links"].append(
             {
                 "href": "./" + str(Path(stac_item_filename).relative_to(stac_root)),
