@@ -220,7 +220,9 @@ def generate_catalog(
                         collection_stac["cube:dimensions"]["bands"]["values"].append(new_band)
             else:
                 collection_stac["cube:dimensions"]["bands"]["values"] = band_names
-
+            collection_stac["summaries"] = {
+                "bands": gdalinfo_stac["bands"],
+            }
             crs_set.add(gdalinfo_stac["proj:epsg"])
             del gdalinfo_stac["proj:projjson"]  # remove verbose information
             del gdalinfo_stac["proj:wkt2"]  # remove verbose information
