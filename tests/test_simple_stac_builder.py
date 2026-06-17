@@ -51,3 +51,7 @@ def test_generate_catalog_exports_stac_1_1(tmp_path, monkeypatch):
     item_href = next(link["href"] for link in collection["links"] if link["rel"] == "item")
     item = json.loads((tmp_path / Path(item_href)).read_text())
     assert item["stac_version"] == "1.1.0"
+    asset = item["assets"][tif.name]
+    assert "bands" in asset
+    assert "eo:bands" not in asset
+    assert asset["bands"] == [{"name": "coherence"}]

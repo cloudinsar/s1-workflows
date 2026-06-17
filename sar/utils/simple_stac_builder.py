@@ -202,8 +202,10 @@ def generate_catalog(
                     return {"name": x["description"]}
                 return x
 
-            gdalinfo_stac["eo:bands"] = list(map(mapper, gdalinfo_stac["eo:bands"]))
-            band_names = [band["name"] for band in gdalinfo_stac["eo:bands"]]
+            raw_bands = gdalinfo_stac.get("bands", gdalinfo_stac.get("eo:bands", []))
+            gdalinfo_stac["bands"] = list(map(mapper, raw_bands))
+            gdalinfo_stac.pop("eo:bands", None)
+            band_names = [band["name"] for band in gdalinfo_stac["bands"]]
             if "values" in collection_stac["cube:dimensions"]["bands"]:
                 # assert collection_stac["cube:dimensions"]["bands"]["values"] == band_names, (
                 #     "Inconsistent band names: "
