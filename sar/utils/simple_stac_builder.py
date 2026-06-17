@@ -75,9 +75,9 @@ def generate_catalog(
 
     collection_stac: dict = {
         "type": "Collection",
-        "stac_version": "1.0.0",
+        "stac_version": "1.1.0",
         "id": "unknown-job",
-        "description": "Stac catalog made with " + os.path.basename(__file__),
+        "description": "Stac catalog made with " + str(os.path.basename(__file__)),
         "license": "unknown",
         "stac_extensions": [
             "https://stac-extensions.github.io/datacube/v2.2.0/schema.json"
@@ -110,7 +110,7 @@ def generate_catalog(
     for file_element in tiff_files:
         stac: Any = {
             "type": "Feature",
-            "stac_version": "1.0.0",
+            "stac_version": "1.1.0",
             "id": None,
             "geometry": {
                 "type": "Polygon",
@@ -202,8 +202,12 @@ def generate_catalog(
                     return {"name": x["description"]}
                 return x
 
-            gdalinfo_stac["eo:bands"] = list(map(mapper, gdalinfo_stac["eo:bands"]))
-            band_names = [band["name"] for band in gdalinfo_stac["eo:bands"]]
+            # Prefer eo:bands for backward compatibility with older GDAL/STAC outputs,
+            # but emit STAC 1.1-compliant bands in generated metadata.
+            raw_bands = gdalinfo_stac.get("eo:bands", gdalinfo_stac.get("bands", []))
+            gdalinfo_stac["bands"] = list(map(mapper, raw_bands))
+            gdalinfo_stac.pop("eo:bands", None)
+            band_names = [band["name"] for band in gdalinfo_stac["bands"]]
             if "values" in collection_stac["cube:dimensions"]["bands"]:
                 # assert collection_stac["cube:dimensions"]["bands"]["values"] == band_names, (
                 #     "Inconsistent band names: "
@@ -216,7 +220,6 @@ def generate_catalog(
                         collection_stac["cube:dimensions"]["bands"]["values"].append(new_band)
             else:
                 collection_stac["cube:dimensions"]["bands"]["values"] = band_names
-
             crs_set.add(gdalinfo_stac["proj:epsg"])
             del gdalinfo_stac["proj:projjson"]  # remove verbose information
             del gdalinfo_stac["proj:wkt2"]  # remove verbose information
@@ -272,6 +275,9 @@ def generate_catalog(
         with open(stac_item_filename, "w") as f:
             json.dump(stac, f, indent=2, default=default_serializer)
 
+        collection_stac["summaries"] = {
+            "bands": list(map(lambda x: {"name": x}, collection_stac["cube:dimensions"]["bands"]["values"])),
+        }
         collection_stac["links"].append(
             {
                 "href": "./" + str(Path(stac_item_filename).relative_to(stac_root)),
