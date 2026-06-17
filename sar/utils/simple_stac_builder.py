@@ -202,7 +202,9 @@ def generate_catalog(
                     return {"name": x["description"]}
                 return x
 
-            raw_bands = gdalinfo_stac.get("bands", gdalinfo_stac.get("eo:bands", []))
+            # Prefer eo:bands for backward compatibility with older GDAL/STAC outputs,
+            # but emit STAC 1.1-compliant bands in generated metadata.
+            raw_bands = gdalinfo_stac.get("eo:bands", gdalinfo_stac.get("bands", []))
             gdalinfo_stac["bands"] = list(map(mapper, raw_bands))
             gdalinfo_stac.pop("eo:bands", None)
             band_names = [band["name"] for band in gdalinfo_stac["bands"]]
