@@ -75,7 +75,7 @@ def generate_catalog(
 
     collection_stac: dict = {
         "type": "Collection",
-        "stac_version": "1.0.0",
+        "stac_version": "1.1.0",
         "id": "unknown-job",
         "description": "Stac catalog made with " + os.path.basename(__file__),
         "license": "unknown",
@@ -110,7 +110,7 @@ def generate_catalog(
     for file_element in tiff_files:
         stac: Any = {
             "type": "Feature",
-            "stac_version": "1.0.0",
+            "stac_version": "1.1.0",
             "id": None,
             "geometry": {
                 "type": "Polygon",
