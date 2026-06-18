@@ -175,7 +175,6 @@ $graph:
         in:
           InSAR_pair: extract_pairs/pairs_array
           burst_id: burst_id
-          spatial_extent: spatial_extent
           polarization: polarization
           sub_swath: extract_pairs/sub_swath_id
           coherence_window_rg: coherence_window_rg
