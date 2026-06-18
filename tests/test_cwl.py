@@ -20,13 +20,13 @@ def test_cwl_validate():
     assert json_files
     json_files_new = list(filter(lambda x: "_new" in str(x), json_files))
     json_files_preprocessing = list(filter(lambda x: str(x).endswith("_preprocessing.json"), json_files))
-    json_files_rest = set(json_files) - set(json_files_new) - set(json_files_preprocessing) - set(json_files_new) - set(json_files_preprocessing)
+    json_files_rest = set(json_files) - set(json_files_new) - set(json_files_preprocessing)
     assert json_files_rest
     for cwl_file in cwl_files:
         print(f"Checking {cwl_file}")
         name = cwl_file.name
         json_files_filtered = None
-        if str(name).startswith("sar_coherence_parallel") or str(name).startswith("sar_interferogram"):
+        if str(name).startswith("sar_interferogram"):
             json_files_filtered = json_files_rest
         elif str(name).startswith("sar_coherence"):
             json_files_filtered = json_files_new

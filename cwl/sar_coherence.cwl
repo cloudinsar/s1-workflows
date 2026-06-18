@@ -33,6 +33,7 @@
 #   - burst_id: Sentinel-1 burst identifier (e.g., 249435)
 #   - polarization: one of "vv", "vh"
 #   - sub_swath: one of "IW1", "IW2", "IW3"
+#   - spatial_extent: Specifies area where to search for bursts. If multiple bursts are found, the one with the lowest id number will be selected. This parameter can be used instead of `burst_id` and `sub_swath`.
 #   - coherence_window_rg/az: Window sizes for coherence estimation
 #
 # LOCAL USAGE:
