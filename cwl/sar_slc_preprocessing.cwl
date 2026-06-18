@@ -37,7 +37,7 @@ doc: |
   ```
 requirements:
   DockerRequirement:
-    dockerPull: ghcr.io/cloudinsar/openeo_insar:20260513T0914-merge
+    dockerPull: ghcr.io/cloudinsar/openeo_insar:20260617T1217
   NetworkAccess:
     networkAccess: true
   InitialWorkDirRequirement:
@@ -58,7 +58,7 @@ inputs:
   burst_id:
     type: int
     doc: |
-      A temporal extent could have multiple bursts per day. Use [this notebook](https://github.com/cloudinsar/s1-workflows/blob/main/notebooks/LPS_DEMO/Input_selection.ipynb) to find a fitting `burst_id`.
+      A temporal extent could have multiple bursts per day. Use [this notebook](https://github.com/cloudinsar/s1-workflows/blob/main/input_selection/InSAR_workflow_input_selection.ipynb) to find a fitting `burst_id`.
       Alternatively, the burst id map can be downloaded here: [Burst ID Maps 2022-05-30](https://sar-mpc.eu/files/S1_burstid_20220530.zip).
   primary_date:
     type: string
