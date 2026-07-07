@@ -18,7 +18,7 @@ local_openEO = False
 
 def get_connection():
     import openeo
-    # url = "https://openeo.stag.amsterdam.openeo.dataspace.copernicus.eu/"  # OTC
+    # url = "https://openeo.stag.eu-nl.openeo-int.v1.dataspace.copernicus.eu/"  # OTC
     # url = "https://openeo.dev.warsaw.openeo.dataspace.copernicus.eu/"  # needs VPN
     # url = "https://openeo-staging.dataspace.copernicus.eu/"
     url = "https://openeo.dataspace.copernicus.eu"
