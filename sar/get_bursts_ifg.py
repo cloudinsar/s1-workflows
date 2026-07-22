@@ -72,6 +72,7 @@ s1_bursts = retrieve_bursts_with_id_and_iw(
 s1_bursts = sorted(s1_bursts, key=lambda d: d['AbsoluteBurstId'])
 
 subswath = input_dict.get("sub_swath") if input_dict.get("sub_swath") is not None else s1_bursts[0]["SwathIdentifier"]
+burst_id = input_dict.get("burst_id") if input_dict.get("burst_id") is not None else s1_bursts[0]["BurstId"]
 
 if not use_provided_pairs:
     dates = [datetime.strptime(b["BeginningDateTime"][:10], "%Y-%m-%d") for b in s1_bursts]
@@ -95,6 +96,7 @@ if not use_provided_pairs:
     input_dict["InSAR_pairs"] = InSARpairs
 
 input_dict["sub_swath_id"] = subswath
+input_dict["burst_id"] = burst_id
 result_folder = Path.cwd().absolute()
 # result_folder = repo_directory / "output"
 # result_folder.mkdir(exist_ok=True)
