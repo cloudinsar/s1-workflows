@@ -315,7 +315,7 @@ $graph:
                 });
               }
       - class: DockerRequirement
-        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260722T0949-merge
+        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260722T1359-merge
       - class: NetworkAccess
         networkAccess: true
       - class: ResourceRequirement
