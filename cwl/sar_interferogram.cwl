@@ -194,7 +194,7 @@ $graph:
     
     doc: "Generate InSAR pairs based on burst ID and temporal parameters"
     
-    baseCommand: /src/sar/get_bursts.py
+    baseCommand: /src/sar/get_bursts_ifg.py
     
     arguments:
       - arguments.json
@@ -216,7 +216,7 @@ $graph:
                 });
               }
       - class: DockerRequirement
-        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260618T1223-merge
+        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260722T0949-merge
       - class: NetworkAccess
         networkAccess: true
       - class: InlineJavascriptRequirement
@@ -293,7 +293,7 @@ $graph:
 
     arguments:
       - arguments.json
-  
+
     requirements:
       - class: InitialWorkDirRequirement
         listing:
@@ -312,7 +312,7 @@ $graph:
                 });
               }
       - class: DockerRequirement
-        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260617T1217
+        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260722T0949-merge
       - class: NetworkAccess
         networkAccess: true
       - class: ResourceRequirement

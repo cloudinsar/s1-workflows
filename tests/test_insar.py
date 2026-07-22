@@ -112,7 +112,7 @@ def test_insar_new(script, input_dict_path, auto_title):
     tmp_dir = Path(repository_root / slugify(auto_title).replace("tests_", "tests/tmp_")).absolute()
     if tmp_dir.exists():
         shutil.rmtree(tmp_dir)
-    tmp_dir.mkdir(exist_ok=True)
+    tmp_dir.mkdir(parents=True, exist_ok=True)
     exec_proc(["python", repository_root / "sar" / script, input_base64_json], cwd=tmp_dir)
 
     json_files = list(tmp_dir.glob("*collection*.json"))
