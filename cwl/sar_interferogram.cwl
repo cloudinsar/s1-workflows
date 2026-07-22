@@ -167,7 +167,7 @@ $graph:
         run: "#extract_pairs_array"
         in:
           pairs_json_file: generate_pairs/insar_pairs_json
-        out: [pairs_array, sub_swath_id]
+        out: [pairs_array, sub_swath_id, burst_id]
       
       process_pairs:
         run: "#process_single_pair"
@@ -216,7 +216,7 @@ $graph:
                 });
               }
       - class: DockerRequirement
-        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260722T0949-merge
+        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260722T1318-merge
       - class: NetworkAccess
         networkAccess: true
       - class: InlineJavascriptRequirement
@@ -274,13 +274,16 @@ $graph:
             items: string
       sub_swath_id:
         type: string
+      burst_id:
+        type: int
     
     expression: |
       ${
         var data = JSON.parse(inputs.pairs_json_file.contents);
         return {
           "pairs_array": data.InSAR_pairs,
-          "sub_swath_id": data.sub_swath_id
+          "sub_swath_id": data.sub_swath_id,
+          "burst_id": data.burst_id
         };
       }
 

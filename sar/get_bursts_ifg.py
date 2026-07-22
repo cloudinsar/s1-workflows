@@ -100,7 +100,7 @@ input_dict["burst_id"] = burst_id
 result_folder = Path.cwd().absolute()
 # result_folder = repo_directory / "output"
 # result_folder.mkdir(exist_ok=True)
-tmp_insar = Path(".")
+tmp_insar = Path("/tmp/insar")
 tmp_insar.mkdir(parents=True, exist_ok=True)
 
 with open(result_folder / "insar_pairs_inputs.json", "w") as f:
