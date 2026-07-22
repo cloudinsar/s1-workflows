@@ -34,11 +34,12 @@ _log.info(f"{input_dict=}")
 # Inputs sanity check:
 # Coherence requires either burst_id and sub_swath or spatial_extent.
 # Interferogram requires either burst_id, sub_swath and InSAR_pairs or spatial_extent and temporal_baseline.
+_log.info(f"Condition: {input_dict.get("burst_id") and input_dict["burst_id"] is not None and input_dict.get("InSAR_pairs") and input_dict["InSAR_pairs"] is not None}")
 
-use_provided_pairs = False
 if input_dict.get("burst_id") and input_dict["burst_id"] is not None and input_dict.get("InSAR_pairs") and input_dict["InSAR_pairs"] is not None:
-    # We can skip all the rest and return the parameters as they are
     use_provided_pairs = True
+    start_date = min([min(pair) for pair in input_dict["InSAR_pairs"]])
+    end_date = max([max(pair) for pair in input_dict["InSAR_pairs"]])
 elif input_dict.get("spatial_extent") \
     and input_dict["spatial_extent"] is not None \
     and input_dict.get("temporal_baseline") \
@@ -46,16 +47,11 @@ elif input_dict.get("spatial_extent") \
     and input_dict.get("temporal_extent") \
     and input_dict["temporal_extent"] is not None:
     # We need to automatically select the burst_id and sub_swath, generating the InSAR_pairs
-    pass
-else:
-    raise Exception("For interferogram generation, please provide either \n(polarization, temporal_extent, burst_id, sub_swath, InSAR_pairs) or \n(polarization, temporal_extent, spatial_extent, temporal_baseline) \nto select the burst of interest")
-
-if use_provided_pairs:
-    start_date = min([min(pair) for pair in input_dict["InSAR_pairs"]])
-    end_date = max([max(pair) for pair in input_dict["InSAR_pairs"]])
-else:
+    use_provided_pairs = False
     start_date = input_dict["temporal_extent"][0]  # TODO: date must be in the correct format, since later we append T00...
     end_date = input_dict["temporal_extent"][1]
+else:
+    raise Exception("For interferogram generation, please provide either \n(polarization, temporal_extent, burst_id, sub_swath, InSAR_pairs) or \n(polarization, temporal_extent, spatial_extent, temporal_baseline) \nto select the burst of interest")
 
 s1_bursts = retrieve_bursts_with_id_and_iw(
     start_date,
