@@ -36,23 +36,20 @@ _log.info(f"{input_dict=}")
 # Interferogram requires either burst_id, sub_swath and InSAR_pairs or spatial_extent and temporal_baseline.
 
 use_provided_pairs = False
-if input_dict.get("interferogram"):
-    if input_dict.get("burst_id") and input_dict["burst_id"] is not None and input_dict.get("InSAR_pairs") and input_dict["InSAR_pairs"] is not None:
-        # We can skip all the rest and return the parameters as they are
-        use_provided_pairs = True
-    elif input_dict.get("spatial_extent") and input_dict["spatial_extent"] is not None and input_dict.get("temporal_baseline") and input_dict["temporal_baseline"] is not None:
-        # We need to automatically select the burst_id and sub_swath, generating the InSAR_pairs
-        pass
-    else:
-        raise Exception("For interferogram generation, please provide either \n(polarization, temporal_extent, burst_id, sub_swath, InSAR_pairs) or \n(polarization, temporal_extent, spatial_extent, temporal_baseline) \nto select the burst of interest")
+if input_dict.get("burst_id") and input_dict["burst_id"] is not None and input_dict.get("InSAR_pairs") and input_dict["InSAR_pairs"] is not None:
+    # We can skip all the rest and return the parameters as they are
+    use_provided_pairs = True
+elif input_dict.get("spatial_extent") \
+    and input_dict["spatial_extent"] is not None \
+    and input_dict.get("temporal_baseline") \
+    and input_dict["temporal_baseline"] is not None \
+    and input_dict.get("temporal_extent") \
+    and input_dict["temporal_extent"] is not None:
+    # We need to automatically select the burst_id and sub_swath, generating the InSAR_pairs
+    pass
 else:
-    if input_dict.get("burst_id") and input_dict["burst_id"] is not None and input_dict.get("sub_swath") and input_dict["sub_swath"] is not None:
-        pass
-    elif input_dict.get("spatial_extent") and input_dict["spatial_extent"] is not None:
-        # We need to automatically select the burst_id and sub_swath, generating the InSAR_pairs
-        pass
-    else:
-        raise Exception("For coherence generation, please provide either \n(polarization, temporal_extent, temporal_baseline, burst_id, sub_swath) or \n(polarization, temporal_extent, temporal_baseline, spatial_extent) \nto select the burst of interest")
+    raise Exception("For interferogram generation, please provide either \n(polarization, temporal_extent, burst_id, sub_swath, InSAR_pairs) or \n(polarization, temporal_extent, spatial_extent, temporal_baseline) \nto select the burst of interest")
+
 if use_provided_pairs:
     start_date = min([min(pair) for pair in input_dict["InSAR_pairs"]])
     end_date = max([max(pair) for pair in input_dict["InSAR_pairs"]])
