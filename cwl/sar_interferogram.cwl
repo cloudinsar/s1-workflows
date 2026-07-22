@@ -194,7 +194,7 @@ $graph:
     
     doc: "Generate InSAR pairs based on burst ID and temporal parameters"
     
-    baseCommand: /src/sar/get_bursts.py
+    baseCommand: /src/sar/get_bursts_ifg.py
     
     arguments:
       - arguments.json
