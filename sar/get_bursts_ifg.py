@@ -26,7 +26,9 @@ else:
     # input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_whole_2023_new.json").read_text())
     # input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_2018_vh_new.json").read_text())
     # input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_2024_vv_new.json").read_text())
-    input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_2018_vh_new_spatial_extent_interferogram.json").read_text())
+    # input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_2018_vh_new_spatial_extent_interferogram.json").read_text())
+    input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_2018_vh.json").read_text())
+
     # input_dict = json.loads((repo_directory / "sar/example_inputs/input_dict_2024_vv_interferogram.json").read_text())
 input_dict = {k: v for k, v in input_dict.items() if v is not None}
 _log.info(f"{input_dict=}")
@@ -34,9 +36,14 @@ _log.info(f"{input_dict=}")
 # Inputs sanity check:
 # Coherence requires either burst_id and sub_swath or spatial_extent.
 # Interferogram requires either burst_id, sub_swath and InSAR_pairs or spatial_extent and temporal_baseline.
-_log.info(f"Condition: {input_dict.get("burst_id") and input_dict["burst_id"] is not None and input_dict.get("InSAR_pairs") and input_dict["InSAR_pairs"] is not None}")
+condition = input_dict.get("burst_id") and input_dict["burst_id"] is not None and input_dict.get("InSAR_pairs") and input_dict["InSAR_pairs"] is not None
+_log.info(f"Condition: {condition}")
+_log.info(input_dict.get("burst_id"))
+_log.info(input_dict["burst_id"] is not None)
+_log.info(input_dict.get("InSAR_pairs"))
+_log.info(input_dict["InSAR_pairs"] is not None)
 
-if input_dict.get("burst_id") and input_dict["burst_id"] is not None and input_dict.get("InSAR_pairs") and input_dict["InSAR_pairs"] is not None:
+if condition:
     use_provided_pairs = True
     start_date = min([min(pair) for pair in input_dict["InSAR_pairs"]])
     end_date = max([max(pair) for pair in input_dict["InSAR_pairs"]])
