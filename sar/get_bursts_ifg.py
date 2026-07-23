@@ -37,11 +37,6 @@ _log.info(f"{input_dict=}")
 # Coherence requires either burst_id and sub_swath or spatial_extent.
 # Interferogram requires either burst_id, sub_swath and InSAR_pairs or spatial_extent and temporal_baseline.
 condition = input_dict.get("burst_id") and input_dict["burst_id"] is not None and input_dict.get("InSAR_pairs") and input_dict["InSAR_pairs"] is not None
-_log.info(f"Condition: {condition}")
-_log.info(input_dict.get("burst_id"))
-_log.info(input_dict["burst_id"] is not None)
-_log.info(input_dict.get("InSAR_pairs"))
-_log.info(input_dict["InSAR_pairs"] is not None)
 
 if condition:
     use_provided_pairs = True
