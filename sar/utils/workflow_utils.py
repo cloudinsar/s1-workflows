@@ -262,8 +262,12 @@ def retrieve_bursts_with_id_and_iw(
     ]
     if spatial_extent:
         se = spatial_extent
-        wkt = f"SRID=4326;POLYGON(({se['west']} {se['south']},{se['east']} {se['south']},{se['east']} {se['north']},{se['west']} {se['north']},{se['west']} {se['south']}))"
+        epsg = 4326
+        if "crs" in spatial_extent:
+            epsg = spatial_extent["crs"].upper().replace("EPSG:", "")
+        wkt = f"SRID={epsg};POLYGON(({se['west']} {se['south']},{se['east']} {se['south']},{se['east']} {se['north']},{se['west']} {se['north']},{se['west']} {se['south']}))"
         print(f"Visualize WKT: https://wktmap.com/?wkt={urllib.parse.quote_plus(wkt)}")
+        assert epsg == 4326, "spatial_extent should be LatLon"  # stac catalog would give: "Error during parsing at index <built-in method index of str object"
         filters.append(f"Data.CSC.Intersects(area=geography'{wkt}')")
 
     filters2 = list(filter(None, filters))

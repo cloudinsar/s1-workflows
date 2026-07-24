@@ -1,0 +1,20 @@
+{
+  "temporal_extent": [
+    "2018-01-28",
+    "2018-02-03"
+  ],
+  "temporal_baseline": 6,
+  "spatial_extent": {
+    "west": -306166.2314,
+    "south": 4137747.436,
+    "east": -306090.2556,
+    "north": 4137829.724,
+    "crs": "EPSG:32631"
+  },
+  "coherence_window_az": 2,
+  "coherence_window_rg": 10,
+  "n_az_looks": 1,
+  "n_rg_looks": 4,
+  "polarization": "VH",
+  "sub_swath": "IW2"
+}
