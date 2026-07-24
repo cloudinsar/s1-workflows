@@ -112,7 +112,7 @@ def test_insar_new(script, input_dict_path, auto_title):
     tmp_dir = Path(repository_root / slugify(auto_title).replace("tests_", "tests/tmp_")).absolute()
     if tmp_dir.exists():
         shutil.rmtree(tmp_dir)
-    tmp_dir.mkdir(exist_ok=True)
+    tmp_dir.mkdir(parents=True, exist_ok=True)
     exec_proc(["python", repository_root / "sar" / script, input_base64_json], cwd=tmp_dir)
 
     json_files = list(tmp_dir.glob("*collection*.json"))
@@ -202,6 +202,7 @@ def test_sar_preprocessing(input_dict_path, auto_title):
     "input_dict_path",
     [
         "sar/example_inputs/input_dict_2018_vh_new.json",
+        "sar/example_inputs/input_dict_2018_vh_spatial_extent.json",
         "sar/example_inputs/input_dict_2018_vh_new_datetime.json",
         "sar/example_inputs/input_dict_2018_vh_new_spatial_extent.json",
         "sar/example_inputs/input_dict_2018_vh_new_spatial_extent_no_subswath.json"
