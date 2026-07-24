@@ -235,3 +235,18 @@ def test_insar_get_bursts_error(auto_title, caplog):
                   write_output=False)
     needle = "Is the end time intentionally put in the very beginning of that day?"
     assert any(needle in record.message for record in caplog.records)
+
+
+def test_insar_get_bursts_crs_error(auto_title, caplog):
+    input_dict_path = "sar/example_inputs/input_dict_2018_vh_new_spatial_extent_utm_error.json"
+    tmp_dir = Path(repository_root / slugify(auto_title).replace("tests_", "tests/tmp_")).absolute()
+    if tmp_dir.exists():
+        shutil.rmtree(tmp_dir)
+    tmp_dir.mkdir(exist_ok=True)
+
+    with pytest.raises(Exception) as exc_info:
+        exec_proc(["python", repository_root / "sar/get_bursts.py", repo_directory / input_dict_path],
+                  cwd=tmp_dir,
+                  write_output=False)
+    needle = "spatial_extent should be LatLon"
+    assert any(needle in record.message for record in caplog.records)
