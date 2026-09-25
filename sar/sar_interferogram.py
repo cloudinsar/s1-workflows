@@ -216,7 +216,7 @@ simple_stac_builder.generate_catalog(
 
 _log.info("seconds since start: " + str((datetime.now() - start_time).seconds))
 
-# # CWL Will find the result files in HOME or CD
+# CWL Will find the result files in CD
 
 files = list(result_folder.glob("*phase_coh_*"))
 for file in files:
