@@ -54,9 +54,9 @@ $graph:
       Interferometric pairs are automatically defined by specifying a temporal extent and temporal baseline.
       The workflow is implemented using ESA SNAP operators and is defined as a Common Workflow Language (CWL) pipeline [sar_coherence.cwl](https://github.com/cloudinsar/s1-workflows/blob/main/cwl/sar_coherence.cwl).
       Interferometric coherence provides a quantitative measure of phase stability between acquisitions and is widely used to assess surface change and temporal decorrelation driven by factors such as snow cover, vegetation dynamics, surface moisture, or mass movement. Coherence time series can be used for a variety of scientific and operational applications, including land cover classification, change detection, and as a diagnostic input for more advanced SAR analysis workflows.
-      
+
       An example on how to use it:
-      
+
       ```python
       import openeo
 
@@ -74,18 +74,18 @@ $graph:
               "sub_swath": "IW2"
           }
       )
-      
+
       job = stac_resource.create_job(title="sentinel1_sar_coherence test")
       job.start_and_wait()
       job.get_results().download_files()
       ```
-    
+
     requirements:
       - class: ScatterFeatureRequirement
       - class: StepInputExpressionRequirement
       - class: InlineJavascriptRequirement
       - class: SubworkflowFeatureRequirement
-    
+
     inputs:
       burst_id:
         type: int?
@@ -93,7 +93,7 @@ $graph:
           A temporal extent could have multiple bursts per day. Use [this notebook](https://github.com/cloudinsar/s1-workflows/blob/main/input_selection/InSAR_workflow_input_selection.ipynb) to find a fitting `burst_id`.
           Alternatively, the burst id map can be downloaded here: [Burst ID Maps 2022-05-30](https://sar-mpc.eu/files/S1_burstid_20220530.zip).
           You can also specify `temporal_extent` instead, so that a `burst_id` gets automatically selected.
-      
+
       polarization:
         - type: enum
           symbols: [ "VV", "VH" ]
@@ -104,7 +104,7 @@ $graph:
           - type: enum
             symbols: [ "IW1", "IW2", "IW3" ]
         doc: "Sub-swath identifier"
-      
+
       temporal_extent:
         type: string[]
         doc: "Temporal extent as [start_date, end_date], e.g., ['2024-08-01', '2024-09-30']. Specify at least a period equivalent to the selected temporal baseline * 2 to make sure at least one pair gets found. E.g. for a temporal baseline of 12 days, select at least a 24 days interval."
@@ -116,23 +116,23 @@ $graph:
       temporal_baseline:
         type: int
         doc: "Should be a multiple of 6. This is used to select how many days the secondary date will be after the primary for each date pair."
-      
+
       coherence_window_rg:
         type: int?
         default: 10
         doc: "Coherence window size in range direction"
-      
+
       coherence_window_az:
         type: int?
         default: 2
         doc: "Coherence window size in azimuth direction"
-    
+
     outputs:
       coherence_results:
         type: Directory
         outputSource: stac_merge/simple_stac_merge_out
         doc: "Directory containing STAC Collection of the results and related files"
-    
+
     steps:
       generate_pairs:
         run: "#get_insar_pairs"
@@ -144,13 +144,13 @@ $graph:
           temporal_extent: temporal_extent
           temporal_baseline: temporal_baseline
         out: [insar_pairs_json]
-      
+
       extract_pairs:
         run: "#extract_pairs_array"
         in:
           pairs_json_file: generate_pairs/insar_pairs_json
         out: [pairs_array, sub_swath_id]
-      
+
       process_pairs:
         run: "#process_single_pair"
         scatter: InSAR_pair
@@ -169,15 +169,15 @@ $graph:
         in:
           simple_stac_merge_in: process_pairs/pair_output
         out: [simple_stac_merge_out]
-          
-  
+
+
   - class: CommandLineTool
     id: get_insar_pairs
-    
+
     doc: "Generate InSAR pairs based on burst ID and temporal parameters"
-    
+
     baseCommand: /src/sar/get_bursts.py
-    
+
     arguments:
       - arguments.json
 
@@ -197,11 +197,11 @@ $graph:
                 });
               }
       - class: DockerRequirement
-        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260724T1203
+        dockerPull: ghcr.io/cloudinsar/openeo_insar:20261126T1452
       - class: NetworkAccess
         networkAccess: true
       - class: InlineJavascriptRequirement
-    
+
     inputs:
       burst_id:
         type: int?
@@ -219,26 +219,26 @@ $graph:
         type: string[]
       temporal_baseline:
         type: int
-    
+
     outputs:
       insar_pairs_json:
         type: File
         outputBinding:
           glob: "insar_pairs_inputs.json"
-  
+
   - class: ExpressionTool
     id: extract_pairs_array
-    
+
     doc: "Extract InSAR_pairs array from JSON file"
-    
+
     requirements:
       - class: InlineJavascriptRequirement
-    
+
     inputs:
       pairs_json_file:
         type: File
         loadContents: true
-    
+
     outputs:
       pairs_array:
         type:
@@ -248,7 +248,7 @@ $graph:
             items: string
       sub_swath_id:
         type: string
-    
+
     expression: |
       ${
         var data = JSON.parse(inputs.pairs_json_file.contents);
@@ -284,14 +284,14 @@ $graph:
 
   - class: CommandLineTool
     id: process_single_pair
-    
+
     doc: "Process a single InSAR pair to generate coherence"
-    
+
     baseCommand: /src/sar/sar_coherence_parallel.py
 
     arguments:
       - arguments.json
-    
+
     requirements:
       - class: InitialWorkDirRequirement
         listing:
@@ -309,7 +309,7 @@ $graph:
                 });
               }
       - class: DockerRequirement
-        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260724T1203
+        dockerPull: ghcr.io/cloudinsar/openeo_insar:20261126T1452
       - class: NetworkAccess
         networkAccess: true
       - class: ResourceRequirement
@@ -318,7 +318,7 @@ $graph:
         coresMin: 2
         coresMax: 4
       - class: InlineJavascriptRequirement
-      
+
     inputs:
       InSAR_pair:
         type: string[]
@@ -336,7 +336,7 @@ $graph:
         type: int?
       coherence_window_az:
         type: int?
-    
+
     outputs:
       pair_output:
         type: Directory

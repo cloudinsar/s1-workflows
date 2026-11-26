@@ -14,10 +14,10 @@ doc: |
   The resulting co‑registered SLC stack provides the fundamental input for a wide range of advanced SAR analyses, including InSAR interferogram generation, coherence estimation, and polarimetric processing.
 
   An example on how to use it:
-  
+
   ```python
   import openeo
-  
+
   connection = openeo.connect("https://openeo.dataspace.copernicus.eu").authenticate_oidc()
   stac_resource = connection.datacube_from_process(
       "sentinel1_sar_slc_preprocessing",
@@ -30,14 +30,14 @@ doc: |
           "temporal_extent": ["2018-01-28", "2018-02-04"],
       },
   )
-  
+
   job = stac_resource.create_job(title="sentinel1_sar_slc_preprocessing test")
   job.start_and_wait()
   job.get_results().download_files()
   ```
 requirements:
   DockerRequirement:
-    dockerPull: ghcr.io/cloudinsar/openeo_insar:20260617T1217
+    dockerPull: ghcr.io/cloudinsar/openeo_insar:20261126T1452
   NetworkAccess:
     networkAccess: true
   InitialWorkDirRequirement:

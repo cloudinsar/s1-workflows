@@ -49,7 +49,7 @@ $graph:
       The generated interferograms are fully suitable for multi‑temporal interferometric analysis. In particular, the outputs can be directly used as input to multi‑temporal InSAR toolkits such as MintPy, enabling time‑series deformation analysis using methods like SBAS or Persistent Scatterer approaches.
 
       An example on how to use it:
-      
+
       ```python
       import openeo
 
@@ -73,7 +73,7 @@ $graph:
             "sub_swath": "IW2"
         }
       )
-      
+
       job = stac_resource.create_job(title="sentinel1_sar_interferogram test")
       job.start_and_wait()
       job.get_results().download_files()
@@ -105,7 +105,7 @@ $graph:
         type: int?
         default: 10
         doc: "Coherence window size in range direction"
-      
+
       coherence_window_az:
         type: int?
         default: 2
@@ -139,7 +139,7 @@ $graph:
       temporal_baseline:
         type: int?
         doc: "Should be a multiple of 6. This is used to select how many days the secondary date will be after the primary for each date pair. To be used in combination with `spatial_extent`, replaces `InSAR_pairs` when selecting the burst automatically."
-      
+
       temporal_extent:
         type: string[]?
         doc: "Temporal extent as [start_date, end_date], e.g., ['2024-08-01', '2024-09-30']. Specify at least a period equivalent to the selected temporal baseline * 2 to make sure at least one pair gets found. E.g. for a temporal baseline of 12 days, select at least a 24 days interval."
@@ -162,13 +162,13 @@ $graph:
           temporal_extent: temporal_extent
           temporal_baseline: temporal_baseline
         out: [insar_pairs_json]
-      
+
       extract_pairs:
         run: "#extract_pairs_array"
         in:
           pairs_json_file: generate_pairs/insar_pairs_json
         out: [pairs_array, sub_swath_id, burst_id]
-      
+
       process_pairs:
         run: "#process_single_pair"
         scatter: InSAR_pair
@@ -191,11 +191,11 @@ $graph:
 
   - class: CommandLineTool
     id: get_insar_pairs
-    
+
     doc: "Generate InSAR pairs based on burst ID and temporal parameters"
-    
+
     baseCommand: /src/sar/get_bursts_ifg.py
-    
+
     arguments:
       - arguments.json
 
@@ -216,11 +216,11 @@ $graph:
                 });
               }
       - class: DockerRequirement
-        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260724T1203
+        dockerPull: ghcr.io/cloudinsar/openeo_insar:20261126T1452
       - class: NetworkAccess
         networkAccess: true
       - class: InlineJavascriptRequirement
-    
+
     inputs:
       InSAR_pairs:
         type:
@@ -245,7 +245,7 @@ $graph:
         type: string[]?
       temporal_baseline:
         type: int?
-    
+
     outputs:
       insar_pairs_json:
         type: File
@@ -254,17 +254,17 @@ $graph:
 
   - class: ExpressionTool
     id: extract_pairs_array
-    
+
     doc: "Extract InSAR_pairs array from JSON file"
-    
+
     requirements:
       - class: InlineJavascriptRequirement
-    
+
     inputs:
       pairs_json_file:
         type: File
         loadContents: true
-    
+
     outputs:
       pairs_array:
         type:
@@ -276,7 +276,7 @@ $graph:
         type: string
       burst_id:
         type: int
-    
+
     expression: |
       ${
         var data = JSON.parse(inputs.pairs_json_file.contents);
@@ -315,7 +315,7 @@ $graph:
                 });
               }
       - class: DockerRequirement
-        dockerPull: ghcr.io/cloudinsar/openeo_insar:20260724T1203
+        dockerPull: ghcr.io/cloudinsar/openeo_insar:20261126T1452
       - class: NetworkAccess
         networkAccess: true
       - class: ResourceRequirement
