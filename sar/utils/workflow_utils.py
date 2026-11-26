@@ -12,9 +12,9 @@ import urllib.request
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
-from reretry import retry
 
 import requests.adapters
+from reretry import retry
 from urllib3 import Retry
 
 _log = logging.getLogger(__name__)
@@ -42,6 +42,7 @@ def setup_insar_environment():
         get_logging_config,
         setup_logging,
     )
+
     # Remove any existing handlers configured by default
     logger = logging.getLogger()
     while logger.hasHandlers():
@@ -59,9 +60,13 @@ def setup_insar_environment():
     if "AWS_ACCESS_KEY_ID" not in os.environ and os.path.exists(repo_directory / "notebooks/CDSE_SECRET"):
         # same credentials as in the notebooks
         with open(repo_directory / "notebooks/CDSE_SECRET", "r") as cdse_secret_file:
-            lines = cdse_secret_file.readlines()
-        os.environ["AWS_ACCESS_KEY_ID"] = lines[0].split(":")[1].strip()
-        os.environ["AWS_SECRET_ACCESS_KEY"] = lines[1].split(":")[1].strip()
+            lines = cdse_secret_file.read().strip().splitlines()
+        if len(lines) == 1:
+            os.environ["AWS_ACCESS_KEY_ID"] = lines[0].split(":")[0].strip()
+            os.environ["AWS_SECRET_ACCESS_KEY"] = lines[0].split(":")[1].strip()
+        else:
+            os.environ["AWS_ACCESS_KEY_ID"] = lines[0].split(":")[1].strip()
+            os.environ["AWS_SECRET_ACCESS_KEY"] = lines[1].split(":")[1].strip()
     if not "AWS_ENDPOINT_URL_S3" in os.environ:
         os.environ["AWS_ENDPOINT_URL_S3"] = "https://eodata.dataspace.copernicus.eu"
 

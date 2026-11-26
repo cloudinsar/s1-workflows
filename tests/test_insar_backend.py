@@ -1,10 +1,10 @@
-import logging
 import json
+import logging
+
 import rioxarray
 from openeo import DataCube
-from openeo.rest.stac_resource import StacResource
 from openeo.internal.graph_building import PGNode
-
+from openeo.rest.stac_resource import StacResource
 from testutils import *
 
 #
@@ -108,6 +108,7 @@ def test_georeferenced_new_sar(cwl_path, input_dict_path, auto_title):
         # "sar/example_inputs/input_dict_2024_vv.json",
         # "sar/example_inputs/input_dict_2023.json",
         "sar/example_inputs/input_dict_2018_vh.json",
+        # "sar/example_inputs/input_dict_salluit_2019_vv.json",  # Got OOM-killed
     ],
 )
 def test_georeferenced_sar(cwl_path, input_dict_path, auto_title):
