@@ -1,0 +1,15 @@
+{
+  "InSAR_pairs": [
+    [
+      "2019-07-09",
+      "2019-07-21"
+    ]
+  ],
+  "burst_id": 131392,
+  "coherence_window_az": 2,
+  "coherence_window_rg": 10,
+  "n_az_looks": 1,
+  "n_rg_looks": 4,
+  "polarization": "VV",
+  "sub_swath": "IW2"
+}

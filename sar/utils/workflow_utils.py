@@ -12,9 +12,9 @@ import urllib.request
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
-from reretry import retry
 
 import requests.adapters
+from reretry import retry
 from urllib3 import Retry
 
 _log = logging.getLogger(__name__)
@@ -42,6 +42,7 @@ def setup_insar_environment():
         get_logging_config,
         setup_logging,
     )
+
     # Remove any existing handlers configured by default
     logger = logging.getLogger()
     while logger.hasHandlers():
@@ -59,9 +60,13 @@ def setup_insar_environment():
     if "AWS_ACCESS_KEY_ID" not in os.environ and os.path.exists(repo_directory / "notebooks/CDSE_SECRET"):
         # same credentials as in the notebooks
         with open(repo_directory / "notebooks/CDSE_SECRET", "r") as cdse_secret_file:
-            lines = cdse_secret_file.readlines()
-        os.environ["AWS_ACCESS_KEY_ID"] = lines[0].split(":")[1].strip()
-        os.environ["AWS_SECRET_ACCESS_KEY"] = lines[1].split(":")[1].strip()
+            lines = cdse_secret_file.read().strip().splitlines()
+        if len(lines) == 1:
+            os.environ["AWS_ACCESS_KEY_ID"] = lines[0].split(":")[0].strip()
+            os.environ["AWS_SECRET_ACCESS_KEY"] = lines[0].split(":")[1].strip()
+        else:
+            os.environ["AWS_ACCESS_KEY_ID"] = lines[0].split(":")[1].strip()
+            os.environ["AWS_SECRET_ACCESS_KEY"] = lines[1].split(":")[1].strip()
     if not "AWS_ENDPOINT_URL_S3" in os.environ:
         os.environ["AWS_ENDPOINT_URL_S3"] = "https://eodata.dataspace.copernicus.eu"
 
@@ -73,7 +78,32 @@ def setup_insar_environment():
         _log.info("adding SNAP to PATH")  # needed when running outside of docker
         os.environ["PATH"] = os.environ["PATH"] + ":/usr/local/esa-snap/bin"
 
-snap_extra_arguments = [
+def get_container_memory_limit_bytes() -> Optional[int]:
+    for path in ["/sys/fs/cgroup/memory.max", "/sys/fs/cgroup/memory/memory.limit_in_bytes"]:
+        try:
+            value = Path(path).read_text().strip()
+        except OSError:
+            continue
+        # cgroup v1 reports a huge number when there is no limit
+        if value.isdigit() and int(value) < 2**60:
+            return int(value)
+    return None
+
+
+def get_snap_xmx_arguments() -> List[str]:
+    """
+    gpt.vmoptions in the Docker image defaults to -Xmx10G, which can exceed the pod memory limit.
+    Java would then grow past the limit and get OOM-killed (exit code -9).
+    Leave headroom for non-heap JVM memory, native libraries and the Python parent process.
+    """
+    limit = get_container_memory_limit_bytes()
+    if limit is None:
+        return []
+    xmx_mb = int(limit * 0.7 / 1024 / 1024)
+    return [f"-J-Xmx{xmx_mb}M"]
+
+
+snap_extra_arguments = get_snap_xmx_arguments() + [
     "-J-Dsnap.dataio.bigtiff.compression.type=LZW",
     "-J-Dsnap.dataio.bigtiff.tiling.width=512",
     "-J-Dsnap.dataio.bigtiff.tiling.height=512",
@@ -83,7 +113,6 @@ snap_extra_arguments = [
     "-J-Dsnap.dataio.gdal.creationoptions=COMPRESS=DEFLATE;TILED=TRUE",
     "-J-Dsnap.jai.defaultTileSize=128",
     "-J-Dsnap.jai.tileCacheSize=512",
-    # "-J-Xmx6G",  # Works without
 ]
 
 origGetAddrInfo = socket.getaddrinfo
