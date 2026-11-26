@@ -182,7 +182,6 @@ for pair in input_dict["InSAR_pairs"]:
         saveDEM = False  # Just like in geocode_snaphuInterferogram.xml
         gpt_cmd = [
                 "gpt",
-                "-J-Xmx14G",
                 str(
                     repo_directory
                     / "snap_graphs/geocode_snaphuInterferogram_WGS84.xml"
