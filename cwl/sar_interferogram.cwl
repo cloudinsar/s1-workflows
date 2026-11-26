@@ -363,7 +363,7 @@ $graph:
 
     requirements:
       - class: DockerRequirement
-        dockerPull: openeo-docker-local-prod.repo.vito.be/openeo-geopyspark-driver-example-stac-catalog:1.9
+        dockerPull: ghcr.io/open-eo/example-stac-catalog:1.1.0
       - class: NetworkAccess
         networkAccess: true
 
