@@ -37,7 +37,7 @@ doc: |
   ```
 requirements:
   DockerRequirement:
-    dockerPull: ghcr.io/cloudinsar/openeo_insar:20261126T1452
+    dockerPull: ghcr.io/cloudinsar/openeo_insar:20261127T1318
   NetworkAccess:
     networkAccess: true
   InitialWorkDirRequirement:
