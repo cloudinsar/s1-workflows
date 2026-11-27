@@ -4,8 +4,7 @@ import os
 import subprocess
 import sys
 
-from sar.utils import simple_stac_builder
-from sar.utils import tiff_to_gtiff
+from sar.utils import simple_stac_builder, tiff_to_gtiff
 from sar.utils.workflow_utils import *
 
 setup_insar_environment()
@@ -62,6 +61,10 @@ bursts = retrieve_bursts_with_id_and_iw(
     burst_id=input_dict.get("burst_id"),
     spatial_extent=input_dict.get("spatial_extent"),
 )
+if len(bursts) == 0:
+    raise ValueError(
+        f"No bursts found in the CDSE catalogue for burst_id={input_dict.get('burst_id')}, sub_swath={input_dict.get('sub_swath')}"
+    )
 
 flattened_pairs = set()
 for pair in input_dict["InSAR_pairs"]:
@@ -100,8 +103,11 @@ _log.info(f"{burst_paths=!r}")
 asset_paths = []
 
 for pair in input_dict["InSAR_pairs"]:
-    prm_filename = next(filter(lambda x: pair[0].replace("-", "") in str(x), burst_paths))
-    sec_filename = next(filter(lambda x: pair[1].replace("-", "") in str(x), burst_paths))
+    prm_filename = next(filter(lambda x: pair[0].replace("-", "") in str(x), burst_paths), None)
+    sec_filename = next(filter(lambda x: pair[1].replace("-", "") in str(x), burst_paths), None)
+    missing_dates = [d for d, f in zip(pair, [prm_filename, sec_filename]) if f is None]
+    if missing_dates:
+        raise ValueError(f"No burst found for date(s) {missing_dates} of InSAR pair {pair}")
 
     output_filename_tmp = f"{result_folder}/tmp_S1_coh_2images_{date_from_burst(prm_filename)}_{date_from_burst(sec_filename)}.tif"
 

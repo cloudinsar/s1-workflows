@@ -6,9 +6,9 @@ import sys
 
 import pytest
 from pystac import Collection
+from testutils import *
 
 from sar.utils.simple_stac_builder import _cached_http
-from testutils import *
 
 _log = logging.getLogger(__name__)
 
@@ -113,7 +113,7 @@ def test_insar_new(script, input_dict_path, auto_title):
     if tmp_dir.exists():
         shutil.rmtree(tmp_dir)
     tmp_dir.mkdir(parents=True, exist_ok=True)
-    exec_proc(["python", repository_root / "sar" / script, input_base64_json], cwd=tmp_dir)
+    exec_proc([sys.executable, repository_root / "sar" / script, input_base64_json], cwd=tmp_dir)
 
     json_files = list(tmp_dir.glob("*collection*.json"))
     assert json_files, "A *collection*.json file generated"
@@ -149,7 +149,7 @@ def test_insar(script, input_dict_path, auto_title):
     if tmp_dir.exists():
         shutil.rmtree(tmp_dir)
     tmp_dir.mkdir(exist_ok=True)
-    exec_proc(["python", repository_root / "sar" / script, input_base64_json], cwd=tmp_dir)
+    exec_proc([sys.executable, repository_root / "sar" / script, input_base64_json], cwd=tmp_dir)
 
     json_files = list(tmp_dir.glob("*collection*.json"))
     assert json_files, "A *collection*.json file generated"
@@ -184,7 +184,7 @@ def test_sar_preprocessing(input_dict_path, auto_title):
     if tmp_dir.exists():
         shutil.rmtree(tmp_dir)
     tmp_dir.mkdir(exist_ok=True)
-    exec_proc(["python", repository_root / script, input_base64_json], cwd=tmp_dir)
+    exec_proc([sys.executable, repository_root / script, input_base64_json], cwd=tmp_dir)
 
     json_files = list(tmp_dir.glob("*collection*.json"))
     assert json_files, "A *collection*.json file generated"
@@ -213,13 +213,50 @@ def test_insar_get_bursts(input_dict_path, auto_title):
     if tmp_dir.exists():
         shutil.rmtree(tmp_dir)
     tmp_dir.mkdir(exist_ok=True)
-    exec_proc(["python", repository_root / "sar/get_bursts.py", repo_directory / input_dict_path], cwd=tmp_dir)
+    exec_proc([sys.executable, repository_root / "sar/get_bursts.py", repo_directory / input_dict_path], cwd=tmp_dir)
 
     json_files = list(tmp_dir.glob("*insar_pairs_inputs.json"))
     with open(json_files[0], "r") as file:
         j = json.load(file)
         print(f"Amount of pairs found: {len(j['InSAR_pairs'])}")
         assert len(j['InSAR_pairs']) > 0
+
+
+@pytest.mark.skip(reason="Disabled for performance. Even tough it is only 15seconds, the catalog might be down.")
+@pytest.mark.parametrize(
+    "input_dict_path",
+    sorted(
+        str(p.relative_to(repo_directory))
+        for p in (repo_directory / "sar/example_inputs").glob("*.json")
+        if "error" not in p.name
+    ),
+)
+def test_example_inputs_have_bursts(input_dict_path):
+    input_dict = json.loads(Path(repo_directory / input_dict_path).read_text())
+
+    if "temporal_extent" in input_dict:
+        start_date, end_date = input_dict["temporal_extent"]
+    else:
+        pairs = input_dict["InSAR_pairs"]
+        if isinstance(pairs[0], str):
+            pairs = [pairs]
+        start_date = min(min(pair) for pair in pairs)
+        end_date = max(max(pair) for pair in pairs)
+
+    polarizations = input_dict.get("polarization")
+    if not isinstance(polarizations, list):
+        polarizations = [polarizations]
+
+    for pol in polarizations:
+        bursts = retrieve_bursts_with_id_and_iw(
+            start_date,
+            end_date,
+            pol,
+            sbswath=input_dict.get("sub_swath"),
+            burst_id=input_dict.get("burst_id"),
+            spatial_extent=input_dict.get("spatial_extent"),
+        )
+        assert len(bursts) > 0, f"No bursts found for {input_dict_path} with polarization={pol}"
 
 
 def test_insar_get_bursts_error(auto_title, caplog):
@@ -230,9 +267,11 @@ def test_insar_get_bursts_error(auto_title, caplog):
     tmp_dir.mkdir(exist_ok=True)
 
     with pytest.raises(Exception) as exc_info:
-        exec_proc(["python", repository_root / "sar/get_bursts.py", repo_directory / input_dict_path],
-                  cwd=tmp_dir,
-                  write_output=False)
+        exec_proc(
+            [sys.executable, repository_root / "sar/get_bursts.py", repo_directory / input_dict_path],
+            cwd=tmp_dir,
+            write_output=False,
+        )
     needle = "Is the end time intentionally put in the very beginning of that day?"
     assert any(needle in record.message for record in caplog.records)
 
@@ -245,8 +284,35 @@ def test_insar_get_bursts_crs_error(auto_title, caplog):
     tmp_dir.mkdir(exist_ok=True)
 
     with pytest.raises(Exception) as exc_info:
-        exec_proc(["python", repository_root / "sar/get_bursts.py", repo_directory / input_dict_path],
-                  cwd=tmp_dir,
-                  write_output=False)
+        exec_proc(
+            [sys.executable, repository_root / "sar/get_bursts.py", repo_directory / input_dict_path],
+            cwd=tmp_dir,
+            write_output=False,
+        )
     needle = "spatial_extent should be LatLon"
+    assert any(needle in record.message for record in caplog.records)
+
+
+@pytest.mark.parametrize(
+    "script",
+    [
+        "sar_coherence_parallel.py",
+        "sar_interferogram.py",
+    ],
+)
+def test_insar_unknown_burst_id_error(script, auto_title, caplog):
+    # Parameters from j-26112710445542af9df4a73e54b5d227: burst_id is not in the CDSE catalogue
+    input_dict_path = "sar/example_inputs/input_dict_unknown_burst_id_error.json"
+    tmp_dir = Path(repository_root / slugify(auto_title).replace("tests_", "tests/tmp_")).absolute()
+    if tmp_dir.exists():
+        shutil.rmtree(tmp_dir)
+    tmp_dir.mkdir(exist_ok=True)
+
+    with pytest.raises(Exception, match="Process returned error status code"):
+        exec_proc(
+            [sys.executable, repository_root / "sar" / script, repo_directory / input_dict_path],
+            cwd=tmp_dir,
+            write_output=False,
+        )
+    needle = "No bursts found in the CDSE catalogue for burst_id=131437"
     assert any(needle in record.message for record in caplog.records)
